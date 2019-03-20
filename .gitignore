@@ -1,0 +1,5 @@
+*.o
+tolset_p86/
+GL/
+tmp/
+vm
