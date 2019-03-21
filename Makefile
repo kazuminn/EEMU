@@ -1,4 +1,4 @@
-TAR	= vm
+TAR	= x86 
 BIN	= test04.bin
 BINSRC	= test04.c
 

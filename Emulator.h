@@ -22,15 +22,6 @@
 extern const char* registers_name16[];		//16bitレジスタの名前
 extern const char* registers_name32[];		//32bitレジスタの名前
 
-//32bitレジスタ型
-typedef union {
-	uint32_t reg32;
-	uint16_t reg16;
-	struct {
-		uint8_t low8;
-		uint8_t high8;
-	};
-} Register;	// 32bit register
 
 #define REGISTERS_COUNT32 8
 
@@ -79,6 +70,77 @@ struct GATE_DESCRIPTOR {
 	uint16_t offset_low, selector;
 	uint8_t dw_count, access_right;
 	uint16_t offset_high;
+};
+
+
+// EFLAGS
+class Register {
+public:
+	union {
+		uint32_t reg32;
+		uint16_t reg16;
+		struct {
+			uint8_t low8;
+			uint8_t high8;
+		};
+		struct {
+			bool CF : 1;
+			bool    : 1;
+			bool PF : 1;
+			bool    : 1;
+			bool AF : 1;
+			bool    : 1;
+			bool ZF : 1;
+			bool SF : 1;
+			bool TF : 1;
+			bool IF : 1;
+			bool DF : 1;
+			bool OF : 1;
+			bool IOPL1 : 1;
+			bool IOPL2 : 1;
+			bool NT : 1;
+			bool    : 1;
+			bool RF : 1;
+			bool VM : 1;
+			bool AC : 1;
+			bool VIF: 1;
+			bool VIP: 1;
+			bool ID : 1;
+		};
+	};
+public:
+
+	inline bool IsCarry() { return CF; }
+
+	inline bool IsParity() { return PF; }
+
+	inline bool IsZero() { return ZF; }
+
+	inline bool IsSign() { return SF; }
+
+	inline bool IsOverflow() { return OF; }
+
+	inline bool IsInterrupt() { return IF; }
+
+	inline bool IsDirection() { return DF; }
+
+	inline void SetCarry(bool carry) { CF = carry; }
+
+	inline void SetParity(bool parity) { PF = parity; }
+
+	inline void SetZero(bool zero) { ZF = zero; }
+
+	inline void SetSign(bool sign) { SF = sign; }
+
+	inline void SetOverflow(bool of) { OF = of; }
+
+	inline void SetInterrupt(bool intr) { IF = intr; }
+
+	inline void SetDirection(bool dir) { DF = dir; }
+
+	inline void UpdateXor(){
+		CF = OF = 0;
+	}
 };
 
 //エミュレータクラス
