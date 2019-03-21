@@ -117,6 +117,16 @@ void xor_rm32_r32(Emulator *emu) {
 	emu->eflags.UpdateXor();
 }
 
+void xor_rm32_imm32(Emulator *emu) {
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint32_t rm32 = modrm.GetRM32();
+	unit32_t imm32 = emu->GetSignCode32(0);
+	emu->EIP++;
+	modrm.SetRM32(imm32 ^ rm32);
+	emu->eflags.UpdateXor();
+}
+
 void code_83(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
