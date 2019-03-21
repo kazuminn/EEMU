@@ -122,7 +122,7 @@ void xor_r32_rm32(Emulator *emu) {
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();
 	uint32_t rm32 = modrm.GetRM32();
-	modrm.SetRM32(r32 ^ rm32);
+	modrm.SetR32(r32 ^ rm32);
 	emu->eflags.UpdateXor();
 }
 
@@ -147,7 +147,11 @@ void xor_rm32_imm8(Emulator *emu) {
 }
 
 void xor_eax_imm32(Emulator *emu) {
-
+	emu->EIP++;
+    uint32_t eax = emu->GetSignCode32(0) - 0x40;
+    emu->reg[eax].reg32 = emu->reg[eax].reg32 ^ emu->GetSignCode32(1);
+    emu->EIP += 2;
+	emu->eflags.UpdateXor();
 }
 
 void code_83(Emulator *emu){
