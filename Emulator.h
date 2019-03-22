@@ -141,6 +141,10 @@ public:
 	inline void UpdateXor(){
 		CF = OF = 0;
 	}
+
+    inline void UpdateOr(){
+		CF = OF = 0;
+    }
 };
 
 //エミュレータクラス
