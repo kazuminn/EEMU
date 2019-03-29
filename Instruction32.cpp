@@ -62,13 +62,11 @@ void inc_r32(Emulator *emu){
 	emu->EIP++;
 }
 
-void add_rm32_imm8(Emulator *emu){
-	emu->EIP++;
-	ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM32(emu);
+void add_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32(emu);
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
 	emu->EIP++;
-	modrm.SetRM32(emu, rm32 + imm8);
+	modrm->SetRM32(emu, rm32 + imm8);
 }
 
 void mov_rm32_imm32(Emulator *emu){
@@ -103,13 +101,11 @@ void near_jump(Emulator *emu){
 	emu->EIP += (diff + 5);
 }
 
-void sub_rm32_imm8(Emulator *emu){
-    emu->EIP++;
-    ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM8();
+void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM8();
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
 	emu->EIP++;
-	modrm.SetRM32(rm32 - imm8);
+	modrm->SetRM32(rm32 - imm8);
 }
 
 void sub_rm32_imm32(Emulator *emu){
@@ -153,23 +149,19 @@ void xor_r32_rm32(Emulator *emu) {
 	emu->eflags.UpdateXor();
 }
 
-void xor_rm32_imm32(Emulator *emu) {
-	emu->EIP++;
-	ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM32();
+void xor_rm32_imm32(Emulator *emu, ModRM *modrm) {
+	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm32 = emu->GetSignCode32(0);
 	emu->EIP += 4;
-	modrm.SetRM32(imm32 ^ rm32);
+	modrm->SetRM32(imm32 ^ rm32);
 	emu->eflags.UpdateXor();
 }
 
-void xor_rm32_imm8(Emulator *emu) {
-	emu->EIP++;
-	ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM32();
+void xor_rm32_imm8(Emulator *emu, ModRM *modrm) {
+	uint32_t rm32 = modrm->GetRM32();
 	uint8_t imm8 = emu->GetSignCode8(0);
 	emu->EIP++;
-	modrm.SetRM32(imm8 ^ rm32);
+	modrm->SetRM32(imm8 ^ rm32);
 	emu->eflags.UpdateXor();
 }
 
@@ -219,7 +211,7 @@ void code_81(Emulator *emu){
 	ModRM *modrm = new ModRM(emu);
 
 	switch(modrm->opecode){
-		case 6: xor_rm32_imm32(emu); break;
+		case 6: xor_rm32_imm32(emu, modrm); break;
 		default:
 			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -229,11 +221,11 @@ void code_81(Emulator *emu){
 void code_83(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
-	
+
 	switch(modrm->opecode){
-		case 0: add_rm32_imm8(emu); break;
-		case 5: sub_rm32_imm8(emu); break;
-        case 6: xor_rm32_imm8(emu); break;
+		case 0: add_rm32_imm8(emu, modrm); break;
+		case 5: sub_rm32_imm8(emu, modrm); break;
+        case 6: xor_rm32_imm8(emu, modrm); break;
 		default:
 			cout<<"not implemented: 83 "<<(uint32_t)modrm->opecode<<endl;
 	}
