@@ -1,4 +1,4 @@
-TARGET = testXor.bin
+TARGET = testOr.bin
 Z_TOOLS = ../z_tools
 
 CC = gcc
