@@ -168,7 +168,7 @@ void xor_rm32_imm8(Emulator *emu, ModRM *modrm) {
 void xor_eax_imm32(Emulator *emu) {
 	emu->EIP++;
     emu->reg[0].reg32 = emu->reg[0].reg32 ^ emu->GetSignCode32(1);
-    emu->EIP += 5;
+    emu->EIP += 4;
 	emu->eflags.UpdateXor();
 }
 
