@@ -158,7 +158,7 @@ void xor_rm32_imm32(Emulator *emu) {
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
 	uint32_t imm32 = emu->GetSignCode32(0);
-	emu->EIP++;
+	emu->EIP += 4;
 	modrm.SetRM32(imm32 ^ rm32);
 	emu->eflags.UpdateXor();
 }
@@ -214,19 +214,28 @@ void or_eax_imm32(Emulator *emu) {
 	emu->eflags.UpdateOr();
 }
 
+void code_81(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(modrm->opecode){
+		case 6: xor_rm32_imm32(emu); break;
+		default:
+			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
+	}
+	delete modrm;
+}
+
 void code_83(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	
 	switch(modrm->opecode){
-		case 0:
-			add_rm32_imm8(emu);
-		case 5:
-			sub_rm32_imm8(emu);
-			break;
+		case 0: add_rm32_imm8(emu); break;
+		case 5: sub_rm32_imm8(emu); break;
+        case 6: xor_rm32_imm8(emu); break;
 		default:
 			cout<<"not implemented: 83 "<<(uint32_t)modrm->opecode<<endl;
-			
 	}
 	delete modrm;
 }
@@ -340,7 +349,10 @@ void InitInstructions32(void){
 	func[0x3B]	= cmp_r32_rm32;
 	//func[0x3C]	= cmp_al_imm8;
 	//func[0x3D]	= cmp_eax_imm32;
-	
+	func[0x31]	= xor_rm32_r32;
+	func[0x33]	= xor_r32_rm32;
+	func[0x35]	= xor_eax_imm32;
+
 	
 	for(i=0;i<8;i++){
 		func[0x40 + i]	= inc_r32;
@@ -373,7 +385,8 @@ void InitInstructions32(void){
 	func[0x79]	= jns;
 	func[0x7C]	= jl;
 	func[0x7E]	= jle;
-	
+
+    func[0x81]	= code_81;
 	func[0x83]	= code_83;
 	func[0x88]	= mov_rm8_r8;
 	func[0x89]	= mov_rm32_r32;
