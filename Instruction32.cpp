@@ -101,21 +101,20 @@ void near_jump(Emulator *emu){
 	emu->EIP += (diff + 5);
 }
 
-void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
-	uint32_t rm32 = modrm->GetRM8();
-	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
-	emu->EIP++;
-	modrm->SetRM32(rm32 - imm8);
-}
-
-void sub_rm32_imm32(Emulator *emu){
-	emu->EIP++;
-	ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM8();
+void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
 	emu->EIP += 4;
-	modrm.SetRM32(rm32 - imm32);
+	modrm->SetRM32(rm32 - imm32);
 }
+
+void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
+    uint32_t rm32 = modrm->GetRM8();
+    uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
+    emu->EIP++;
+    modrm->SetRM32(rm32 - imm8);
+}
+
 
 void sub_rm32_r32(Emulator *emu){
 	emu->EIP++;
@@ -136,7 +135,7 @@ void sub_r32_rm32(Emulator *emu){
 void sub_eax_imm32(Emulator *emu) {
 	emu->EIP++;
 	emu->reg[0].reg32 = emu->reg[0].reg32 ^ emu->GetSignCode32(1);
-	emu->EIP += 5;
+	emu->EIP += 4;
 }
 
 void xor_rm32_r32(Emulator *emu) {
@@ -226,7 +225,7 @@ void code_81(Emulator *emu){
 
 	switch(modrm->opecode){
 		case 1: or_rm32_imm32(emu, modrm);  break;
-		case 5: sub_rm32_imm8(emu, modrm);  break;
+		case 5: sub_rm32_imm32(emu, modrm);  break;
 		case 6: xor_rm32_imm32(emu, modrm); break;
 		default:
 			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
