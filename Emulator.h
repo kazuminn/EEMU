@@ -109,6 +109,7 @@ public:
 		};
 	};
 public:
+	inline bool IsAjust() { return AF; }
 
 	inline bool IsCarry() { return CF; }
 
@@ -124,7 +125,9 @@ public:
 
 	inline bool IsDirection() { return DF; }
 
-	inline void SetCarry(bool carry) { CF = carry; }
+	inline void SetAjust(bool ajust) { AF = ajust; }
+
+    inline void SetCarry(bool carry) { CF = carry; }
 
 	inline void SetParity(bool parity) { PF = parity; }
 
