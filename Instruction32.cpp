@@ -219,6 +219,22 @@ void or_eax_imm32(Emulator *emu) {
 	emu->eflags.UpdateOr();
 }
 
+void cmp_rm32_imm32(Emulator *emu, ModRM *modrm){
+	uint32_t rm32= modrm->GetRM32();
+	uint32_t imm32 = emu->GetCode32(0);
+	uint64_t result = (uint64_t)rm32 - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
+	emu->UpdateEflagsSub(rm32, imm32, result);
+	emu->EIP += 4;
+}
+
+void cmp_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32= modrm->GetRM32();
+	uint32_t imm8 = emu->GetCode8(0);
+	uint64_t result = (uint64_t)rm32 - (uint64_t)imm8; //32bit目を観測したいから64bitとして扱う
+	emu->UpdateEflagsSub(rm32, imm8, result);
+	emu->EIP += 4;
+}
+
 void code_81(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -227,6 +243,7 @@ void code_81(Emulator *emu){
 		case 1: or_rm32_imm32(emu, modrm);  break;
 		case 5: sub_rm32_imm32(emu, modrm);  break;
 		case 6: xor_rm32_imm32(emu, modrm); break;
+		case 7: cmp_rm32_imm32(emu, modrm); break;
 		default:
 			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -242,6 +259,7 @@ void code_83(Emulator *emu){
 		case 1: or_rm32_imm8(emu, modrm);  break;
 		case 5: sub_rm32_imm8(emu, modrm); break;
         case 6: xor_rm32_imm8(emu, modrm); break;
+		case 7: cmp_rm32_imm8(emu, modrm); break;
 		default:
 			cout<<"not implemented: 83 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -321,6 +339,14 @@ DEFINE_JX(s, IsSign);
 DEFINE_JX(o, IsOverflow)
 
 #undef DEFINE_JX
+void cmp_rm32_r32(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+	uint32_t rm32= modrm->GetRM32();
+	uint32_t r32 = modrm->GetR32();
+	uint64_t result = (uint64_t)rm32 - (uint64_t)r32; //32bit目を観測したいから64bitとして扱う
+	emu->UpdateEflagsSub(rm32, r32, result);
+	}
 
 void cmp_r32_rm32(Emulator *emu){
 	emu->EIP++;
@@ -329,7 +355,15 @@ void cmp_r32_rm32(Emulator *emu){
 	uint32_t rm32= modrm->GetRM32();
 	uint64_t result = (uint64_t)r32 - (uint64_t)rm32; //32bit目を観測したいから64bitとして扱う
 	emu->UpdateEflagsSub(r32, rm32, result);
-	delete modrm;
+}
+
+void cmp_eax_imm32(Emulator *emu){
+	emu->EIP++;
+	uint32_t eax = emu->reg[0].reg32;
+	uint32_t imm32 = emu->GetCode32(1);
+	uint64_t result = (uint64_t)eax - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
+	emu->UpdateEflagsSub(eax, imm32, result);
+	emu->EIP += 4;
 }
 
 void jl(Emulator *emu){
@@ -369,6 +403,9 @@ void InitInstructions32(void){
 	func[0x33]	= xor_r32_rm32;
 	func[0x35]	= xor_eax_imm32;
 
+	func[0x39]  = cmp_rm32_r32;
+	func[0x3b]  = cmp_r32_rm32;
+	func[0x3d]  = cmp_eax_imm32;
 	
 	for(i=0;i<8;i++){
 		func[0x40 + i]	= inc_r32;
