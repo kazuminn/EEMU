@@ -133,9 +133,8 @@ void sub_r32_rm32(Emulator *emu){
 }
 
 void sub_eax_imm32(Emulator *emu) {
-	emu->EIP++;
 	emu->reg[0].reg32 = emu->reg[0].reg32 ^ emu->GetSignCode32(1);
-	emu->EIP += 4;
+	emu->EIP += 5;
 }
 
 void xor_rm32_r32(Emulator *emu) {
@@ -173,9 +172,8 @@ void xor_rm32_imm8(Emulator *emu, ModRM *modrm) {
 }
 
 void xor_eax_imm32(Emulator *emu) {
-	emu->EIP++;
     emu->reg[0].reg32 = emu->reg[0].reg32 ^ emu->GetSignCode32(1);
-    emu->EIP += 4;
+    emu->EIP += 5;
 	emu->eflags.UpdateXor();
 }
 
@@ -213,9 +211,8 @@ void or_r32_rm32(Emulator *emu) {
 	emu->eflags.UpdateOr();
 }
 void or_eax_imm32(Emulator *emu) {
-	emu->EIP++;
 	emu->reg[0].reg32 = emu->reg[0].reg32 | emu->GetSignCode32(1);
-	emu->EIP += 4;
+	emu->EIP += 5;
 	emu->eflags.UpdateOr();
 }
 
@@ -358,12 +355,11 @@ void cmp_r32_rm32(Emulator *emu){
 }
 
 void cmp_eax_imm32(Emulator *emu){
-	emu->EIP++;
 	uint32_t eax = emu->reg[0].reg32;
 	uint32_t imm32 = emu->GetCode32(1);
 	uint64_t result = (uint64_t)eax - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
 	emu->UpdateEflagsSub(eax, imm32, result);
-	emu->EIP += 4;
+	emu->EIP += 5;
 }
 
 void jl(Emulator *emu){
