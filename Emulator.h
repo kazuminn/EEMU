@@ -197,18 +197,6 @@ public:				// member funcs
 	void Push32(uint32_t val);
 	uint32_t Pop32();
 
-	// EFLAGSの各フラグ取得
-	int IsCarry()	{ return (EFLAGS & CARRY_FLAG)	 != 0; }
-	int IsZero()	{ return (EFLAGS & ZERO_FLAG)	 != 0; }
-	int IsSign()	{ return (EFLAGS & SIGN_FLAG)	 != 0; }
-	int IsOverflow(){ return (EFLAGS & OVERFLOW_FLAG)!= 0; }
-
-	// EFLAGSの各フラグ設定
-	void SetCarry(int is_carry);
-	void SetZero(int is_zero);
-	void SetSign(int is_sign);
-	void SetOverflow(int is_overflow);
-
 	//関数名がキモいけどとりあえず放置
 	void UpdateEflagsSub(uint32_t v1, uint32_t v2, uint64_t result);
 
