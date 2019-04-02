@@ -16,9 +16,29 @@ void nop(Emulator *emu){
 void add_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t r32 = modrm.GetR32();
 	uint32_t rm32 = modrm.GetRM32();
+	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(rm32 + r32);
+}
+
+void add_r32_rm32(Emulator *emu){
+    emu->EIP++;
+    ModRM modrm(emu);
+    uint32_t r32 = modrm.GetR32();
+    uint32_t rm32 = modrm.GetRM32();
+    modrm.SetRM32(rm32 + r32);
+}
+
+void add_eax_imm8(Emulator *emu){
+	emu->reg[0].reg32 = emu->reg[0].reg32 + emu->GetSignCode32(1);
+	emu->EIP += 5;
+}
+
+void add_rm32_imm32(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
+	emu->EIP += 4;
+	modrm->SetRM32(rm32 + imm32);
 }
 
 void mov_rm8_r8(Emulator *emu){
@@ -402,7 +422,7 @@ void InitInstructions32(void){
 	func[0x39]  = cmp_rm32_r32;
 	func[0x3b]  = cmp_r32_rm32;
 	func[0x3d]  = cmp_eax_imm32;
-	
+
 	for(i=0;i<8;i++){
 		func[0x40 + i]	= inc_r32;
 	}
