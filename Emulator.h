@@ -13,12 +13,6 @@
 #define LOW			0
 #define HIGH			1
 
-// EFLAGS
-#define CARRY_FLAG	(1)
-#define ZERO_FLAG	(1 << 6)
-#define SIGN_FLAG	(1 << 7)
-#define OVERFLOW_FLAG	(1 << 11)
-
 extern const char* registers_name16[];		//16bitレジスタの名前
 extern const char* registers_name32[];		//32bitレジスタの名前
 
@@ -108,46 +102,6 @@ public:
 			bool ID : 1;
 		};
 	};
-public:
-	inline bool IsAjust() { return AF; }
-
-	inline bool IsCarry() { return CF; }
-
-	inline bool IsParity() { return PF; }
-
-	inline bool IsZero() { return ZF; }
-
-	inline bool IsSign() { return SF; }
-
-	inline bool IsOverflow() { return OF; }
-
-	inline bool IsInterrupt() { return IF; }
-
-	inline bool IsDirection() { return DF; }
-
-	inline void SetAjust(bool ajust) { AF = ajust; }
-
-    inline void SetCarry(bool carry) { CF = carry; }
-
-	inline void SetParity(bool parity) { PF = parity; }
-
-	inline void SetZero(bool zero) { ZF = zero; }
-
-	inline void SetSign(bool sign) { SF = sign; }
-
-	inline void SetOverflow(bool of) { OF = of; }
-
-	inline void SetInterrupt(bool intr) { IF = intr; }
-
-	inline void SetDirection(bool dir) { DF = dir; }
-
-	inline void UpdateXor(){
-		CF = OF = 0;
-	}
-
-    inline void UpdateOr(){
-		CF = OF = 0;
-    }
 };
 
 //エミュレータクラス
@@ -155,10 +109,10 @@ class Emulator{
 private:
 	int BitMode;
 	int memory_size;
+	Register eflags;
 public:
 	Register CR[5];		// CR0 ~ CR4 制御レジスタ
-	Register eflags;
-	
+
 	Register eip;
 	DTRegister GDTR, IDTR;
 	
@@ -205,6 +159,31 @@ public:				// member funcs
 	void DumpMemory(const char *fname, uint32_t addr, uint32_t size);
 	void DumpMemory(const char *fname, uint32_t size){	DumpMemory(fname, 0x00, size);	}
 	void DumpMemory(const char *fname){	DumpMemory(fname, memory_size);	}
+public:
+	inline int IsAjust() { return eflags.AF; }
+	inline int IsCarry() { return eflags.CF; }
+	inline int IsParity() { return eflags.PF; }
+	inline int IsZero() { return eflags.ZF; }
+	inline int IsSign() { return eflags.SF; }
+	inline int IsOverflow() { return eflags.OF; }
+	inline int IsInterrupt() { return eflags.IF; }
+	inline int IsDirection() { return eflags.DF; }
+	inline void SetAjust(bool ajust) { eflags.AF = ajust; }
+	inline void SetCarry(bool carry) { eflags.CF = carry; }
+	inline void SetParity(bool parity) { eflags.PF = parity; }
+	inline void SetZero(bool zero) { eflags.ZF = zero; }
+	inline void SetSign(bool sign) { eflags.SF = sign; }
+	inline void SetOverflow(bool of) { eflags.OF = of; }
+	inline void SetInterrupt(bool intr) { eflags.IF = intr; }
+	inline void SetDirection(bool dir) { eflags.DF = dir; }
+
+	inline void UpdateXor(){
+		eflags.CF = eflags.OF = 0;
+	}
+
+	inline void UpdateOr(){
+		eflags.CF = eflags.OF = 0;
+	}
 };
 
 //instructions
