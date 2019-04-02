@@ -29,7 +29,7 @@ void add_r32_rm32(Emulator *emu){
     modrm.SetRM32(rm32 + r32);
 }
 
-void add_eax_imm8(Emulator *emu){
+void add_eax_imm32(Emulator *emu){
 	emu->reg[0].reg32 = emu->reg[0].reg32 + emu->GetSignCode32(1);
 	emu->EIP += 5;
 }
@@ -257,10 +257,11 @@ void code_81(Emulator *emu){
 	ModRM *modrm = new ModRM(emu);
 
 	switch(modrm->opecode){
-		case 1: or_rm32_imm32(emu, modrm);  break;
+		case 0: add_rm32_imm32(emu, modrm);  break;
+		case 1: or_rm32_imm32(emu, modrm);   break;
 		case 5: sub_rm32_imm32(emu, modrm);  break;
-		case 6: xor_rm32_imm32(emu, modrm); break;
-		case 7: cmp_rm32_imm32(emu, modrm); break;
+		case 6: xor_rm32_imm32(emu, modrm);  break;
+		case 7: cmp_rm32_imm32(emu, modrm);  break;
 		default:
 			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -403,6 +404,9 @@ void InitInstructions32(void){
 	instruction_func_t** func = instructions32;
 	
 	func[0x01]	= add_rm32_r32;
+	func[0x03]	= add_r32_rm32;
+	func[0x05]	= add_eax_imm32;
+
 
 	func[0x09]  = or_rm32_r32;
 	func[0x0b]  = or_rm32_r32;
