@@ -184,6 +184,12 @@ public:
 	inline void UpdateOr(){
 		eflags.CF = eflags.OF = 0;
 	}
+
+	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
+
+
+private:
+	bool chk_parity(uint8_t v);
 };
 
 //instructions

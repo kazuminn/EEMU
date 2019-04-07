@@ -19,6 +19,7 @@ void add_rm32_r32(Emulator *emu){
 	uint32_t rm32 = modrm.GetRM32();
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(rm32 + r32);
+	emu->update_eflags_add(rm32, r32);
 }
 
 void add_r32_rm32(Emulator *emu){
@@ -27,11 +28,14 @@ void add_r32_rm32(Emulator *emu){
     uint32_t r32 = modrm.GetR32();
     uint32_t rm32 = modrm.GetRM32();
     modrm.SetRM32(rm32 + r32);
+	emu->update_eflags_add(r32, rm32);
 }
 
 void add_eax_imm32(Emulator *emu){
-	emu->reg[0].reg32 = emu->reg[0].reg32 + emu->GetSignCode32(1);
+    uint32_t imm32 = emu->GetSignCode32(1);
+	emu->reg[0].reg32 = emu->reg[0].reg32 + imm32;
 	emu->EIP += 5;
+	emu->update_eflags_add(emu->reg[0].reg32, imm32);
 }
 
 void add_rm32_imm32(Emulator *emu, ModRM *modrm){
@@ -39,6 +43,7 @@ void add_rm32_imm32(Emulator *emu, ModRM *modrm){
 	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
 	emu->EIP += 4;
 	modrm->SetRM32(rm32 + imm32);
+	emu->update_eflags_add(rm32, imm32);
 }
 
 void mov_rm8_r8(Emulator *emu){
@@ -87,6 +92,7 @@ void add_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
 	emu->EIP++;
 	modrm->SetRM32(emu, rm32 + imm8);
+	emu->update_eflags_add(rm32, imm8);
 }
 
 void mov_rm32_imm32(Emulator *emu){
@@ -106,8 +112,7 @@ void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
 
 /*
 void in_al_dx(Emulator *emu){
-	uint16_t addr = emu->EDX & 0xffff;
-	uint8_t val = io_in8(addr);
+	uint16_t addr);
 	
 }
 */
