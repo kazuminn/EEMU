@@ -151,8 +151,6 @@ public:				// member funcs
 	void Push32(uint32_t val);
 	uint32_t Pop32();
 
-	//関数名がキモいけどとりあえず放置
-	void UpdateEflagsSub(uint32_t v1, uint32_t v2, uint64_t result);
 
 	void DumpRegisters(int bit);		//各レジスタの値を標準入出力に書き込む。引数はビットモード。
 	void DumpRegisters();
@@ -186,6 +184,7 @@ public:
 	}
 
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
+	void update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result);
 
 
 private:
