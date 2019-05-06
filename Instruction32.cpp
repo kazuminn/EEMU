@@ -133,7 +133,7 @@ void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->EIP += 4;
 	modrm->SetRM32(rm32 - imm32);
 	uint64_t result = (uint64_t)rm32 - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
-	emu->update_eflags_sub(rm32, imm32, result)
+	emu->update_eflags_sub(rm32, imm32, result);
 }
 
 void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
@@ -142,7 +142,7 @@ void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
     emu->EIP++;
     modrm->SetRM32(rm32 - imm8);
 	uint64_t result = (uint64_t)rm32 - (uint64_t)imm8; //32bit目を観測したいから64bitとして扱う
-	emu->update_eflags_sub(rm32, imm8, result)
+	emu->update_eflags_sub(rm32, imm8, result);
 }
 
 
@@ -153,7 +153,7 @@ void sub_rm32_r32(Emulator *emu){
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(rm32 - r32);
 	uint64_t result = (uint64_t)rm32 - (uint64_t)r32; //32bit目を観測したいから64bitとして扱う
-	emu->update_eflags_sub(rm32, r32, result)
+	emu->update_eflags_sub(rm32, r32, result);
 }
 
 void sub_r32_rm32(Emulator *emu){
@@ -163,7 +163,7 @@ void sub_r32_rm32(Emulator *emu){
 	uint32_t rm32 = modrm.GetRM8();
 	modrm.SetR32(rm32 - r32);
 	uint64_t result = (uint64_t)r32 - (uint64_t)rm32; //32bit目を観測したいから64bitとして扱う
-	emu->update_eflags_sub(r32, rm32, result)
+	emu->update_eflags_sub(r32, rm32, result);
 }
 
 void sub_eax_imm32(Emulator *emu) {
@@ -172,7 +172,7 @@ void sub_eax_imm32(Emulator *emu) {
 	emu->reg[0].reg32 = emu->reg[0].reg32 ^ imm32;
 	emu->EIP += 5;
 	uint64_t result = (uint64_t)eax - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
-	emu->update_eflags_sub(eax , imm32, result)
+	emu->update_eflags_sub(eax , imm32, result);
 }
 
 void xor_rm32_r32(Emulator *emu) {
@@ -303,7 +303,7 @@ void code_83(Emulator *emu){
 }
 
 void push_r32(Emulator *emu){
-	uint8_t reg = emu->GetCode8(0)d - 0x50;
+	uint8_t reg = emu->GetCode8(0) - 0x50;
 	emu->Push32(emu->GetRegister32(reg));
 	emu->EIP++;
 }

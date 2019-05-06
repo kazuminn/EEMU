@@ -39,6 +39,13 @@ extern const char* registers_name32[];		//32bitレジスタの名前
 #define ESI	reg[6].reg32
 #define EDI	reg[7].reg32
 
+#define ES	sreg[0].sreg;
+#define CS	sreg[1].sreg;
+#define SS	sreg[2].sreg;
+#define DS	sreg[3].sreg;
+#define FS	sreg[4].sreg;
+#define GS	sreg[5].sreg;
+
 //特殊なレジスタに簡単にアクセスするためのdefine
 #define FLAGS	eflags.reg16
 #define EFLAGS	eflags.reg32
@@ -70,9 +77,10 @@ struct GATE_DESCRIPTOR {
 // EFLAGS
 class Register {
 public:
-	union {
+	struct {
 		uint32_t reg32;
 		uint16_t reg16;
+		uint16_t sreg;
 		struct {
 			uint8_t low8;
 			uint8_t high8;
@@ -110,6 +118,7 @@ private:
 	int BitMode;
 	int memory_size;
 	Register eflags;
+	Register sreg[6];
 public:
 	Register CR[5];		// CR0 ~ CR4 制御レジスタ
 
