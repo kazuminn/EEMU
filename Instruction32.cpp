@@ -17,15 +17,29 @@ void push_es(Emulator *emu){
 	emu->Push32(emu->get_ES());
 	emu->EIP++;
 }
+void pop_es(Emulator *emu){
+	emu->set_ES(emu->Pop32());
+	emu->EIP++;
+}
 
 void push_ss(Emulator *emu){
 	emu->Push32(emu->get_SS());
 	emu->EIP++;
 }
 
+void pop_ss(Emulator *emu){
+	emu->set_SS(emu->Pop32());
+	emu->EIP++;
+}
+
 void push_ds(Emulator *emu){
     emu->Push32(emu->get_DS());
     emu->EIP++;
+}
+
+void pop_ds(Emulator *emu){
+	emu->set_DS(emu->Pop32());
+	emu->EIP++;
 }
 
 void add_rm32_r32(Emulator *emu){
@@ -441,13 +455,16 @@ void InitInstructions32(void){
 	func[0x05]	= add_eax_imm32;
 
 	func[0x06]	= push_es;
+	func[0x07]	= pop_es;
 
 	func[0x09]  = or_rm32_r32;
 	func[0x0b]  = or_rm32_r32;
 	func[0x0d]  = or_eax_imm32;
 
 	func[0x16]  = push_ss;
+	func[0x17]  = pop_ss;
 	func[0x1e]  = push_ds;
+	func[0x1f]  = pop_ds;
 
 	func[0x29]  = sub_rm32_r32;
 	func[0x2b]  = sub_r32_rm32;
