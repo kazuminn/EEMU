@@ -195,6 +195,18 @@ public:
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
 	void update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result);
 
+	void set_ES(uint16_t v) { sreg[0].sreg = v;}
+	void set_CS(uint16_t v) { sreg[1].sreg = v;}
+	void set_SS(uint16_t v) { sreg[2].sreg = v;}
+	void set_DS(uint16_t v) { sreg[3].sreg = v;}
+	void set_FS(uint16_t v) { sreg[4].sreg = v;}
+	void set_GS(uint16_t v) { sreg[5].sreg = v;}
+
+	uint16_t get_ES() {return ES;}
+	uint16_t get_CS() {return CS;}
+	uint16_t get_SS() {return SS;}
+	uint16_t get_DS() {return DS;}
+	uint16_t get_FS() {return FS;}
 
 private:
 	bool chk_parity(uint8_t v);

@@ -13,6 +13,21 @@ void nop(Emulator *emu){
 	emu->EIP++;
 }
 
+void push_es(Emulator *emu){
+	emu->Push32(emu->get_ES());
+	emu->EIP++;
+}
+
+void push_ss(Emulator *emu){
+	emu->Push32(emu->get_SS());
+	emu->EIP++;
+}
+
+void push_ds(Emulator *emu){
+    emu->Push32(emu->get_DS());
+    emu->EIP++;
+}
+
 void add_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
@@ -425,10 +440,14 @@ void InitInstructions32(void){
 	func[0x03]	= add_r32_rm32;
 	func[0x05]	= add_eax_imm32;
 
+	func[0x06]	= push_es;
 
 	func[0x09]  = or_rm32_r32;
 	func[0x0b]  = or_rm32_r32;
 	func[0x0d]  = or_eax_imm32;
+
+	func[0x16]  = push_ss;
+	func[0x1e]  = push_ds;
 
 	func[0x29]  = sub_rm32_r32;
 	func[0x2b]  = sub_r32_rm32;
