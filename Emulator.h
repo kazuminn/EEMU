@@ -19,6 +19,15 @@ extern const char* registers_name32[];		//32bitレジスタの名前
 
 #define REGISTERS_COUNT32 8
 
+#define  AL reg[0].low8
+#define  CL reg[1].low8
+#define  DL reg[2].low8
+#define  BL reg[3].low8
+#define  AH reg[0].high8
+#define  CH reg[1].high8
+#define  DH reg[2].high8
+#define  BH reg[3].high8
+
 //16bitレジスタに簡単にアクセスするためのdefine
 #define  AX	reg[0].reg16
 #define  CX	reg[1].reg16
@@ -193,6 +202,7 @@ public:
 	}
 
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
+    template <class T> uint32_t update_eflags_shl(T v, uint8_t c);
 	void update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result);
 
 	void set_ES(uint16_t v) { sreg[0].sreg = v;}
@@ -208,6 +218,23 @@ public:
 	uint16_t get_DS() {return DS;}
 	uint16_t get_FS() {return FS;}
 
+	void set_AL(uint8_t v) { reg[0].low8 = v;}
+	void set_CL(uint8_t v) { reg[1].low8 = v;}
+	void set_DL(uint8_t v) { reg[2].low8 = v;}
+	void set_BL(uint8_t v) { reg[3].low8 = v;}
+	void set_AH(uint8_t v) { reg[0].high8 = v;}
+	void set_CH(uint8_t v) { reg[1].high8 = v;}
+	void set_DH(uint8_t v) { reg[2].high8 = v;}
+	void set_BH(uint8_t v) { reg[3].high8 = v;}
+
+	uint8_t get_AL() {return AL;}
+	uint8_t get_CL() {return CL;}
+	uint8_t get_DL() {return DL;}
+	uint8_t get_BL() {return BL;}
+	uint8_t get_AH() {return AH;}
+	uint8_t get_CH() {return CH;}
+	uint8_t get_DH() {return DH;}
+	uint8_t get_BH() {return BH;}
 private:
 	bool chk_parity(uint8_t v);
 };
