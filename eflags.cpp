@@ -24,6 +24,21 @@ template <class T> uint32_t Emulator::update_eflags_add(T v1, uint32_t v2){
 
     return eflags.reg32;
 }
+void Emulator::update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result){
+    // 各値の符号取得
+    int sign1 = v1 >> 31;
+    int sign2 = v2 >> 31;
+    int signr = (result >> 31) & 1;
+
+    // carry
+    SetCarry(result >> 32);
+    // zero
+    SetZero(result == 0);
+    // sign
+    SetSign(signr);
+    // overflow
+    SetOverflow(sign1 != sign2 && sign1 != signr);
+}
 
 bool Emulator::chk_parity(uint8_t v){
     bool p = true;
