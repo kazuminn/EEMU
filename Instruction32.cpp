@@ -299,6 +299,20 @@ void cmp_rm32_imm8(Emulator *emu, ModRM *modrm){
 	emu->EIP += 4;
 }
 
+void shl_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm8 = emu->GetCode8(0);
+	modrm->SetRM32(rm32<<imm8);
+	emu->update_eflags_shl(rm32, imm8);
+}
+
+void shl_rm32_cl(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint8_t cl = emu->get_CL();
+	modrm->SetRM32(rm32<<cl);
+	emu->update_eflags_shl(rm32, cl);
+}
+
 void code_81(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -327,6 +341,30 @@ void code_83(Emulator *emu){
 		case 7: cmp_rm32_imm8(emu, modrm); break;
 		default:
 			cout<<"not implemented: 83 "<<(uint32_t)modrm->opecode<<endl;
+	}
+	delete modrm;
+}
+
+void code_c1(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(modrm->opecode){
+		case 4: shl_rm32_imm8(emu, modrm); break;
+		default:
+			cout<<"not implemented: c1 "<<(uint32_t)modrm->opecode<<endl;
+	}
+	delete modrm;
+}
+
+void code_d3(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(modrm->opecode){
+		case 4: shl_rm32_cl(emu, modrm); break;
+		default:
+			cout<<"not implemented: d3 "<<(uint32_t)modrm->opecode<<endl;
 	}
 	delete modrm;
 }
@@ -449,7 +487,9 @@ using namespace instruction32;
 void InitInstructions32(void){
 	int i;
 	instruction_func_t** func = instructions32;
-	
+
+    func[0x00]	= nop;
+
 	func[0x01]	= add_rm32_r32;
 	func[0x03]	= add_r32_rm32;
 	func[0x05]	= add_eax_imm32;
