@@ -203,6 +203,7 @@ public:
 
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
     template <class T> uint32_t update_eflags_shl(T v, uint8_t c);
+	template <class T> uint32_t update_eflags_shr(T v, uint8_t c);
 	void update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result);
 
 	void set_ES(uint16_t v) { sreg[0].sreg = v;}

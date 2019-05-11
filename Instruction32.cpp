@@ -313,6 +313,48 @@ void shl_rm32_cl(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_shl(rm32, cl);
 }
 
+void shr_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm8 = emu->GetCode8(0);
+	modrm->SetRM32(rm32>>imm8);
+	emu->update_eflags_shr(rm32, imm8);
+}
+
+void shr_rm32_cl(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint8_t cl = emu->get_CL();
+	modrm->SetRM32(rm32>>cl);
+	emu->update_eflags_shr(rm32, cl);
+}
+
+void sal_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm8 = emu->GetCode8(0);
+	modrm->SetRM32(rm32<<imm8);
+	//emu->update_eflags_shr(rm32, imm8);
+}
+
+void sal_rm32_cl(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint8_t cl = emu->get_CL();
+	modrm->SetRM32(rm32<<cl);
+	//emu->update_eflags_shr(rm32, cl);
+}
+
+void sar_rm32_imm8(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm8 = emu->GetCode8(0);
+	modrm->SetRM32(rm32>>imm8);
+	//emu->update_eflags_shr(rm32, imm8);
+}
+
+void sar_rm32_cl(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint8_t cl = emu->get_CL();
+	modrm->SetRM32(rm32>>cl);
+	//emu->update_eflags_shr(rm32, cl);
+}
+
 void code_81(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -351,6 +393,9 @@ void code_c1(Emulator *emu){
 
 	switch(modrm->opecode){
 		case 4: shl_rm32_imm8(emu, modrm); break;
+		case 5: shr_rm32_imm8(emu, modrm); break;
+		case 6: sal_rm32_imm8(emu, modrm); break;
+		case 7: sar_rm32_imm8(emu, modrm); break;
 		default:
 			cout<<"not implemented: c1 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -363,6 +408,9 @@ void code_d3(Emulator *emu){
 
 	switch(modrm->opecode){
 		case 4: shl_rm32_cl(emu, modrm); break;
+		case 5: shr_rm32_cl(emu, modrm); break;
+		case 6: sal_rm32_cl(emu, modrm); break;
+		case 7: sar_rm32_cl(emu, modrm); break;
 		default:
 			cout<<"not implemented: d3 "<<(uint32_t)modrm->opecode<<endl;
 	}
@@ -568,11 +616,14 @@ void InitInstructions32(void){
 	for(i=0;i<8;i++){
 		func[0xB8 + i]	= mov_r32_imm32;
 	}
-	
+
+	func[0xC1]	= code_c1;
+
 	func[0xC3]	= ret;
 	func[0xC7]	= mov_rm32_imm32;
 	func[0xC9]	= leave;
-	
+
+	func[0xd3]	= code_d3;
 	//func[0xCD]	= swi;
 	
 	func[0xE8]	= call_rel32;
