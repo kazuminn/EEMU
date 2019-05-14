@@ -472,7 +472,37 @@ void leave(Emulator *emu){
 	emu->EIP++;
 }
 
+void pushad(Emulator *emu) {
+    uint32_t esp;
+    esp = emu->ESP;
 
+    emu->Push32(emu->EAX);
+	emu->Push32(emu->ECX);
+	emu->Push32(emu->EDX);
+	emu->Push32(emu->EBX);
+	emu->Push32(esp);
+	emu->Push32(emu->EBP);
+	emu->Push32(emu->ESI);
+	emu->Push32(emu->EDI);
+
+	emu->EIP++;
+}
+
+void popad(Emulator *emu) {
+	uint32_t esp;
+
+	emu->EDI = emu->Pop32();
+	emu->ESI = emu->Pop32();
+	emu->EBP = emu->Pop32();
+	esp = emu->Pop32();
+	emu->EBX = emu->Pop32();
+	emu->EDX = emu->Pop32();
+	emu->ECX = emu->Pop32();
+	emu->EAX = emu->Pop32();
+
+	emu->ESP = esp;
+	emu->EIP++;
+}
 // defineでJなんとか関数を大量錬成する
 #define DEFINE_JX(flag, is_flag) \
 void j ## flag(Emulator *emu){ \
@@ -583,9 +613,11 @@ void InitInstructions32(void){
 	for(i=0;i<8;i++){
 		func[0x58 + i]	= pop_r32;
 	}
-	
-	
-	
+
+
+	func[0x60]	= pushad;
+	func[0x61]	= popad;
+
 	//func[0x68]	= push_imm32;
 	func[0x6A]	= push_imm8;
 	
