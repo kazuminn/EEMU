@@ -16,6 +16,7 @@ void mov_r8_imm8(Emulator *emu){
 }
 
 void add_rm16_r16(Emulator *emu) {
+	emu->EIP++;
 	ModRM modrm(emu);
 	uint16_t rm16 = modrm.GetR16();
 	uint16_t r16 = modrm.GetR16();
