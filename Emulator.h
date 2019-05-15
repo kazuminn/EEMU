@@ -156,6 +156,7 @@ public:				// member funcs
 	int32_t GetSignCode32(int index);
 
 	uint8_t GetRegister8(int index);
+    uint16_t GetRegister16(int index);
 	uint32_t GetRegister32(int index);
 
 	void SetRegister8(int index, uint8_t val);
@@ -164,6 +165,7 @@ public:				// member funcs
 	uint32_t GetMemory8(uint32_t addr);
 	uint32_t GetMemory32(uint32_t addr);
 	void SetMemory8(uint32_t addr, uint32_t val);
+	void SetMemory16(uint32_t addr, uint32_t val);
 	void SetMemory32(uint32_t addr, uint32_t val);
 
 	void Push32(uint32_t val);

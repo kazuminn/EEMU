@@ -70,6 +70,31 @@ void ModRM::SetRM8(Emulator *emu, uint8_t val){
 void ModRM::SetRM8(uint8_t val){
 	if(emu != NULL) SetRM8(emu, val); return;
 }
+void ModRM::SetRM16(Emulator *emu, uint16_t val){
+	if(Mod == 3){
+		emu->SetRegister16(RM, val);
+	}else{
+		uint32_t addr = CalcMemAddr(emu);
+		emu->SetMemory16(addr, val);
+	}
+}
+
+void ModRM::SetRM16(uint16_t val){
+	if(emu != NULL) SetRM16(emu, val); return;
+}
+
+uint16_t ModRM::GetRM16(Emulator *emu){
+	if(Mod == 3){
+		return emu->GetRegister16(RM);
+	}else{
+		uint32_t addr = CalcMemAddr(emu);
+		return emu->GetMemory16(addr);
+	}
+}
+
+uint16_t ModRM::GetRM16(){
+	if(emu != NULL)	return GetRM16(emu);
+}
 
 uint32_t ModRM::GetRM32(Emulator *emu){
 	if(Mod == 3){
@@ -108,6 +133,14 @@ uint8_t ModRM::GetR8(Emulator *emu){
 }
 
 uint8_t ModRM::GetR8(){
+	if(emu != NULL) return GetR8(emu);
+}
+
+uint16_t ModRM::GetR16(Emulator *emu){
+	return emu->GetRegister16(reg_index);
+}
+
+uint16_t ModRM::GetR16(){
 	if(emu != NULL) return GetR8(emu);
 }
 
