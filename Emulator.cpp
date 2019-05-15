@@ -124,6 +124,10 @@ void Emulator::SetRegister8(int index, uint8_t val){
 	}
 }
 
+void Emulator::SetRegister16(int index, uint16_t val){
+	reg[index].reg16 = val;
+}
+
 void Emulator::SetRegister32(int index, uint32_t val){
 	reg[index].reg32 = val;
 }
@@ -134,6 +138,16 @@ uint32_t Emulator::GetMemory8(uint32_t addr){
 		return 0x00;
 	}
 	return memory[addr];
+}
+
+uint32_t Emulator::GetMemory16(uint32_t addr){
+	// little endian
+	uint32_t ret = 0;
+	for(int i=0; i<2; i++){
+		ret |= GetMemory8(addr + i) << (8 * i);
+	}
+
+	return ret;
 }
 
 uint32_t Emulator::GetMemory32(uint32_t addr){
