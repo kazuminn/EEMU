@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+#include "Instruction.h"
 #include "Emulator.h"
 #include "ModRM.h"
 
@@ -565,8 +566,7 @@ using namespace instruction32;
 void InitInstructions32(void){
 	int i;
 	instruction_func_t** func = instructions32;
-
-    func[0x00]	= nop;
+	instruction::Init();
 
 	func[0x01]	= add_rm32_r32;
 	func[0x03]	= add_r32_rm32;

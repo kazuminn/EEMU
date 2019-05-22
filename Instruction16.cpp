@@ -1,13 +1,10 @@
 #include "Emulator.h"
 #include "ModRM.h"
+#include "Instruction.h"
 
 instruction_func_t* instructions16[256];
 
 namespace instruction16{
-
-void test(Emulator *emu){
-	
-}
 
 void mov_r8_imm8(Emulator *emu){
 	uint8_t reg = emu->GetCode8(0) - 0xB0;
@@ -32,7 +29,9 @@ using namespace instruction16;
 void InitInstructions16(){
 	int i;
 	instruction_func_t** func = instructions16;
-	
+	instruction::Init();
+
+
 //	func[0x00] = test;
 
 	func[0x01] = add_rm16_r16;

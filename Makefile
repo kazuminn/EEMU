@@ -3,7 +3,7 @@ BIN	= test04.bin
 BINSRC	= test04.c
 
 OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o
-OBJS	+= GUI.o
+OBJS	+= GUI.o eflags.o Instruction.o
 OBJS	+= kazuminlib/kazuminlib.a
 OBJS	+= device/Device.a
 #OBJS	+= GL/lib/libglut.a
