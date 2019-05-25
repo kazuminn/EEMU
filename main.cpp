@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include <iostream>
+#include <cstdint>
+#include <cstring>
 
 #include "Emulator.h"
 #include "GUI.h"
@@ -42,51 +44,31 @@ int main(int argc, char **argv){
 	gui = new GUI(disp);
 	
 //	getchar();
-	
-	emu->LoadBinary(argv[1], 0x7c00, 512);
+
+	//iplとasmheadの処理
+	emu->LoadBinary(argv[1], 0x100000, 1440 * 1024);
+	std::memcpy(&emu->memory[0x280000], &emu->memory[0x104390], 512 * 1024);
+
+	uint32_t source;
+	uint32_t dest;
+	std::memcpy(&source, &emu->memory[0x280014], 4 * 8);
+	std::memcpy(&dest, &emu->memory[0x28000c], 4 * 8);
+	source += 0x280000;
+
+
+	printf("hoge : %d", emu->memory[0x280014]);
 	
 	emu->EIP = 0x7c00;	//EIP初期設定
 	emu->ESP = 0x7c00;
 	
-	//internal boxfill
-#ifdef INTERNAL_BOXFILL
 
-#ifdef TEST_VRAM
-	for(int i=VRAM_ADDR; i<=0xaffff; i++){
-		char *p;
-		p = (char*)(i + emu->memory);
-		*p = i & 0x0f;
-	}
-#endif
-
-#ifdef HARIBOTE_UI
-	boxfill(emu->memory + VRAM_ADDR, 320, 14, 0,      0, 320-1, 200-29);
-	boxfill(emu->memory + VRAM_ADDR, 320,  8, 0, 200-28, 320-1, 200-28);
-	boxfill(emu->memory + VRAM_ADDR, 320,  7, 0, 200-27, 320-1, 200-27);
-	boxfill(emu->memory + VRAM_ADDR, 320,  8, 0, 200-26, 320-1, 200- 1);
-	
-	boxfill(emu->memory + VRAM_ADDR, 320,  7,  3, 200-24, 59, 200-24);
-	boxfill(emu->memory + VRAM_ADDR, 320,  7,  2, 200-14,  2, 200- 4);
-	boxfill(emu->memory + VRAM_ADDR, 320, 15,  3, 200- 4, 59, 200- 4);
-	boxfill(emu->memory + VRAM_ADDR, 320, 15, 59, 200-23, 59, 200- 5);
-	boxfill(emu->memory + VRAM_ADDR, 320,  0,  2, 200- 3, 59, 200- 3);
-	boxfill(emu->memory + VRAM_ADDR, 320,  0, 60, 200-24, 60, 200- 3);
-	
-	boxfill(emu->memory + VRAM_ADDR, 320, 15, 320-47, 200-24, 320- 4, 200-24);
-	boxfill(emu->memory + VRAM_ADDR, 320, 15, 320-47, 200-23, 320-47, 200- 4);
-	boxfill(emu->memory + VRAM_ADDR, 320,  7, 320-47, 200- 3, 320- 4, 200- 3);
-	boxfill(emu->memory + VRAM_ADDR, 320,  7, 320- 3, 200-24, 320- 3, 200- 3);
-#endif //haribote-ui
-
-#endif //internal boxfill
-	
 	gui->OpenWindow();
 	
 //	emu->ESP = 0xffff;
 //	emu->DumpRegisters(32);
 	//emulation
 	while(true){
-		int bit		= emu->GetBitMode();
+		int bit		= 32;
 		uint8_t code	= emu->GetCode8(0);
 		instruction_func_t* func;
 
