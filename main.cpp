@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 	std::memcpy(&dest, &emu->memory[0x28000c], 4 ); source += 0x280000;
 	std::memcpy(&interval, &emu->memory[0x280010], 4);
 
-	std::memcpy((void *)(intptr_t)dest, (void *)(intptr_t)source, interval);
+	std::memcpy(&emu->memory[dest], &emu->memory[source], interval);
 
 	printf("source : %p\n", (void *)(intptr_t )source);
 	printf("dest : %p\n", (void *)(intptr_t )dest);
