@@ -24,15 +24,6 @@ Emulator	*emu;
 GUI		*gui;
 Display		*disp;
 
-void boxfill(unsigned char *vram, int xsize, unsigned char c, int x0, int y0, int x1, int y1){
-	for(int y=y0; y<=y1; y++){
-		for(int x=x0; x<=x1; x++){
-			vram[y * xsize + x] = c;
-		}
-	}
-	return;
-}
-
 int main(int argc, char **argv){
 	
 	//TODO parse args
@@ -51,15 +42,19 @@ int main(int argc, char **argv){
 
 	uint32_t source;
 	uint32_t dest;
-	std::memcpy(&source, &emu->memory[0x280014], 4 * 8);
-	std::memcpy(&dest, &emu->memory[0x28000c], 4 * 8);
-	source += 0x280000;
+	uint32_t interval;
+	std::memcpy(&source, &emu->memory[0x280014], 4);
+	std::memcpy(&dest, &emu->memory[0x28000c], 4 ); source += 0x280000;
+	std::memcpy(&interval, &emu->memory[0x280010], 4);
 
+	std::memcpy((void *)(intptr_t)dest, (void *)(intptr_t)source, interval);
 
-	printf("hoge : %d", emu->memory[0x280014]);
-	
-	emu->EIP = 0x7c00;	//EIP初期設定
-	emu->ESP = 0x7c00;
+	printf("source : %p\n", (void *)(intptr_t )source);
+	printf("dest : %p\n", (void *)(intptr_t )dest);
+	printf("interval : %x\n", interval);
+
+	emu->EIP = 0x1b;
+	emu->ESP = dest;
 	
 
 	gui->OpenWindow();
