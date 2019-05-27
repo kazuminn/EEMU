@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define DEFAULT_BIT_MODE	32//16		//デフォルトの起動時のビット。本来は16。
-#define DEFAULT_MEMORY_SIZE	(1024 * 1024)	//デフォルトのメモリサイズ。1MB
+#define DEFAULT_BIT_MODE	16//16		//デフォルトの起動時のビット。本来は16。
 #define REGISTERS_COUNT		8		//レジスタの本数(16/32bit)
 
 #define VRAM_ADDR		0xa0000
@@ -16,6 +15,7 @@
 extern const char* registers_name16[];		//16bitレジスタの名前
 extern const char* registers_name32[];		//32bitレジスタの名前
 
+//enum sgreg_t { ES, CS, SS, DS, FS, GS, SGREGS_COUNT };
 
 #define REGISTERS_COUNT32 8
 
@@ -68,18 +68,8 @@ struct DTRegister {
 	uint32_t base_addr;
 };
 
-//GDT
-struct SEGMENT_DESCRIPTOR {
-	uint16_t limit_low, base_low;
-	uint8_t base_mid, access_right;
-	uint8_t limit_high, base_high;
-};
-
-//IDT
-struct GATE_DESCRIPTOR {
-	uint16_t offset_low, selector;
-	uint8_t dw_count, access_right;
-	uint16_t offset_high;
+struct SGRegister {
+	uint32_t base;
 };
 
 
@@ -133,9 +123,10 @@ public:
 
 	Register eip;
 	DTRegister GDTR, IDTR;
-	
+
 	Register reg[REGISTERS_COUNT];
-	
+	SGRegister sgregs[6];
+
 	uint8_t *memory;
 public:				// member funcs
 	Emulator();
