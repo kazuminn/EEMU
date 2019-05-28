@@ -28,7 +28,10 @@ Emulator::Emulator(){
 	InitRegisters();
 
 	sgregs[1].base = 0x280000; //1 == cs
-	
+	sgregs[3].base = 0x000000; //3 == DS
+	sgregs[0].base = 0x000000; //0 == Es
+	sgregs[2].base = 0x000000; //2 == Ss
+
 	InitInstructions16();
 	InitInstructions32();
 	
