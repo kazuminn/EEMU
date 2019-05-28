@@ -51,19 +51,6 @@ void Emulator::InitRegisters(){
 	IDTR.table_limit= 0xffff;	// 同上2.4.3
 }
 
-int Emulator::GetBitMode(){
-	return BitMode;
-}
-
-//IsReal is defined in header.
-
-bool Emulator::IsProtected(){
-	if((CR[0].reg32 & 0x80000000) == 0){	//最上位ビットが0だったらリアルモード
-		return false;
-	}
-	return true;
-}
-
 void Emulator::LoadBinary(const char* fname, uint32_t addr, int size){
 	FILE *fp;
 	fp = fopen(fname, "rb");
@@ -74,12 +61,16 @@ void Emulator::LoadBinary(const char* fname, uint32_t addr, int size){
 	fclose(fp);
 }
 
+int Emulator::GetBitMode(){
+	return BitMode;
+}
+
 uint8_t Emulator::GetCode8(int index){
 	if(memory_size < (EIP +index)){
 		cout<<"error"<<endl;
 		return 0xff;
 	}
-	return memory[EIP + index];
+	return memory[sgregs[1].base + EIP + index];
 }
 
 int8_t Emulator::GetSignCode8(int index){
@@ -138,11 +129,11 @@ void Emulator::SetRegister32(int index, uint32_t val){
 }
 
 uint32_t Emulator::GetMemory8(uint32_t addr){
-	if(addr > memory_size){
+	if(sgregs[1].base + addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"を参照しようとしました。"<<endl;
 		return 0x00;
 	}
-	return memory[addr];
+	return memory[sgregs[1].base + addr];
 }
 
 uint32_t Emulator::GetMemory16(uint32_t addr){
@@ -166,12 +157,12 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 }
 
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
-	if(addr > memory_size){
+	if(sgregs[1].base + addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
 		return;
 	}
 //	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
-	memory[addr] = val & 0xFF;
+	memory[sgregs[1].base + addr] = val & 0xFF;
 	return;
 }
 
@@ -253,10 +244,10 @@ void Emulator::DumpRegisters(){
 }
 
 void Emulator::DumpMemory(const char *fname, uint32_t addr, uint32_t size){
-	if(memory_size < addr)
+	if(memory_size < sgregs[1].base + addr)
 		return;
-	if(memory_size < addr+size){
-		size = memory_size - addr;
+	if(memory_size < sgregs[1].base + addr+size){
+		size = memory_size - sgregs[1].base + addr;
 	}
 	
 	FILE *fp;
