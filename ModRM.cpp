@@ -15,6 +15,54 @@ ModRM::ModRM(Emulator *emu){
 	Parse(emu);
 }
 
+uint32_t ModRM::calc_modrm32(void) {
+	uint32_t addr = 0;
+
+	switch(Mod){
+		case 1:
+			addr += disp8;
+			break;
+		case 2:
+			addr += disp32;
+			break;
+	}
+
+	switch(RM){
+		case 4:
+			addr += calc_sib();
+		case 5:
+		    if(Mod == 0) {
+				addr += disp32;
+				break;
+			}
+		default:
+		    SEGMENT = (RM == 5) ? 2:3;
+		    addr += emu->reg[RM].reg32;
+	}
+	return addr;
+}
+
+uint32_t ModRM::calc_sib(void){
+    uint32_t base;
+
+    if(sib.base == 5 && Mod == 0)
+    	base = disp32;
+    else if (sib.base == 4) {
+    	if(sib.scale == 0){
+    		SEGMENT = 2;
+    		base = 0;
+    	}
+		else
+			printf("not implemented SIB (base = %d, index = %d, scale = %d)\n", sib.base, sib.index, sib.scale);
+	}
+	else{
+		SEGMENT = (RM == 5) ? 2 : 3;
+		base = emu->reg[sib.base].reg32;
+	}
+
+	return base + emu->reg[sib.index].reg32 * (1<<sib.scale);
+}
+
 void ModRM::Parse(Emulator *emu){	//cout<<"parse"<<endl;
 	uint8_t code = emu->GetCode8(0);
 	cout<<"code="<<(uint32_t)code<<endl;

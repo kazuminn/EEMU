@@ -3,6 +3,12 @@
 
 #include "Emulator.h"
 
+struct SIB {
+	uint8_t base :3;
+	uint8_t index :3;
+	uint8_t scale :2;
+};
+
 class ModRM {
 private:
 	Emulator *emu;
@@ -14,10 +20,12 @@ public:
 	};
 	uint8_t RM;
 	uint8_t SIB;
+	int SEGMENT;
 	union {
 		int8_t disp8;
 		uint32_t disp32;
 	};
+	struct SIB sib;
 public:
 	ModRM();
 	ModRM(Emulator *emu);
@@ -30,6 +38,9 @@ public:
 	uint8_t GetRM8();
 	void SetRM8(Emulator *emu, uint8_t val);
 	void SetRM8(uint8_t val);
+
+	uint32_t calc_modrm32(void);
+	uint32_t calc_sib(void);
 
 	uint16_t GetRM16(Emulator *emu);
 	uint16_t GetRM16();
