@@ -63,36 +63,6 @@ uint32_t ModRM::calc_sib(void){
 	return base + emu->reg[sib.index].reg32 * (1<<sib.scale);
 }
 
-void ModRM::Parse(Emulator *emu){	//cout<<"parse"<<endl;
-	uint8_t code = emu->GetCode8(0);
-	cout<<"code="<<(uint32_t)code<<endl;
-	Mod	= ((code & 0xC0) >> 6);
-	opecode	= ((code & 0x38) >> 3);
-	RM	= code & 0x07;			DEBUG()
-
-	emu->EIP++;
-
-	if(Mod != 3 && RM == 4){
-		SIB = emu->GetCode8(0);
-		emu->EIP++;
-	}
-
-	if((Mod == 0 && RM == 5) || Mod == 2){
-		disp32	= emu->GetSignCode32(0);
-		emu->EIP += 4;
-	}else if(Mod == 1){
-		disp8 = emu->GetSignCode8(0);
-		emu->EIP++;
-	}
-
-	return;
-}
-
-void ModRM::Parse(){
-	if(emu != NULL)
-		Parse(emu);
-}
-
 uint8_t ModRM::GetRM8(Emulator *emu){
 	if(Mod == 3){
 		return emu->GetRegister8(RM);
