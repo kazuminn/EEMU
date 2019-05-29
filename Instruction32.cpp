@@ -77,6 +77,12 @@ void add_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_add(rm32, imm32);
 }
 
+void add_al_imm8(Emulator *emu){
+	uint8_t	al = emu->AL;
+	uint8_t imm8 = emu->GetSignCode8(1);
+	emu->AL = al + imm8;
+}
+
 void mov_rm8_r8(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
@@ -118,6 +124,13 @@ void inc_r32(Emulator *emu){
 	emu->EIP++;
 }
 
+void lea_r32_m32(Emulator *emu){
+	ModRM modrm(emu);
+    uint32_t m32 = modrm.calc_modrm32();
+    modrm.SetR32(m32);
+    emu->EIP -= 2;
+}
+
 void add_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32(emu);
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
@@ -148,8 +161,8 @@ void in_al_dx(Emulator *emu){
 }
 */
 void short_jump(Emulator *emu){
-	int8_t diff = emu->GetSignCode8(1);
-	emu->EIP += (diff + 2);
+     uint8_t imm8 = emu->GetSignCode8(1);
+	 emu->EIP += imm8 + 2;
 }
 
 void near_jump(Emulator *emu){
@@ -570,6 +583,7 @@ void InitInstructions32(void){
 
 	func[0x01]	= add_rm32_r32;
 	func[0x03]	= add_r32_rm32;
+//	func[0x04]	= add_al_imm8;
 	func[0x05]	= add_eax_imm32;
 
 	func[0x06]	= push_es;
@@ -638,6 +652,8 @@ void InitInstructions32(void){
 	func[0x89]	= mov_rm32_r32;
 	//func[0x8A]	= mov_r8_rm8;
 	func[0x8B]	= mov_r32_rm32;
+
+	func[0x8D]	= lea_r32_m32;
 
 	func[0x90]	= nop;
 

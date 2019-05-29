@@ -31,6 +31,9 @@ public:
 	ModRM(Emulator *emu);
 //	~ModRM();
 
+	void Parse(Emulator *emu);
+	void Parse();
+
 	uint8_t GetRM8(Emulator *emu);
 	uint8_t GetRM8();
 	void SetRM8(Emulator *emu, uint8_t val);
