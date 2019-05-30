@@ -4,8 +4,13 @@
 #include "ModRM.h"
 
 namespace instruction {
-    void Init() {
+    void jmp(Emulator *emu) {
+        emu->IP += static_cast<uint16_t>(emu->GetCode8(0));
+    }
+}
 
+namespace instruction {
+    void Init() {
     }
 };
 

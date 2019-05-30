@@ -131,6 +131,10 @@ void lea_r32_m32(Emulator *emu){
     emu->EIP -= 2;
 }
 
+void mov_al_moffs8(Emulator *emu) {
+	emu->AL = get_moffs8();
+}
+
 void add_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32(emu);
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
