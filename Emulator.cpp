@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include "Emulator.h"
+#include "ModRM.h"
 
 using namespace std;
 
@@ -33,10 +34,15 @@ Emulator::Emulator(){
 	sgregs[2].base = 0x000000; //2 == Ss
 
 	InitInstructions16();
+
 	InitInstructions32();
 	
 //	memset(memory, 0x01, memory_size);
 //	test(this);
+}
+
+uint8_t get_moffs(Emulator *emu) {
+	emu->instr.SEGMENT = 3;
 }
 
 Emulator::~Emulator(){

@@ -17,6 +17,28 @@ extern const char* registers_name32[];		//32bitレジスタの名前
 
 //enum sgreg_t { ES, CS, SS, DS, FS, GS, SGREGS_COUNT };
 
+struct SIB {
+	uint8_t base :3;
+	uint8_t index :3;
+	uint8_t scale :2;
+};
+
+struct InstrData {
+	uint8_t Mod;
+	union {
+		uint8_t opecode;
+		uint8_t reg_index;
+	};
+	uint8_t RM;
+	uint8_t SIB;
+	int SEGMENT;
+	union {
+		int8_t disp8;
+		uint32_t disp32;
+	};
+	struct SIB sib;
+};
+
 #define REGISTERS_COUNT32 8
 
 #define  AL reg[0].low8
@@ -128,6 +150,7 @@ public:
 	SGRegister sgregs[6];
 
 	uint8_t *memory;
+	InstrData instr;
 public:				// member funcs
 	Emulator();
 	~Emulator();

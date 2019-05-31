@@ -1,101 +1,94 @@
 #include <iostream>
 
 #include "ModRM.h"
+#include "Emulator.h"
 
 using namespace std;
 
-#define DEBUG() cout<<"Mod:"<<(uint32_t)Mod<<" RM:"<<(uint32_t)RM<<endl;
-
-ModRM::ModRM(){
-	
-}
 
 ModRM::ModRM(Emulator *emu){
 	this->emu = emu;
 	Parse(emu);
 }
 
-uint32_t ModRM::calc_modrm32(void) {
+uint32_t ModRM::calc_modrm32(Emulator *emu) {
 	uint32_t addr = 0;
 
-	switch(Mod){
+	switch(emu->instr.Mod){
 		case 1:
-			addr += disp8;
+			addr += emu->instr.disp8;
 			break;
 		case 2:
-			addr += disp32;
+			addr += emu->instr.disp32;
 			break;
 	}
 
-	switch(RM){
+	switch(emu->instr.RM){
 		case 4:
-			addr += calc_sib();
+			addr += calc_sib(emu);
 		case 5:
-		    if(Mod == 0) {
-				addr += disp32;
+		    if(emu->instr.Mod == 0) {
+				addr += emu->instr.disp32;
 				break;
 			}
 		default:
-		    SEGMENT = (RM == 5) ? 2:3;
-		    addr += emu->reg[RM].reg32;
+		    emu->instr.SEGMENT = (emu->instr.RM == 5) ? 2:3;
+		    addr += emu->reg[emu->instr.RM].reg32;
 	}
 	return addr;
 }
 
-uint32_t ModRM::calc_sib(void){
+uint32_t ModRM::calc_sib(Emulator *emu){
     uint32_t base;
 
-    if(sib.base == 5 && Mod == 0)
-    	base = disp32;
-    else if (sib.base == 4) {
-    	if(sib.scale == 0){
-    		SEGMENT = 2;
+    if(emu->instr.sib.base == 5 && emu->instr.Mod == 0)
+    	base = emu->instr.disp32;
+    else if (emu->instr.sib.base == 4) {
+    	if(emu->instr.sib.scale == 0){
+    		emu->instr.SEGMENT = 2;
     		base = 0;
     	}
 		else
-			printf("not implemented SIB (base = %d, index = %d, scale = %d)\n", sib.base, sib.index, sib.scale);
+			printf("not implemented SIB (base = %d, index = %d, scale = %d)\n", emu->instr.sib.base, emu->instr.sib.index, emu->instr.sib.scale);
 	}
 	else{
-		SEGMENT = (RM == 5) ? 2 : 3;
-		base = emu->reg[sib.base].reg32;
+		emu->instr.SEGMENT = (emu->instr.RM == 5) ? 2 : 3;
+		base = emu->reg[emu->instr.sib.base].reg32;
 	}
 
-	return base + emu->reg[sib.index].reg32 * (1<<sib.scale);
+	return base + emu->reg[emu->instr.sib.index].reg32 * (1<<emu->instr.sib.scale);
 }
 
 void ModRM::Parse(Emulator *emu){	//cout<<"parse"<<endl;
 	uint8_t code = emu->GetCode8(0);
 	cout<<"code="<<(uint32_t)code<<endl;
-	Mod	= ((code & 0xC0) >> 6);
-	opecode	= ((code & 0x38) >> 3);
-	RM	= code & 0x07;			DEBUG()
+	emu->instr.Mod	= ((code & 0xC0) >> 6);
+	emu->instr.opecode	= ((code & 0x38) >> 3);
+	emu->instr.RM	= code & 0x07;
+
+	cout<<"Mod:"<<(uint32_t)emu->instr.Mod<<" RM:"<<(uint32_t)emu->instr.RM<<endl;
 
 	emu->EIP++;
 
-	if(Mod != 3 && RM == 4){
-		SIB = emu->GetCode8(0);
+	if(emu->instr.Mod != 3 && emu->instr.RM == 4){
+		emu->instr.SIB = emu->GetCode8(0);
 		emu->EIP++;
 	}
 
-	if((Mod == 0 && RM == 5) || Mod == 2){
-		disp32	= emu->GetSignCode32(0);
+	if((emu->instr.Mod == 0 && emu->instr.RM == 5) || emu->instr.Mod == 2){
+		emu->instr.disp32	= emu->GetSignCode32(0);
 		emu->EIP += 4;
-	}else if(Mod == 1){
-		disp8 = emu->GetSignCode8(0);
+	}else if(emu->instr.Mod == 1){
+		emu->instr.disp8 = emu->GetSignCode8(0);
 		emu->EIP++;
 	}
 
 	return;
 }
 
-void ModRM::Parse(){
-	if(emu != NULL)
-		Parse(emu);
-}
-
 uint8_t ModRM::GetRM8(Emulator *emu){
-	if(Mod == 3){
-		return emu->GetRegister8(RM);
+	if(emu->instr.Mod == 3){
+		return emu->GetRegister8(emu->instr.RM);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		return emu->GetMemory8(addr);
@@ -107,8 +100,8 @@ uint8_t ModRM::GetRM8(){
 }
 
 void ModRM::SetRM8(Emulator *emu, uint8_t val){
-	if(Mod == 3){
-		emu->SetRegister8(RM, val);
+	if(emu->instr.Mod == 3){
+		emu->SetRegister8(emu->instr.RM, val);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		emu->SetMemory8(addr, val);
@@ -119,8 +112,8 @@ void ModRM::SetRM8(uint8_t val){
 	if(emu != NULL) SetRM8(emu, val); return;
 }
 void ModRM::SetRM16(Emulator *emu, uint16_t val){
-	if(Mod == 3){
-		emu->SetRegister16(RM, val);
+	if(emu->instr.Mod == 3){
+		emu->SetRegister16(emu->instr.RM, val);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		emu->SetMemory16(addr, val);
@@ -132,8 +125,8 @@ void ModRM::SetRM16(uint16_t val){
 }
 
 uint16_t ModRM::GetRM16(Emulator *emu){
-	if(Mod == 3){
-		return emu->GetRegister16(RM);
+	if(emu->instr.Mod == 3){
+		return emu->GetRegister16(emu->instr.RM);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		return emu->GetMemory16(addr);
@@ -145,8 +138,8 @@ uint16_t ModRM::GetRM16(){
 }
 
 uint32_t ModRM::GetRM32(Emulator *emu){
-	if(Mod == 3){
-		return emu->GetRegister32(RM);
+	if(emu->instr.Mod == 3){
+		return emu->GetRegister32(emu->instr.RM);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		return emu->GetMemory32(addr);
@@ -158,15 +151,15 @@ uint32_t ModRM::GetRM32(){
 }
 
 void ModRM::SetRM32(Emulator *emu, uint32_t val){
-	if(Mod == 3){
-		emu->SetRegister32(RM, val);
+	if(emu->instr.Mod == 3){
+		emu->SetRegister32(emu->instr.RM, val);
 	}else{
 		uint32_t addr = CalcMemAddr(emu);
 		emu->SetMemory32(addr, val);
 		cout<<"setrm addr="<<addr;
 		cout<<" val="<<val<<hex;
-		cout<<" Mod="<<(uint32_t)Mod;
-		cout<<" RM="<<(uint32_t)RM;
+		cout<<" Mod="<<(uint32_t)emu->instr.Mod;
+		cout<<" RM="<<(uint32_t)emu->instr.RM;
 		cout<<endl;
 	}
 }
@@ -177,7 +170,7 @@ void ModRM::SetRM32(uint32_t val){
 }
 
 uint8_t ModRM::GetR8(Emulator *emu){
-	return emu->GetRegister32(reg_index);
+	return emu->GetRegister32(emu->instr.reg_index);
 }
 
 uint8_t ModRM::GetR8(){
@@ -185,7 +178,7 @@ uint8_t ModRM::GetR8(){
 }
 
 uint16_t ModRM::GetR16(Emulator *emu){
-	return emu->GetRegister16(reg_index);
+	return emu->GetRegister16(emu->instr.reg_index);
 }
 
 uint16_t ModRM::GetR16(){
@@ -193,7 +186,7 @@ uint16_t ModRM::GetR16(){
 }
 
 void ModRM::SetR8(Emulator *emu, uint8_t val){
-	emu->SetRegister8(reg_index, val);
+	emu->SetRegister8(emu->instr.reg_index, val);
 }
 
 void ModRM::SetR8(uint8_t val){
@@ -201,7 +194,7 @@ void ModRM::SetR8(uint8_t val){
 }
 
 uint32_t ModRM::GetR32(Emulator *emu){
-	return emu->GetRegister32(reg_index);
+	return emu->GetRegister32(emu->instr.reg_index);
 }
 
 uint32_t ModRM::GetR32(){
@@ -209,7 +202,7 @@ uint32_t ModRM::GetR32(){
 }
 
 void ModRM::SetR32(Emulator *emu, uint32_t val){
-	emu->SetRegister32(reg_index, val);
+	emu->SetRegister32(emu->instr.reg_index, val);
 }
 
 void ModRM::SetR32(uint32_t val){
@@ -219,28 +212,28 @@ void ModRM::SetR32(uint32_t val){
 }
 
 uint32_t ModRM::CalcMemAddr(Emulator *emu){
-	if(Mod == 0){
-		if(RM == 4){
+	if(emu->instr.Mod == 0){
+		if(emu->instr.RM == 4){
 			cout<<"not implemented ModRM Mod = 0, RM = 4"<<endl;
 			return 0;
-		}else if(RM == 5){
-			return disp32;
+		}else if(emu->instr.RM == 5){
+			return emu->instr.disp32;
 		}else{
-			return emu->GetRegister32(RM);
+			return emu->GetRegister32(emu->instr.RM);
 		}
-	}else if(Mod == 1){
-		if(RM == 4){
+	}else if(emu->instr.Mod == 1){
+		if(emu->instr.RM == 4){
 			cout<<"not implemented ModRM Mod = 1, RM = 4"<<endl;
 			return 0;
 		}else{
-			return emu->GetRegister32(RM) + disp8;
+			return emu->GetRegister32(emu->instr.RM) + emu->instr.disp8;
 		}
-	}else if(Mod == 2){
-		if(RM == 4){
+	}else if(emu->instr.Mod == 2){
+		if(emu->instr.RM == 4){
 			cout<<"not implemented ModRM Mod = 2, RM = 4"<<endl;
 			return 0;
 		}else{
-			return emu->GetRegister32(RM) + disp32;
+			return emu->GetRegister32(emu->instr.RM) + emu->instr.disp32;
 		}
 	}else{
 		cout<<"not implemented ModRM Mod = 3"<<endl;

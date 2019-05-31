@@ -126,20 +126,20 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
 	ModRM modrm(emu);
-    uint32_t m32 = modrm.calc_modrm32();
+    uint32_t m32 = modrm.calc_modrm32(emu);
     modrm.SetR32(m32);
     emu->EIP -= 2;
 }
 
 void mov_al_moffs8(Emulator *emu) {
-	emu->AL = get_moffs8();
+//	emu->AL = get_moffs8();
 }
 
 void add_rm32_imm8(Emulator *emu, ModRM *modrm){
-	uint32_t rm32 = modrm->GetRM32(emu);
+	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm8 = (int32_t)emu->GetSignCode8(0);
 	emu->EIP++;
-	modrm->SetRM32(emu, rm32 + imm8);
+	modrm->SetRM32(rm32 + imm8);
 	emu->update_eflags_add(rm32, imm8);
 }
 
@@ -377,14 +377,14 @@ void code_81(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 
-	switch(modrm->opecode){
+	switch(emu->instr.opecode){
 		case 0: add_rm32_imm32(emu, modrm);  break;
 		case 1: or_rm32_imm32(emu, modrm);   break;
 		case 5: sub_rm32_imm32(emu, modrm);  break;
 		case 6: xor_rm32_imm32(emu, modrm);  break;
 		case 7: cmp_rm32_imm32(emu, modrm);  break;
 		default:
-			cout<<"not implemented: 81 "<<(uint32_t)modrm->opecode<<endl;
+			cout<<"not implemented: 81 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -393,14 +393,14 @@ void code_83(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 
-	switch(modrm->opecode){
+	switch(emu->instr.opecode){
 		case 0: add_rm32_imm8(emu, modrm); break;
 		case 1: or_rm32_imm8(emu, modrm);  break;
 		case 5: sub_rm32_imm8(emu, modrm); break;
         case 6: xor_rm32_imm8(emu, modrm); break;
 		case 7: cmp_rm32_imm8(emu, modrm); break;
 		default:
-			cout<<"not implemented: 83 "<<(uint32_t)modrm->opecode<<endl;
+			cout<<"not implemented: 83 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -409,13 +409,13 @@ void code_c1(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 
-	switch(modrm->opecode){
+	switch(emu->instr.opecode){
 		case 4: shl_rm32_imm8(emu, modrm); break;
 		case 5: shr_rm32_imm8(emu, modrm); break;
 		case 6: sal_rm32_imm8(emu, modrm); break;
 		case 7: sar_rm32_imm8(emu, modrm); break;
 		default:
-			cout<<"not implemented: c1 "<<(uint32_t)modrm->opecode<<endl;
+			cout<<"not implemented: c1 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -424,13 +424,13 @@ void code_d3(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 
-	switch(modrm->opecode){
+	switch(emu->instr.opecode){
 		case 4: shl_rm32_cl(emu, modrm); break;
 		case 5: shr_rm32_cl(emu, modrm); break;
 		case 6: sal_rm32_cl(emu, modrm); break;
 		case 7: sar_rm32_cl(emu, modrm); break;
 		default:
-			cout<<"not implemented: d3 "<<(uint32_t)modrm->opecode<<endl;
+			cout<<"not implemented: d3 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -462,12 +462,12 @@ void code_ff(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	
-	switch(modrm->opecode){
+	switch(emu->instr.opecode){
 	case 0:
 		inc_rm32(emu, modrm);
 		break;
 	default:
-		cout<<"not implemented: 0xFF /"<<(int)modrm->opecode<<endl;
+		cout<<"not implemented: 0xFF /"<<(int)emu->instr.opecode<<endl;
 	}
 	
 	delete modrm;
