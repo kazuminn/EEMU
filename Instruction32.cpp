@@ -131,9 +131,43 @@ void lea_r32_m32(Emulator *emu){
     emu->EIP -= 2;
 }
 
-void mov_al_moffs8(Emulator *emu) {
-//	emu->AL = get_moffs8();
+uint32_t get_memio_base(uint32_t addr) {
+	addr &= (~((1<<12)-1));
+	return 0;
 }
+
+uint32_t trans_v2p(int mode, int seg, uint32_t vaddr) {
+	uint32_t laddr, paddr;
+
+	laddr = trans_v2l(mode, seg, vaddr);
+
+	paddr = laddr;
+
+	//とばして
+
+	return paddr;
+}
+
+uint8_t read_mem8_seg(int seg, uint32_t addr){
+	uint32_t paddr, io_base;
+
+	paddr = trans_v2p(0, seg, addr);
+	return (io_base = get_memio_base(paddr)) ? 0 : read_mem8(paddr);
+
+}
+
+uint8_t get_moffs8(Emulator *emu, uint32_t addr) {
+	emu->instr.SEGMENT = 3;
+	read_mem8_seg(emu->instr.SEGMENT, addr);
+}
+
+void mov_al_moffs8(Emulator *emu) {
+	emu->EIP++;
+	uint32_t moffs = emu->GetSignCode32(0);
+	emu->AL = get_moffs8(emu, moffs);
+	emu->EIP += 4;
+}
+
 
 void add_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32();
@@ -660,6 +694,8 @@ void InitInstructions32(void){
 	func[0x8D]	= lea_r32_m32;
 
 	func[0x90]	= nop;
+
+	func[0xA0]	= mov_al_moffs8;
 
 	for(i=0;i<8;i++){
 		func[0xB0 + i]	= mov_r8_imm8;
