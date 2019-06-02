@@ -131,40 +131,10 @@ void lea_r32_m32(Emulator *emu){
     emu->EIP -= 2;
 }
 
-uint32_t get_memio_base(uint32_t addr) {
-	addr &= (~((1<<12)-1));
-	return 0;
-}
-
-uint32_t trans_v2p(int mode, int seg, uint32_t vaddr) {
-	uint32_t laddr, paddr;
-
-	laddr = trans_v2l(mode, seg, vaddr);
-
-	paddr = laddr;
-
-	//とばして
-
-	return paddr;
-}
-
-uint8_t read_mem8_seg(int seg, uint32_t addr){
-	uint32_t paddr, io_base;
-
-	paddr = trans_v2p(0, seg, addr);
-	return (io_base = get_memio_base(paddr)) ? 0 : read_mem8(paddr);
-
-}
-
-uint8_t get_moffs8(Emulator *emu, uint32_t addr) {
-	emu->instr.SEGMENT = 3;
-	read_mem8_seg(emu->instr.SEGMENT, addr);
-}
-
 void mov_al_moffs8(Emulator *emu) {
 	emu->EIP++;
-	uint32_t moffs = emu->GetSignCode32(0);
-	emu->AL = get_moffs8(emu, moffs);
+	uint8_t moffs = emu->memory[emu->sgregs[1].base + emu->GetSignCode32(0)];
+	emu->AL = moffs;
 	emu->EIP += 4;
 }
 
@@ -407,6 +377,19 @@ void sar_rm32_cl(Emulator *emu, ModRM *modrm){
 	//emu->update_eflags_shr(rm32, cl);
 }
 
+void sar_rm8_imm8(Emulator *emu, ModRM *modrm){
+	int8_t rm8_s = modrm->GetR32();
+	uint8_t imm8 = emu->GetSignCode8(0);
+	modrm->SetRM8(rm8_s>>imm8);
+	emu->EIP++;
+}
+void and_rm32_imm8(Emulator *emu, ModRM *modrm) {
+	uint32_t rm32 = modrm->GetRM32();
+	uint8_t imm8 = emu->GetSignCode8(0);
+	modrm->SetRM32(rm32&imm8);
+	emu->EIP++;
+}
+
 void code_81(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -430,11 +413,24 @@ void code_83(Emulator *emu){
 	switch(emu->instr.opecode){
 		case 0: add_rm32_imm8(emu, modrm); break;
 		case 1: or_rm32_imm8(emu, modrm);  break;
+		case 4: and_rm32_imm8(emu, modrm);  break;
 		case 5: sub_rm32_imm8(emu, modrm); break;
         case 6: xor_rm32_imm8(emu, modrm); break;
 		case 7: cmp_rm32_imm8(emu, modrm); break;
 		default:
 			cout<<"not implemented: 83 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
+}
+
+void code_c0(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 7: sar_rm8_imm8(emu, modrm); break;
+		default:
+			cout<<"not implemented: c1 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -704,7 +700,7 @@ void InitInstructions32(void){
 	for(i=0;i<8;i++){
 		func[0xB8 + i]	= mov_r32_imm32;
 	}
-
+	func[0xC0]	= code_c0;
 	func[0xC1]	= code_c1;
 
 	func[0xC3]	= ret;
