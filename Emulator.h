@@ -133,6 +133,7 @@ public:
 	};
 };
 
+
 //エミュレータクラス
 class Emulator{
 private:
@@ -168,6 +169,8 @@ public:				// member funcs
 	int8_t  GetSignCode8(int index);
 	uint32_t GetCode32(int index);
 	int32_t GetSignCode32(int index);
+
+	void parse_prefix(Emulator *emu);
 
 	uint8_t GetRegister8(int index);
     uint16_t GetRegister16(int index);

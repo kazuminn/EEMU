@@ -24,6 +24,7 @@ Emulator	*emu;
 GUI		*gui;
 Display		*disp;
 
+
 int main(int argc, char **argv){
 	
 	//TODO parse args
@@ -49,9 +50,10 @@ int main(int argc, char **argv){
 
 	std::memcpy(&emu->memory[dest], &emu->memory[source], interval);
 
-	printf("source : %p\n", (void *)(intptr_t )source);
+/*	printf("source : %p\n", (void *)(intptr_t )source);
 	printf("dest : %p\n", (void *)(intptr_t )dest);
 	printf("interval : %x\n", interval);
+*/
 
 	emu->EIP = 0x1b;
 	emu->ESP = dest;
@@ -63,8 +65,9 @@ int main(int argc, char **argv){
 //	emu->DumpRegisters(32);
 	//emulation
 	while(true){
-		int bit		= 32;
-		uint8_t code	= emu->GetCode8(0);
+		emu->parse_prefix(emu);
+
+		uint8_t code	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
 
 #ifndef QUIET
@@ -73,19 +76,10 @@ int main(int argc, char **argv){
 		cout<<"Code = "<<(uint32_t)code<<endl;
 #endif
 
-		if(bit == 16){
-			func = instructions16[code];
-		}else if(bit == 32){
-			func = instructions32[code];
-		}else if(bit == 64){
-			cout<<"64bitには対応していません。"<<endl;
-			break;
-		}
-		
+		func = instructions32[code];
+
 		if(func == NULL){
-//			cout<<"命令("<<showbase<<(int)code<<")は実装されていません。"<<endl;
-			// おふざけ
-			cout<<showbase<<(int)code<<"...？知らない命令ですね。"<<endl;
+			cout<<"命令("<<showbase<<(int)code<<")は実装されていません。"<<endl;
 			break;
 		}
 		
@@ -102,7 +96,6 @@ int main(int argc, char **argv){
 			break;
 		}
 		
-//		emu->EIP.reg32++;
 	}
 	
 	emu->DumpRegisters(32);

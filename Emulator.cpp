@@ -41,12 +41,18 @@ Emulator::Emulator(){
 //	test(this);
 }
 
-uint8_t get_moffs(Emulator *emu) {
-	emu->instr.SEGMENT = 3;
-}
-
 Emulator::~Emulator(){
 	delete[] memory;
+}
+
+void Emulator::parse_prefix(Emulator *emu){
+	while(true) {
+		uint8_t code = emu->GetSignCode8(0);
+		switch(code) {
+			case 0x66:
+			    emu->EIP++; break;
+		}
+	}
 }
 
 //各レジスタの初期化
