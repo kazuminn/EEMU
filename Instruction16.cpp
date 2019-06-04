@@ -22,6 +22,13 @@ void add_rm16_r16(Emulator *emu) {
 	emu->update_eflags_add(rm16, r16);
 }
 
+void mov_rm32_r16(Emulator *emu){
+    emu->EIP++;
+	ModRM modrm(emu);
+	uint16_t r16 = modrm.GetR16();
+	modrm.SetRM32((uint32_t)r16);
+}
+
 }
 
 using namespace instruction16;
@@ -35,6 +42,7 @@ void InitInstructions16(){
 //	func[0x00] = test;
 
 	func[0x01] = add_rm16_r16;
+	func[0x89] = mov_rm32_r16;
 	for(i=0;i<8;i++){
 		func[0xB8 + i] = mov_r8_imm8;
 	}
