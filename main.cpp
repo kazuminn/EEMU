@@ -65,7 +65,7 @@ int main(int argc, char **argv){
 //	emu->DumpRegisters(32);
 	//emulation
 	while(true){
-		emu->parse_prefix(emu);
+		emu->instr.prefix = emu->parse_prefix(emu);
 
 		uint8_t code	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
@@ -76,7 +76,11 @@ int main(int argc, char **argv){
 		cout<<"Code = "<<(uint32_t)code<<endl;
 #endif
 
-		func = instructions32[code];
+		if(emu->instr.prefix) {
+			func = instructions32[code];
+		}else {
+			func = instructions16[code];
+		}
 
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)code<<")は実装されていません。"<<endl;
