@@ -1,7 +1,6 @@
 #include <iostream>
 using namespace std;
 
-#include "Instruction.h"
 #include "Emulator.h"
 #include "ModRM.h"
 
@@ -77,16 +76,25 @@ void add_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_add(rm32, imm32);
 }
 
-void add_al_imm8(Emulator *emu){
-	uint8_t	al = emu->AL;
-	uint8_t imm8 = emu->GetSignCode8(1);
-	emu->AL = al + imm8;
+//void add_al_imm8(Emulator *emu){
+//	uint8_t	al = emu->AL;
+//	uint8_t imm8 = emu->GetSignCode8(1);
+//	emu->AL = al + imm8;
+//}
+
+void dec_r32(Emulator *emu){
+	uint8_t reg = emu->GetSignCode8(0) & ((1<<3)-1);
+	uint32_t r32 = emu->reg[reg].reg32;
+	emu->reg[reg].reg32 = r32 - 1;
+	emu->EIP++;
+	uint64_t result = (uint64_t)r32 - (uint64_t)1; //32bit目を観測したいから64bitとして扱う
+	emu->update_eflags_sub(r32, 1, result);
 }
 
 void mov_rm8_r8(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t r8 = modrm.GetR8();
+	uint8_t r8 = modrm.GetR8();
 	modrm.SetRM8(r8);
 }
 
@@ -186,6 +194,11 @@ void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
 	uint64_t result = (uint64_t)rm32 - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
 	emu->update_eflags_sub(rm32, imm32, result);
 }
+void push_imm32(Emulator *emu) {
+	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
+	emu->Push32(imm32);
+	emu->EIP += 5;
+}
 
 void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
     uint32_t rm32 = modrm->GetRM8();
@@ -218,8 +231,7 @@ void sub_r32_rm32(Emulator *emu){
 }
 
 void sub_eax_imm32(Emulator *emu) {
-    uint32_t imm32 = emu->GetSignCode32(1);
-    uint32_t eax = emu->reg[0].reg32;
+    uint32_t imm32 = emu->GetSignCode32(1); uint32_t eax = emu->reg[0].reg32;
 	emu->reg[0].reg32 = emu->reg[0].reg32 ^ imm32;
 	emu->EIP += 5;
 	uint64_t result = (uint64_t)eax - (uint64_t)imm32; //32bit目を観測したいから64bitとして扱う
@@ -339,6 +351,7 @@ void shr_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm8 = emu->GetCode8(0);
 	modrm->SetRM32(rm32>>imm8);
+	emu->EIP++;
 	emu->update_eflags_shr(rm32, imm8);
 }
 
@@ -367,6 +380,7 @@ void sar_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm8 = emu->GetCode8(0);
 	modrm->SetRM32(rm32>>imm8);
+	emu->EIP++;
 	//emu->update_eflags_shr(rm32, imm8);
 }
 
@@ -551,21 +565,43 @@ void popad(Emulator *emu) {
 	emu->ESP = esp;
 	emu->EIP++;
 }
-// defineでJなんとか関数を大量錬成する
-#define DEFINE_JX(flag, is_flag) \
-void j ## flag(Emulator *emu){ \
-	int diff = emu->is_flag() ? emu->GetSignCode8(1) : 0; \
-	emu->EIP += (diff + 2); \
-} \
-void jn ## flag(Emulator *emu){ \
-	int diff = emu->is_flag() ? 0 : emu->GetSignCode8(1); \
-	emu->EIP += (diff + 2); \
+void jc(Emulator *emu){
+	int diff = emu->IsCarry() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jz(Emulator *emu){
+	int diff = emu->IsZero() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void js(Emulator *emu){
+	int diff = emu->IsSign() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jo(Emulator *emu){
+	int diff = emu->IsOverflow() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jnc(Emulator *emu){
+	int diff = !emu->IsCarry() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jnz(Emulator *emu){
+	int diff = !emu->IsZero() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jns(Emulator *emu){
+	int diff = !emu->IsSign() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jno(Emulator *emu){
+	int diff = !emu->IsOverflow() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+void jbe(Emulator *emu){
+	int diff = emu->IsCarry() || emu->IsZero() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
 }
 
-DEFINE_JX(c, IsCarry);
-DEFINE_JX(z, IsZero);
-DEFINE_JX(s, IsSign);
-DEFINE_JX(o, IsOverflow)
 
 #undef DEFINE_JX
 void cmp_rm32_r32(Emulator *emu){
@@ -613,7 +649,6 @@ using namespace instruction32;
 void InitInstructions32(void){
 	int i;
 	instruction_func_t** func = instructions32;
-	instruction::Init();
 
 	func[0x01]	= add_rm32_r32;
 	func[0x03]	= add_r32_rm32;
@@ -649,7 +684,10 @@ void InitInstructions32(void){
 	for(i=0;i<8;i++){
 		func[0x40 + i]	= inc_r32;
 	}
-	
+	for(i=0;i<8;i++){
+		func[0x48 + i]	= dec_r32;
+	}
+
 	
 	
 	for(i=0;i<8;i++){
@@ -666,7 +704,7 @@ void InitInstructions32(void){
 	func[0x60]	= pushad;
 	func[0x61]	= popad;
 
-	//func[0x68]	= push_imm32;
+	func[0x68]	= push_imm32;
 	func[0x6A]	= push_imm8;
 	
 	func[0x70]	= jo;
@@ -675,6 +713,7 @@ void InitInstructions32(void){
 	func[0x73]	= jnc;
 	func[0x74]	= jz;
 	func[0x75]	= jnz;
+	func[0x76]	= jbe;
 	func[0x78]	= js;
 	func[0x79]	= jns;
 	func[0x7C]	= jl;

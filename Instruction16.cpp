@@ -1,6 +1,9 @@
+//
+// Created by emu on 19/06/06.
+//
+
 #include "Emulator.h"
 #include "ModRM.h"
-#include "Instruction.h"
 
 instruction_func_t* instructions16[256];
 
@@ -23,6 +26,7 @@ void add_rm16_r16(Emulator *emu) {
 }
 
 void mov_rm32_r16(Emulator *emu){
+    printf("prefix 66 \n");
     emu->EIP++;
 	ModRM modrm(emu);
 	uint16_t r16 = modrm.GetR16();
@@ -36,7 +40,6 @@ using namespace instruction16;
 void InitInstructions16(){
 	int i;
 	instruction_func_t** func = instructions16;
-	instruction::Init();
 
 
 //	func[0x00] = test;
@@ -47,5 +50,4 @@ void InitInstructions16(){
 		func[0xB8 + i] = mov_r8_imm8;
 	}
 }
-
 
