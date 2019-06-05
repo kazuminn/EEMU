@@ -24,6 +24,7 @@ struct SIB {
 };
 
 struct InstrData {
+	int prefix;
 	uint8_t Mod;
 	union {
 		uint8_t opecode;
@@ -34,6 +35,7 @@ struct InstrData {
 	int SEGMENT;
 	union {
 		int8_t disp8;
+		int16_t disp16;
 		uint32_t disp32;
 	};
 	struct SIB sib;
@@ -170,7 +172,7 @@ public:				// member funcs
 	uint32_t GetCode32(int index);
 	int32_t GetSignCode32(int index);
 
-	void parse_prefix(Emulator *emu);
+	int parse_prefix(Emulator *emu);
 
 	uint8_t GetRegister8(int index);
     uint16_t GetRegister16(int index);
