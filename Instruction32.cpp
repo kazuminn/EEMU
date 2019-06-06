@@ -123,6 +123,11 @@ void mov_r32_rm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
+	printf("rm32 : %x\n", rm32);
+	printf("8 + EBX : %x\n", emu->memory[emu->sgregs[1].base + 8 + emu->EBP]);
+	printf("GetRegister32 : %x\n", emu->GetRegister32(emu->instr.RM));
+	printf("disp8 : %x\n", emu->instr.disp8);
+
 	modrm.SetR32(rm32);
 }
 
@@ -134,7 +139,7 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
 	ModRM modrm(emu);
-    uint32_t m32 = modrm.calc_modrm32(emu);
+    uint32_t m32 = modrm.CalcMemAddr();
     modrm.SetR32(m32);
     emu->EIP -= 2;
 }

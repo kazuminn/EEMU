@@ -18,9 +18,6 @@ public:
 	void SetRM8(Emulator *emu, uint8_t val);
 	void SetRM8(uint8_t val);
 
-	uint32_t calc_modrm32(Emulator *emu);
-	uint32_t calc_sib(Emulator *emu);
-
 	uint16_t GetRM16(Emulator *emu);
 	uint16_t GetRM16();
 	void SetRM16(Emulator *emu, uint16_t val);
