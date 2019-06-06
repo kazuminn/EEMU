@@ -133,7 +133,7 @@ void ModRM::SetRM32(uint32_t val){
 }
 
 uint8_t ModRM::GetR8(Emulator *emu){
-	return emu->GetRegister32(emu->instr.reg_index);
+	return emu->GetRegister8(emu->instr.reg_index);
 }
 
 uint8_t ModRM::GetR8(){
