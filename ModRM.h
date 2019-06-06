@@ -44,7 +44,8 @@ public:
 	void SetR32(Emulator *emu, uint32_t val);
 	void SetR32(uint32_t val);
 
-	uint32_t CalcMemAddr(Emulator *emu);
+	uint32_t CalcMemAddr32(Emulator *emu);
+    uint32_t CalcMemAddr16(Emulator *emu);
 	uint32_t CalcMemAddr();
 };
 

@@ -100,7 +100,7 @@ uint8_t ModRM::GetRM8(Emulator *emu){
 	if(emu->instr.Mod == 3){
 		return emu->GetRegister8(emu->instr.RM);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		return emu->GetMemory8(addr);
 	}
 }
@@ -113,7 +113,7 @@ void ModRM::SetRM8(Emulator *emu, uint8_t val){
 	if(emu->instr.Mod == 3){
 		emu->SetRegister8(emu->instr.RM, val);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		emu->SetMemory8(addr, val);
 	}
 }
@@ -125,7 +125,7 @@ void ModRM::SetRM16(Emulator *emu, uint16_t val){
 	if(emu->instr.Mod == 3){
 		emu->SetRegister16(emu->instr.RM, val);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		emu->SetMemory16(addr, val);
 	}
 }
@@ -138,7 +138,7 @@ uint16_t ModRM::GetRM16(Emulator *emu){
 	if(emu->instr.Mod == 3){
 		return emu->GetRegister16(emu->instr.RM);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		return emu->GetMemory16(addr);
 	}
 }
@@ -151,7 +151,7 @@ uint32_t ModRM::GetRM32(Emulator *emu){
 	if(emu->instr.Mod == 3){
 		return emu->GetRegister32(emu->instr.RM);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		return emu->GetMemory32(addr);
 	}
 }
@@ -164,7 +164,7 @@ void ModRM::SetRM32(Emulator *emu, uint32_t val){
 	if(emu->instr.Mod == 3){
 		emu->SetRegister32(emu->instr.RM, val);
 	}else{
-		uint32_t addr = CalcMemAddr(emu);
+		uint32_t addr = CalcMemAddr();
 		emu->SetMemory32(addr, val);
 		cout<<"setrm addr="<<addr;
 		cout<<" val="<<val<<hex;
@@ -221,7 +221,7 @@ void ModRM::SetR32(uint32_t val){
 	}
 }
 
-uint32_t ModRM::CalcMemAddr(Emulator *emu){
+uint32_t ModRM::CalcMemAddr32(Emulator *emu){
 	if(emu->instr.Mod == 0){
 		if(emu->instr.RM == 4){
 			cout<<"not implemented ModRM Mod = 0, RM = 4"<<endl;
@@ -251,9 +251,47 @@ uint32_t ModRM::CalcMemAddr(Emulator *emu){
 	}
 }
 
+uint32_t ModRM::CalcMemAddr16(Emulator *emu) {
+	uint32_t addr = 0;
+
+	switch(emu->instr.Mod){
+		case 1:
+			addr += emu->instr.disp8;
+			break;
+		case 2:
+			addr += emu->instr.disp16;
+	}
+
+	switch(emu->instr.RM){
+		case 7:
+			addr += emu->reg[3].reg16;
+			break;
+		case 6:
+			if(emu->instr.Mod == 0 && emu->instr.RM == 6){
+				addr += emu->instr.disp16;
+			}else {
+				addr += emu->reg[5].reg16;
+				emu->instr.SEGMENT = 2;
+			}
+	}
+
+	if(emu->instr.RM < 6){
+	    if(emu->instr.RM % 2)
+			addr += emu->reg[7].reg16;
+	    else
+			addr += emu->reg[6].reg16;
+	}
+
+	return addr;
+}
+
 uint32_t ModRM::CalcMemAddr(){
 	if(emu == NULL)
 		return 0;
 
-	return CalcMemAddr(emu);
+	if (emu->instr.prefix) {
+		return CalcMemAddr32(emu);
+	} else {
+		return CalcMemAddr16(emu);
+	}
 }
