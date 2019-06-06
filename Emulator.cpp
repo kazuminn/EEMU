@@ -45,13 +45,16 @@ Emulator::~Emulator(){
 	delete[] memory;
 }
 
-void Emulator::parse_prefix(Emulator *emu){
+int Emulator::parse_prefix(Emulator *emu){
 	while(true) {
 		uint8_t code = emu->GetSignCode8(0);
 		switch(code) {
 			case 0x66:
-			    emu->EIP++; break;
+				emu->EIP++;
+				return 0;
 		}
+
+		break;
 	}
 }
 
@@ -141,18 +144,18 @@ void Emulator::SetRegister32(int index, uint32_t val){
 }
 
 uint32_t Emulator::GetMemory8(uint32_t addr){
-	if(sgregs[1].base + addr > memory_size){
+	if(addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"を参照しようとしました。"<<endl;
 		return 0x00;
 	}
-	return memory[sgregs[1].base + addr];
+	return memory[addr];
 }
 
 uint32_t Emulator::GetMemory16(uint32_t addr){
 	// little endian
 	uint32_t ret = 0;
 	for(int i=0; i<2; i++){
-		ret |= GetMemory8(addr + i) << (8 * i);
+		ret |= GetMemory8(sgregs[1].base + addr + i) << (8 * i);
 	}
 
 	return ret;
@@ -162,26 +165,27 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 	// little endian
 	uint32_t ret = 0;
 	for(int i=0; i<4; i++){
-		ret |= GetMemory8(addr + i) << (8 * i);
+		ret |= GetMemory8(sgregs[1].base + addr + i) << (8 * i);
 	}
 	
 	return ret;
 }
 
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
-	if(sgregs[1].base + addr > memory_size){
+	if(addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
+		printf("addr : %x\n memory_size : %x\n", sgregs[1].base + addr, memory_size);
 		return;
 	}
 //	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
-	memory[sgregs[1].base + addr] = val & 0xFF;
+	memory[addr] = val & 0xFF;
 	return;
 }
 
 void Emulator::SetMemory16(uint32_t addr, uint32_t val){
 	//little endian
 	for(int i=0; i<2; i++){
-		SetMemory8(addr + i, val >> (i*8));
+		SetMemory8(sgregs[1].base + addr + i, val >> (i*8));
 	}
 
 	return;
@@ -190,7 +194,7 @@ void Emulator::SetMemory16(uint32_t addr, uint32_t val){
 void Emulator::SetMemory32(uint32_t addr, uint32_t val){
 	//little endian
 	for(int i=0; i<4; i++){
-		SetMemory8(addr + i, val >> (i*8));
+		SetMemory8(sgregs[1].base + addr + i, val >> (i*8));
 	}
 
 	return;
