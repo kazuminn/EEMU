@@ -31,7 +31,6 @@ void mov_r16_rm32(Emulator *emu){
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
 	modrm.SetR16(rm32);
-	emu->EIP++;
 }
 
 void mov_rm32_r16(Emulator *emu){
