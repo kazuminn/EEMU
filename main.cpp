@@ -70,6 +70,14 @@ int main(int argc, char **argv){
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
 
+		//two byte opecode
+		switch(emu->instr.opcode) {
+			case 0x0f:
+				emu->EIP++;
+				emu->instr.opcode = (emu->instr.opcode << 8) + emu->GetSignCode8(0);
+				emu->EIP++;
+		}
+
 #ifndef QUIET
 		cout<<"emu: ";
 		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
