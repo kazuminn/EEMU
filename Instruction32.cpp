@@ -400,7 +400,7 @@ void sar_rm8_imm8(Emulator *emu, ModRM *modrm){
 	int8_t rm8_s = modrm->GetR32();
 	uint8_t imm8 = emu->GetSignCode8(0);
 	modrm->SetRM8(rm8_s>>imm8);
-	emu->EIP++;
+	emu->EIP += 3;
 }
 void and_rm32_imm8(Emulator *emu, ModRM *modrm) {
 	uint32_t rm32 = modrm->GetRM32();

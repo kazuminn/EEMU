@@ -52,6 +52,10 @@ int Emulator::parse_prefix(Emulator *emu){
 			case 0x66:
 				emu->EIP++;
 				return 0;
+			case 0x0f:
+				emu->EIP++;
+				emu->instr.opcode = (emu->instr.opcode << 8) + emu->GetSignCode8(0);
+				emu->EIP++;
 		}
 
 		break;

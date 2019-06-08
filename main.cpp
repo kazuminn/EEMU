@@ -67,23 +67,23 @@ int main(int argc, char **argv){
 	while(true){
 		emu->instr.prefix = emu->parse_prefix(emu);
 
-		uint8_t code	= emu->memory[emu->EIP + emu->sgregs[1].base];
+		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
 
 #ifndef QUIET
 		cout<<"emu: ";
 		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
-		cout<<"Code = "<<(uint32_t)code<<endl;
+		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
 #endif
 
 		if(emu->instr.prefix) {
-			func = instructions32[code];
+			func = instructions32[emu->instr.opcode];
 		}else {
-			func = instructions16[code];
+			func = instructions16[emu->instr.opcode];
 		}
 
 		if(func == NULL){
-			cout<<"命令("<<showbase<<(int)code<<")は実装されていません。"<<endl;
+			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
 		}
 		

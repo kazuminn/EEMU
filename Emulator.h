@@ -24,6 +24,7 @@ struct SIB {
 };
 
 struct InstrData {
+    uint16_t opcode;
 	int prefix;
 	uint8_t Mod;
 	union {
