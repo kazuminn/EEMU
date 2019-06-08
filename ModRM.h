@@ -33,6 +33,9 @@ public:
 	void SetR8(Emulator *emu, uint8_t val);
 	void SetR8(uint8_t val);
 
+    uint16_t SetR16(Emulator *emu, uint16_t val);
+    uint16_t SetR16(uint16_t val);
+
 	uint32_t calc_sib(void);
 
 	uint16_t GetR16(Emulator *emu);

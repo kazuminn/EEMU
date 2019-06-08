@@ -152,6 +152,14 @@ void ModRM::SetR8(Emulator *emu, uint8_t val){
 	emu->SetRegister8(emu->instr.reg_index, val);
 }
 
+uint16_t ModRM::SetR16(uint16_t val){
+	if(emu != NULL) return SetR16(emu, val);
+}
+
+uint16_t ModRM::SetR16(Emulator *emu, uint16_t val) {
+	emu->SetRegister16(emu->instr.reg_index, val);
+}
+
 void ModRM::SetR8(uint8_t val){
 	if(emu != NULL)	return SetR8(val);
 }
