@@ -1,0 +1,3 @@
+/home/emu/x86emu/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/emu/x86emu/cmake-build-debug/CMakeFiles/x86emu.dir
+/home/emu/x86emu/cmake-build-debug/CMakeFiles/edit_cache.dir

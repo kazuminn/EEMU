@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="x86emu"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/emu/x86emu/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/emu/x86emu/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="x86emu">
+				<Option output="/home/emu/x86emu/cmake-build-debug/x86emu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/emu/x86emu/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/emu/x86emu/."/>
+					<Add directory="/home/emu/x86emu/device"/>
+					<Add directory="/home/emu/x86emu/kazuminlib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 x86emu"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="x86emu/fast">
+				<Option output="/home/emu/x86emu/cmake-build-debug/x86emu" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/emu/x86emu/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/emu/x86emu/."/>
+					<Add directory="/home/emu/x86emu/device"/>
+					<Add directory="/home/emu/x86emu/kazuminlib"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 x86emu/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/emu/x86emu/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/emu/x86emu/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/emu/x86emu/Emulator.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/Emulator.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/GUI.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/GUI.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/Instruction16.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/Instruction32.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/ModRM.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/ModRM.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/Device.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/Device.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/Display.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/Display.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/PIC.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/device/PIC.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/BMP.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/BMP.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/Image.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/Image.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/PPM.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/kazuminlib/PPM.h">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/main.cpp">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/test03.c">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/test04.c">
+			<Option target="x86emu"/>
+		</Unit>
+		<Unit filename="/home/emu/x86emu/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
