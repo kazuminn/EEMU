@@ -140,9 +140,12 @@ void mov_r32_rm32(Emulator *emu){
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
 	printf("rm32 : %x\n", rm32);
-	printf("8 + EBX : %x\n", emu->memory[emu->sgregs[1].base + 8 + emu->EBP]);
+	printf("EBX : %x\n", emu->EBX);
 	printf("GetRegister32 : %x\n", emu->GetRegister32(emu->instr.RM));
 	printf("disp8 : %x\n", emu->instr.disp8);
+	for(int i = 0;i<40;i++){
+		printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
+	}
 
 	modrm.SetR32(rm32);
 }
@@ -154,10 +157,10 @@ void inc_r32(Emulator *emu){
 }
 
 void lea_r32_m32(Emulator *emu){
+    emu->EIP++;
 	ModRM modrm(emu);
-    uint32_t m32 = modrm.CalcMemAddr();
+    uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
-    emu->EIP -= 2;
 }
 
 void mov_al_moffs8(Emulator *emu) {
@@ -555,11 +558,20 @@ void call_rel32(Emulator *emu){
 	int32_t diff = emu->GetSignCode32(1);
 	emu->Push32(emu->EIP + 5);	//call命令は全体で5バイト
 	emu->EIP += (diff + 5);
+	for(int i = 0;i<3;i++){
+		printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
+	}
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
+	if(emu->EIP == 0x172a){
+		for(int i = 0;i<40;i++){
+			printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
+		}
+	}
 	emu->EIP = emu->Pop32();
-	printf("ESP + 12 %x\n", emu->GetMemory32(emu->ESP + 12));
+	printf("ESP - 4 %x\n", emu->GetMemory32(emu->ESP - 4));
+	printf("EIP - 4 %x\n", emu->GetMemory32(emu->EIP - 6));
 	printf("ret: %x\n", emu->memory[emu->sgregs[1].base + emu->EIP + 10]);
 }
 
