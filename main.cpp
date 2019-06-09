@@ -75,7 +75,6 @@ int main(int argc, char **argv){
 			case 0x0f:
 				emu->EIP++;
 				emu->instr.opcode = (emu->instr.opcode << 8) + emu->GetSignCode8(0);
-				emu->EIP++;
 		}
 
 #ifndef QUIET
