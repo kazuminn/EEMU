@@ -5,7 +5,7 @@
 #include "Emulator.h"
 #include "ModRM.h"
 
-instruction_func_t* instructions16[256];
+instruction_func_t* instructions16[0xffff];
 
 namespace instruction16{
 

@@ -93,7 +93,7 @@ int main(int argc, char **argv){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
 		}
-		
+
 		//execute
 		func(emu);
 		

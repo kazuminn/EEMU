@@ -4,13 +4,29 @@ using namespace std;
 #include "Emulator.h"
 #include "ModRM.h"
 
-instruction_func_t* instructions32[256];
+instruction_func_t* instructions32[0xffff];
 
 namespace instruction32{
 
 // 圧倒的NOP
 void nop(Emulator *emu){
 	emu->EIP++;
+}
+
+void lgdt_m32(Emulator *emu, ModRM *modrm) {
+	uint32_t m48 = modrm->get_m();
+	uint16_t limit = emu->GetMemory16(m48);
+	uint32_t base = emu->GetMemory32(m48 + 2);
+
+	emu->set_gdtr(base, limit);
+}
+
+void lidt_m32(Emulator *emu, ModRM *modrm) {
+	uint32_t m48 = modrm->get_m();
+	uint16_t limit = emu->GetMemory16(m48);
+	uint32_t base = emu->GetMemory32(m48 + 2);
+
+	emu->set_gdtr(base, limit);
 }
 
 void push_es(Emulator *emu){
@@ -484,6 +500,19 @@ void code_d3(Emulator *emu){
 	delete modrm;
 }
 
+void code_0f01(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 2: lgdt_m32(emu, modrm); break;
+		case 3: lidt_m32(emu, modrm); break;
+		default:
+			cout<<"not implemented: 0f01 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
+}
+
 void push_r32(Emulator *emu){
 	uint8_t reg = emu->GetCode8(0) - 0x50;
 	emu->Push32(emu->GetRegister32(reg));
@@ -530,6 +559,8 @@ void call_rel32(Emulator *emu){
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
 	emu->EIP = emu->Pop32();
+	printf("ESP + 12 %x\n", emu->GetMemory32(emu->ESP + 12));
+	printf("ret: %x\n", emu->memory[emu->sgregs[1].base + emu->EIP + 10]);
 }
 
 void leave(Emulator *emu){
@@ -760,6 +791,8 @@ void InitInstructions32(void){
 	//func[0xEC]	= in_al_dx;
 	//func[0xEE]	= out_dx_al;
 	func[0xFF]	= code_ff;
+
+	func[0x0f01]	= code_0f01;
 }
 
 

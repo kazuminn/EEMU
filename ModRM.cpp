@@ -280,3 +280,7 @@ uint32_t ModRM::CalcMemAddr(){
 		return CalcMemAddr16(emu);
 	}
 }
+
+uint32_t ModRM::get_m(void){
+	return CalcMemAddr();
+}

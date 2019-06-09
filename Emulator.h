@@ -89,6 +89,7 @@ struct InstrData {
 //GDT,IDT関連
 //GDTR,IDTR用のレジスタ型(48bit)
 struct DTRegister {
+	uint16_t selector;
 	uint16_t table_limit;
 	uint32_t base_addr;
 };
@@ -217,6 +218,8 @@ public:
 	inline void SetInterrupt(bool intr) { eflags.IF = intr; }
 	inline void SetDirection(bool dir) { eflags.DF = dir; }
 
+	void set_gdtr(uint32_t base, uint16_t limit);
+
 	inline void UpdateXor(){
 		eflags.CF = eflags.OF = 0;
 	}
@@ -271,8 +274,8 @@ typedef void instruction_func_t(Emulator*);	//各命令に対応した関数の�
 void InitInstructions16(void);			//16bit命令の初期化
 void InitInstructions32(void);			//32bit
 
-extern instruction_func_t* instructions16[256];	//16bit命令の関数の配列
-extern instruction_func_t* instructions32[256];	//32bit
+extern instruction_func_t* instructions16[0xffff];	//16bit命令の関数の配列
+extern instruction_func_t* instructions32[0xffff];	//32bit
 
 //eflgas
 

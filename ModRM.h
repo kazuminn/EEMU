@@ -38,6 +38,8 @@ public:
 
 	uint32_t calc_sib(void);
 
+	uint32_t get_m(void);
+
 	uint16_t GetR16(Emulator *emu);
 	uint16_t GetR16();
 

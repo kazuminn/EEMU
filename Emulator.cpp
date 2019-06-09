@@ -58,6 +58,14 @@ int Emulator::parse_prefix(Emulator *emu){
 	}
 }
 
+
+void Emulator::set_gdtr(uint32_t base, uint16_t limit){
+   GDTR.selector = 0;
+   GDTR.table_limit = limit;
+   GDTR.base_addr = base;
+
+}
+
 //各レジスタの初期化
 void Emulator::InitRegisters(){
 	GDTR.base_addr	= 0;
