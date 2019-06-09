@@ -33,12 +33,12 @@ void mov_r16_rm32(Emulator *emu){
 	modrm.SetR16(rm32);
 }
 
-void mov_rm32_r16(Emulator *emu){
+void mov_rm16_r16(Emulator *emu){
     printf("prefix 66 \n");
     emu->EIP++;
 	ModRM modrm(emu);
 	uint16_t r16 = modrm.GetR16();
-	modrm.SetRM32((uint32_t)r16);
+	modrm.SetRM16(r16);
 }
 
 }
@@ -53,7 +53,7 @@ void InitInstructions16(){
 //	func[0x00] = test;
 
 	func[0x01] = add_rm16_r16;
-	func[0x89] = mov_rm32_r16;
+	func[0x89] = mov_rm16_r16;
 	func[0x8B] = mov_r16_rm32;
 	for(i=0;i<8;i++){
 		func[0xB8 + i] = mov_r8_imm8;
