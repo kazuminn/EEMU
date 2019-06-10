@@ -168,7 +168,9 @@ public:				// member funcs
 	size_t GetMemSize(){	return memory_size;	}
 	
 	void LoadBinary(const char* fname, uint32_t addr, int size);	//バイナリファイルを読み込んでメモリの指定番地に指定サイズだけ転送する
-	
+
+	void io_out8(uint16_t,uint8_t);
+
 	uint8_t GetCode8(int index);
 	int8_t  GetSignCode8(int index);
 	uint32_t GetCode32(int index);

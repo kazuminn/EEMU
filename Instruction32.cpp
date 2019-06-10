@@ -136,6 +136,12 @@ void mov_r8_rm8(Emulator *emu){//		cout<<"mov_r8_rm8"<<endl;
 	modrm.SetR8(rm8);
 }
 
+void out_dx_al(Emulator *emu){
+	printf("addr %x\n", emu->EDX & 0xffff);
+	emu->io_out8(emu->EDX, emu->AL);
+	emu->EIP++;
+}
+
 void mov_r32_rm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
@@ -782,8 +788,9 @@ void InitInstructions32(void){
 	func[0xE8]	= call_rel32;
 	func[0xE9]	= near_jump;
 	func[0xEB]	= short_jump;
+
+	func[0xEE]	= out_dx_al;
 	//func[0xEC]	= in_al_dx;
-	//func[0xEE]	= out_dx_al;
 	func[0xFF]	= code_ff;
 
 	func[0x0f01]	= code_0f01;

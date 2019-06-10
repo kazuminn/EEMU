@@ -143,6 +143,10 @@ void Emulator::SetRegister16(int index, uint16_t val){
 	reg[index].reg16 = val;
 }
 
+void Emulator::io_out8(uint16_t addr, uint8_t val){
+
+}
+
 void Emulator::SetRegister32(int index, uint32_t val){
 	reg[index].reg32 = val;
 }
