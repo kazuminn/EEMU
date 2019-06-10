@@ -123,7 +123,7 @@ void mov_r8_imm8(Emulator *emu){
 
 void mov_r32_imm32(Emulator *emu){
 	uint8_t reg	= emu->GetCode8(0) - 0xB8;
-	uint32_t val	= emu->GetCode8(1);
+	uint32_t val = emu->GetCode8(1);
 	emu->reg[reg].reg32 = val;
 	emu->EIP += 5;
 }
@@ -131,7 +131,8 @@ void mov_r32_imm32(Emulator *emu){
 void mov_r8_rm8(Emulator *emu){//		cout<<"mov_r8_rm8"<<endl;
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t rm8 = modrm.GetRM8();
+	uint8_t rm8 = modrm.GetRM8();
+	printf("reg_index %x\n", emu->instr.reg_index);
 	modrm.SetR8(rm8);
 }
 
@@ -139,14 +140,6 @@ void mov_r32_rm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
-	printf("rm32 : %x\n", rm32);
-	printf("EBX : %x\n", emu->EBX);
-	printf("GetRegister32 : %x\n", emu->GetRegister32(emu->instr.RM));
-	printf("disp8 : %x\n", emu->instr.disp8);
-	for(int i = 0;i<40;i++){
-		printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
-	}
-
 	modrm.SetR32(rm32);
 }
 
@@ -237,7 +230,7 @@ void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
 void sub_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t rm32 = modrm.GetRM8();
+	uint32_t rm32 = modrm.GetRM32();
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(rm32 - r32);
 	uint64_t result = (uint64_t)rm32 - (uint64_t)r32; //32bit目を観測したいから64bitとして扱う
@@ -558,21 +551,10 @@ void call_rel32(Emulator *emu){
 	int32_t diff = emu->GetSignCode32(1);
 	emu->Push32(emu->EIP + 5);	//call命令は全体で5バイト
 	emu->EIP += (diff + 5);
-	for(int i = 0;i<3;i++){
-		printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
-	}
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
-	if(emu->EIP == 0x172a){
-		for(int i = 0;i<40;i++){
-			printf("ESP + i: %x\n", emu->GetMemory32(emu->ESP + i));
-		}
-	}
 	emu->EIP = emu->Pop32();
-	printf("ESP - 4 %x\n", emu->GetMemory32(emu->ESP - 4));
-	printf("EIP - 4 %x\n", emu->GetMemory32(emu->EIP - 6));
-	printf("ret: %x\n", emu->memory[emu->sgregs[1].base + emu->EIP + 10]);
 }
 
 void leave(Emulator *emu){
@@ -771,7 +753,7 @@ void InitInstructions32(void){
 	func[0x83]	= code_83;
 	func[0x88]	= mov_rm8_r8;
 	func[0x89]	= mov_rm32_r32;
-	//func[0x8A]	= mov_r8_rm8;
+	func[0x8A]	= mov_r8_rm8;
 	func[0x8B]	= mov_r32_rm32;
 
 	func[0x8D]	= lea_r32_m32;
