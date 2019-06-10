@@ -133,13 +133,9 @@ uint32_t Emulator::GetRegister32(int index){
 
 void Emulator::SetRegister8(int index, uint8_t val){
 	if(index < 4){
-		uint32_t r = reg[index].reg32 & 0xffffff00;
-		reg[index].reg32 = r | (uint32_t)val;
-	}else if(index <= REGISTERS_COUNT32){
-		uint32_t r = reg[index - 4].reg32 & 0xffff00ff;
-		reg[index - 4].reg32 = r | ((int32_t)val << 8);
+		reg[index].high8 = val;
 	}else{
-		cout<<index<<"番目のレジスタとかなんですか"<<endl;
+		reg[index - 4].low8 = val;
 	}
 }
 
@@ -182,7 +178,6 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
 	if(addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
-		printf("addr : %x\n memory_size : %x\n", sgregs[1].base + addr, memory_size);
 		return;
 	}
 //	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;

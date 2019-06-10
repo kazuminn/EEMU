@@ -161,7 +161,7 @@ uint16_t ModRM::SetR16(Emulator *emu, uint16_t val) {
 }
 
 void ModRM::SetR8(uint8_t val){
-	if(emu != NULL)	return SetR8(val);
+	if(emu != NULL)	return SetR8(emu, val);
 }
 
 uint32_t ModRM::GetR32(Emulator *emu){
@@ -194,8 +194,7 @@ uint32_t ModRM::CalcMemAddr32(Emulator *emu){
 		}
 	}else if(emu->instr.Mod == 1){
 		if(emu->instr.RM == 4){
-			cout<<"not implemented ModRM Mod = 1, RM = 4"<<endl;
-			return 0;
+			return emu->instr.disp8 + calc_sib();
 		}else{
 			return emu->GetRegister32(emu->instr.RM) + emu->instr.disp8;
 		}
