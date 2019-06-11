@@ -128,6 +128,14 @@ void mov_r32_imm32(Emulator *emu){
 	emu->EIP += 5;
 }
 
+void mov_rm8_imm8(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint8_t val = emu->GetCode8(0);
+	modrm.SetRM8(val);
+	emu->EIP++;
+}
+
 void mov_r8_rm8(Emulator *emu){//		cout<<"mov_r8_rm8"<<endl;
 	emu->EIP++;
 	ModRM modrm(emu);
@@ -137,6 +145,7 @@ void mov_r8_rm8(Emulator *emu){//		cout<<"mov_r8_rm8"<<endl;
 }
 
 void out_dx_al(Emulator *emu){
+    printf("DX %x\n", emu->DX);
 	emu->io_out8(emu->DX, emu->AL);
 	emu->EIP++;
 }
@@ -204,8 +213,8 @@ void in_al_dx(Emulator *emu){
 }
 */
 void short_jump(Emulator *emu){
-     uint8_t imm8 = emu->GetSignCode8(1);
-	 emu->EIP += imm8 + 2;
+     uint8_t diff = emu->GetSignCode8(1);
+	 emu->EIP += diff + 2;
 }
 
 void near_jump(Emulator *emu){
@@ -429,6 +438,26 @@ void and_rm32_imm8(Emulator *emu, ModRM *modrm) {
 	uint8_t imm8 = emu->GetSignCode8(0);
 	modrm->SetRM32(rm32&imm8);
 	emu->EIP++;
+}
+
+void cmp_rm8_imm8(Emulator *emu, ModRM *modrm) {
+	uint8_t rm8 = modrm->GetRM8();
+	uint8_t imm8 = emu->GetSignCode8(0);
+	uint64_t result = (uint64_t)rm8 - (uint64_t)imm8; //32bit目を観測したいから64bitとして扱う
+	emu->update_eflags_sub(rm8, imm8, result);
+	emu->EIP++;
+}
+
+void code_80(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 7: cmp_rm8_imm8(emu, modrm);  break;
+		default:
+			cout<<"not implemented: 80 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
 }
 
 void code_81(Emulator *emu){
@@ -759,6 +788,7 @@ void InitInstructions32(void){
 	func[0x7C]	= jl;
 	func[0x7E]	= jle;
 
+	func[0x80]	= code_80;
     func[0x81]	= code_81;
 	func[0x83]	= code_83;
 	func[0x88]	= mov_rm8_r8;
@@ -783,12 +813,13 @@ void InitInstructions32(void){
 	func[0xC1]	= code_c1;
 
 	func[0xC3]	= ret;
+	func[0xC6]	= mov_rm8_imm8;
 	func[0xC7]	= mov_rm32_imm32;
 	func[0xC9]	= leave;
 
 	func[0xd3]	= code_d3;
 	//func[0xCD]	= swi;
-	
+
 	func[0xE8]	= call_rel32;
 	func[0xE9]	= near_jump;
 	func[0xEB]	= short_jump;
