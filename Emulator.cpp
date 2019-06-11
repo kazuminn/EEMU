@@ -143,8 +143,12 @@ void Emulator::SetRegister16(int index, uint16_t val){
 	reg[index].reg16 = val;
 }
 
-void Emulator::io_out8(uint16_t addr, uint8_t val){
+void Emulator::io_out8(uint16_t, uint8_t) {
 
+}
+
+void Emulator::set_interrupt(bool interrupt){
+	eflags.IF = interrupt;
 }
 
 void Emulator::SetRegister32(int index, uint32_t val){
@@ -152,18 +156,18 @@ void Emulator::SetRegister32(int index, uint32_t val){
 }
 
 uint32_t Emulator::GetMemory8(uint32_t addr){
-	if(addr > memory_size){
+	if(sgregs[1].base + addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"を参照しようとしました。"<<endl;
 		return 0x00;
 	}
-	return memory[addr];
+	return memory[sgregs[1].base + addr];
 }
 
 uint32_t Emulator::GetMemory16(uint32_t addr){
 	// little endian
 	uint32_t ret = 0;
 	for(int i=0; i<2; i++){
-		ret |= GetMemory8(sgregs[1].base + addr + i) << (8 * i);
+		ret |= GetMemory8(addr + i) << (8 * i);
 	}
 
 	return ret;
@@ -173,26 +177,26 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 	// little endian
 	uint32_t ret = 0;
 	for(int i=0; i<4; i++){
-		ret |= GetMemory8(sgregs[1].base + addr + i) << (8 * i);
+		ret |= GetMemory8(addr + i) << (8 * i);
 	}
 	
 	return ret;
 }
 
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
-	if(addr > memory_size){
+	if(sgregs[1].base + addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
 		return;
 	}
 //	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
-	memory[addr] = val & 0xFF;
+	memory[sgregs[1].base + addr] = val & 0xFF;
 	return;
 }
 
 void Emulator::SetMemory16(uint32_t addr, uint32_t val){
 	//little endian
 	for(int i=0; i<2; i++){
-		SetMemory8(sgregs[1].base + addr + i, val >> (i*8));
+		SetMemory8(addr + i, val >> (i*8));
 	}
 
 	return;
@@ -201,7 +205,7 @@ void Emulator::SetMemory16(uint32_t addr, uint32_t val){
 void Emulator::SetMemory32(uint32_t addr, uint32_t val){
 	//little endian
 	for(int i=0; i<4; i++){
-		SetMemory8(sgregs[1].base + addr + i, val >> (i*8));
+		SetMemory8(addr + i, val >> (i*8));
 	}
 
 	return;
