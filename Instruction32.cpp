@@ -213,8 +213,8 @@ void in_al_dx(Emulator *emu){
 }
 */
 void short_jump(Emulator *emu){
-     uint8_t diff = emu->GetSignCode8(1);
-	 emu->EIP += diff + 2;
+    uint32_t diff = emu->GetSignCode8(1);
+	emu->EIP += diff + 2;
 }
 
 void near_jump(Emulator *emu){
@@ -708,6 +708,7 @@ void jle(Emulator *emu){
 	int diff = (emu->IsZero() || (emu->IsSign() != emu->IsOverflow())) ? emu->GetSignCode8(1) : 0;
 	emu->EIP += (diff + 2);
 }
+
 
 } // namespace instruction32
 
