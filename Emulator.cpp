@@ -156,11 +156,11 @@ void Emulator::SetRegister32(int index, uint32_t val){
 }
 
 uint32_t Emulator::GetMemory8(uint32_t addr){
-	if(sgregs[1].base + addr > memory_size){
+	if(addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"を参照しようとしました。"<<endl;
 		return 0x00;
 	}
-	return memory[sgregs[1].base + addr];
+	return memory[addr];
 }
 
 uint32_t Emulator::GetMemory16(uint32_t addr){
@@ -184,12 +184,12 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 }
 
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
-	if(sgregs[1].base + addr > memory_size){
+	if(addr > memory_size){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
 		return;
 	}
 //	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
-	memory[sgregs[1].base + addr] = val & 0xFF;
+	memory[addr] = val & 0xFF;
 	return;
 }
 
