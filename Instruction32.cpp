@@ -222,6 +222,13 @@ void near_jump(Emulator *emu){
 	emu->EIP += (diff + 5);
 }
 
+void mov_moffs32_eax(Emulator *emu){
+	uint32_t eax = emu->EAX;
+	emu->EIP++;
+	uint32_t moffs = emu->GetSignCode32(0);
+	emu->SetMemory32(moffs, eax);
+}
+
 void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
@@ -802,6 +809,7 @@ void InitInstructions32(void){
 	func[0x90]	= nop;
 
 	func[0xA0]	= mov_al_moffs8;
+	func[0xA3]	= mov_moffs32_eax;
 
 	for(i=0;i<8;i++){
 		func[0xB0 + i]	= mov_r8_imm8;
