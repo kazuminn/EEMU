@@ -227,6 +227,18 @@ void mov_moffs32_eax(Emulator *emu){
 	emu->EIP++;
 	uint32_t moffs = emu->GetSignCode32(0);
 	emu->SetMemory32(moffs, eax);
+	emu->EIP += 4;
+}
+
+void in_al_dx(Emulator *emu){
+	uint16_t dx = emu->DX;
+	emu->AL = emu->in_io8(dx);
+	emu->EIP++;
+}
+
+void pushfd(Emulator *emu){
+    emu->Push32(emu->get_eflags());
+    emu->EIP++;
 }
 
 void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
@@ -678,6 +690,10 @@ void jbe(Emulator *emu){
 	emu->EIP += (diff + 2);
 }
 
+void jnl(Emulator *emu){
+	int diff = emu->IsSign() == emu->IsOverflow() ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
 
 #undef DEFINE_JX
 void cmp_rm32_r32(Emulator *emu){
@@ -716,6 +732,33 @@ void jle(Emulator *emu){
 	emu->EIP += (diff + 2);
 }
 
+void popfd(Emulator *emu){
+	emu->set_eflags(emu->Pop32());
+	emu->EIP++;
+}
+
+void test_eax_imm32(Emulator *emu){
+	emu->EIP++;
+	emu->update_eflags_add(emu->EAX, emu->GetSignCode32(0));
+	emu->EIP += 4;
+
+}
+
+void and_eax_imm32(Emulator *emu){
+	emu->EIP++;
+	uint32_t imm32 = emu->GetSignCode32(0);
+	uint32_t eax = emu->EAX;
+	emu->update_eflags_add(eax,imm32);
+	emu->EIP += 4;
+}
+
+void test_rm8_r8(Emulator *emu){
+    emu->EIP++;
+	ModRM modrm(emu);
+	uint32_t rm8 = modrm.GetRM8();
+	uint32_t r8 = modrm.GetR8();
+	emu->update_eflags_add(rm8, r8);
+}
 
 } // namespace instruction32
 
@@ -743,6 +786,8 @@ void InitInstructions32(void){
 	func[0x17]  = pop_ss;
 	func[0x1e]  = push_ds;
 	func[0x1f]  = pop_ds;
+
+	func[0x25]  = and_eax_imm32;
 
 	func[0x29]  = sub_rm32_r32;
 	func[0x2b]  = sub_r32_rm32;
@@ -794,11 +839,15 @@ void InitInstructions32(void){
 	func[0x78]	= js;
 	func[0x79]	= jns;
 	func[0x7C]	= jl;
+	func[0x7D]	= jnl;
 	func[0x7E]	= jle;
 
 	func[0x80]	= code_80;
     func[0x81]	= code_81;
 	func[0x83]	= code_83;
+
+	func[0x84]	= test_rm8_r8;
+
 	func[0x88]	= mov_rm8_r8;
 	func[0x89]	= mov_rm32_r32;
 	func[0x8A]	= mov_r8_rm8;
@@ -807,9 +856,13 @@ void InitInstructions32(void){
 	func[0x8D]	= lea_r32_m32;
 
 	func[0x90]	= nop;
+	func[0x9C]	= pushfd;
+	func[0x9D]	= popfd;
 
 	func[0xA0]	= mov_al_moffs8;
 	func[0xA3]	= mov_moffs32_eax;
+
+	func[0xA9]	= test_eax_imm32;
 
 	for(i=0;i<8;i++){
 		func[0xB0 + i]	= mov_r8_imm8;
@@ -833,8 +886,9 @@ void InitInstructions32(void){
 	func[0xE9]	= near_jump;
 	func[0xEB]	= short_jump;
 
+	func[0xEC]	= in_al_dx;
 	func[0xEE]	= out_dx_al;
-	//func[0xEC]	= in_al_dx;
+
 	func[0xFB]	= sti;
 	func[0xFF]	= code_ff;
 
