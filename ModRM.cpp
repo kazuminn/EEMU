@@ -200,8 +200,7 @@ uint32_t ModRM::CalcMemAddr32(Emulator *emu){
 		}
 	}else if(emu->instr.Mod == 2){
 		if(emu->instr.RM == 4){
-			cout<<"not implemented ModRM Mod = 2, RM = 4"<<endl;
-			return 0;
+			return emu->instr.disp32 + calc_sib();
 		}else{
 			return emu->GetRegister32(emu->instr.RM) + emu->instr.disp32;
 		}
