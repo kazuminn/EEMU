@@ -14,6 +14,7 @@ unsigned char *g_img;
 thread *g_hThread;
 
 void close();
+void passiveMotionCallback(int, int);
 
 
 void test(int val){
@@ -58,8 +59,9 @@ try{
 	//glutDisplayFunc(a::display);	//message loopをglutMainLoopではなくwhileでやっていて、その中でdisplayを呼んでいるため必要ない（こうするためにはGui::displayをstaticメンバ関数にする必要がある）
 //	GUIFunc_i f = timer;
 //	glutTimerFunc(500, f, 0);
+	glutPassiveMotionFunc(passiveMotionCallback);
 	glutCloseFunc(close);
-	
+
 	int menu = glutCreateMenu(test);
 	glutAddMenuEntry("screenshot", 1);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -77,6 +79,10 @@ catch(char m){
 	return;
 }
 
+}
+
+void passiveMotionCallback(int x, int y){
+	printf("passive motion");
 }
 
 void close(){

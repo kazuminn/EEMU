@@ -15,6 +15,7 @@
 extern const char* registers_name16[];		//16bitレジスタの名前
 extern const char* registers_name32[];		//32bitレジスタの名前
 
+enum dtreg_t { GDTR, IDTR, LDTR, TR, DTREGS_COUNT};
 //enum sgreg_t { ES, CS, SS, DS, FS, GS, SGREGS_COUNT };
 
 struct SIB {
@@ -149,7 +150,7 @@ public:
 	Register CR[5];		// CR0 ~ CR4 制御レジスタ
 
 	Register eip;
-	DTRegister GDTR, IDTR;
+	DTRegister dtregs[DTREGS_COUNT];
 
 	Register reg[REGISTERS_COUNT];
 	SGRegister sgregs[6];
@@ -166,10 +167,13 @@ public:				// member funcs
 	bool IsReal(){	return !IsProtected();	}
 	bool IsProtected();
 	size_t GetMemSize(){	return memory_size;	}
-	
+
+	void set_interrupt(bool);
+
 	void LoadBinary(const char* fname, uint32_t addr, int size);	//バイナリファイルを読み込んでメモリの指定番地に指定サイズだけ転送する
 
 	void io_out8(uint16_t,uint8_t);
+	uint16_t in_io8(uint16_t);
 
 	uint8_t GetCode8(int index);
 	int8_t  GetSignCode8(int index);
@@ -185,6 +189,8 @@ public:				// member funcs
 	void SetRegister8(int index, uint8_t val);
 	void SetRegister16(int index, uint16_t val);
 	void SetRegister32(int index, uint32_t val);
+
+	void set_dtreg(enum dtreg_t, uint16_t, uint32_t, uint16_t);
 
 	uint32_t GetMemory8(uint32_t addr);
 	uint32_t GetMemory16(uint32_t addr);
@@ -203,6 +209,8 @@ public:				// member funcs
 	void DumpMemory(const char *fname, uint32_t size){	DumpMemory(fname, 0x00, size);	}
 	void DumpMemory(const char *fname){	DumpMemory(fname, memory_size);	}
 public:
+    uint32_t get_eflags() { return eflags.reg32; }
+	void set_eflags(uint32_t val) { eflags.reg32 = val; }
 	inline int IsAjust() { return eflags.AF; }
 	inline int IsCarry() { return eflags.CF; }
 	inline int IsParity() { return eflags.PF; }
@@ -232,6 +240,7 @@ public:
 
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
     template <class T> uint32_t update_eflags_shl(T v, uint8_t c);
+	template <class T> uint32_t update_eflags_imul(T v, uint32_t c);
 	template <class T> uint32_t update_eflags_shr(T v, uint8_t c);
 	void update_eflags_sub(uint32_t v1, uint32_t v2, uint64_t result);
 

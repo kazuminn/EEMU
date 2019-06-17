@@ -80,6 +80,23 @@ template <class T> uint32_t Emulator::update_eflags_shr(T v, uint8_t c){
     return eflags.reg32;
 }
 
+template uint32_t Emulator::update_eflags_imul(uint32_t v1, uint32_t v2);
+template uint32_t Emulator::update_eflags_imul(uint16_t v1, uint32_t v2);
+template uint32_t Emulator::update_eflags_imul(uint8_t v1, uint32_t v2);
+template <class T> uint32_t Emulator::update_eflags_imul(T v1, uint32_t v2){
+    int64_t result;
+    uint8_t size;
+
+    v2 = (T)v2;
+    result = (int64_t)v1 * v2;
+    size = sizeof(T)*8;
+
+    SetCarry((result >> size) != -1);
+    SetOverflow((result >> size) != -1);
+
+    return eflags.reg32;
+}
+
 bool Emulator::chk_parity(uint8_t v){
     bool p = true;
 

@@ -385,7 +385,7 @@ void cmp_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t imm8 = emu->GetCode8(0);
 	uint64_t result = (uint64_t)rm32 - (uint64_t)imm8; //32bit目を観測したいから64bitとして扱う
 	emu->update_eflags_sub(rm32, imm8, result);
-	emu->EIP += 4;
+	emu->EIP++;
 }
 
 void shl_rm32_imm8(Emulator *emu, ModRM *modrm){
@@ -695,6 +695,11 @@ void jnl(Emulator *emu){
 	emu->EIP += (diff + 2);
 }
 
+void jnle(Emulator *emu){
+	int diff = !emu->IsZero() && (emu->IsSign() == emu->IsOverflow()) ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+
 #undef DEFINE_JX
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
@@ -760,6 +765,56 @@ void test_rm8_r8(Emulator *emu){
 	emu->update_eflags_add(rm8, r8);
 }
 
+void test_rm32_r32(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	emu->update_eflags_add(modrm.GetRM32(), modrm.GetR32());
+}
+
+void cli(Emulator *emu){
+	emu->set_interrupt(false);
+	emu->EIP++;
+}
+
+void imul_r32_rm32_imm8(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint32_t rm32_s = modrm.GetRM32();
+	uint32_t imm8 = emu->GetSignCode8(0);
+	modrm.SetR32(rm32_s * imm8);
+	emu->update_eflags_imul(rm32_s, imm8);
+	emu->EIP++;
+}
+
+void movsx_r32_rm16(Emulator *emu){
+    emu->EIP++;
+    ModRM modrm(emu);
+	int16_t	rm16_s = modrm.GetRM16();
+	modrm.SetR32(rm16_s);
+}
+
+void mov_eax_moffs32(Emulator *emu){
+	emu->EIP++;
+	emu->EAX = emu->memory[emu->sgregs[1].base + emu->GetSignCode32(0)];
+	emu->EIP += 4;
+}
+void imul_r32_rm32_imm32(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint32_t rm32_s = modrm.GetRM32();
+	uint32_t imm32 = emu->GetSignCode32(0);
+	modrm.SetR32(rm32_s * imm32);
+	emu->update_eflags_imul(rm32_s, imm32);
+	emu->EIP += 4;
+}
+
+void ltr_rm16(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint16_t rm16 = modrm.GetRM16();
+	modrm.SetTR(rm16);
+}
+
 } // namespace instruction32
 
 
@@ -769,7 +824,6 @@ using namespace instruction32;
 void InitInstructions32(void){
 	int i;
 	instruction_func_t** func = instructions32;
-
 	func[0x01]	= add_rm32_r32;
 	func[0x03]	= add_r32_rm32;
 //	func[0x04]	= add_al_imm8;
@@ -826,9 +880,13 @@ void InitInstructions32(void){
 	func[0x60]	= pushad;
 	func[0x61]	= popad;
 
+	func[0x69]	= imul_r32_rm32_imm32;
+
 	func[0x68]	= push_imm32;
 	func[0x6A]	= push_imm8;
-	
+
+	func[0x6B]	= imul_r32_rm32_imm8;
+
 	func[0x70]	= jo;
 	func[0x71]	= jno;
 	func[0x72]	= jc;
@@ -841,12 +899,14 @@ void InitInstructions32(void){
 	func[0x7C]	= jl;
 	func[0x7D]	= jnl;
 	func[0x7E]	= jle;
+	func[0x7F]	= jnle;
 
 	func[0x80]	= code_80;
     func[0x81]	= code_81;
 	func[0x83]	= code_83;
 
 	func[0x84]	= test_rm8_r8;
+	func[0x85]	= test_rm32_r32;
 
 	func[0x88]	= mov_rm8_r8;
 	func[0x89]	= mov_rm32_r32;
@@ -860,6 +920,7 @@ void InitInstructions32(void){
 	func[0x9D]	= popfd;
 
 	func[0xA0]	= mov_al_moffs8;
+	func[0xA1]	= mov_eax_moffs32;
 	func[0xA3]	= mov_moffs32_eax;
 
 	func[0xA9]	= test_eax_imm32;
@@ -889,10 +950,14 @@ void InitInstructions32(void){
 	func[0xEC]	= in_al_dx;
 	func[0xEE]	= out_dx_al;
 
+	func[0xFA]	= cli;
 	func[0xFB]	= sti;
 	func[0xFF]	= code_ff;
 
 	func[0x0f01]	= code_0f01;
+	func[0x0fbf]	= movsx_r32_rm16;
+
+
 }
 
 

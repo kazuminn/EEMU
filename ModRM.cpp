@@ -182,6 +182,10 @@ void ModRM::SetR32(uint32_t val){
 	}
 }
 
+void ModRM::SetTR(uint16_t sel){
+
+}
+
 uint32_t ModRM::CalcMemAddr32(Emulator *emu){
 	if(emu->instr.Mod == 0){
 		if(emu->instr.RM == 4){

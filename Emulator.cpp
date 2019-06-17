@@ -59,19 +59,24 @@ int Emulator::parse_prefix(Emulator *emu){
 }
 
 
-void Emulator::set_gdtr(uint32_t base, uint16_t limit){
-   GDTR.selector = 0;
-   GDTR.table_limit = limit;
-   GDTR.base_addr = base;
 
+void Emulator::set_dtreg(enum dtreg_t n, uint16_t sel, uint32_t base, uint16_t limit){
+	dtregs[n].selector = sel;
+	dtregs[n].base_addr = base;
+	dtregs[n].table_limit = limit;
+
+}
+
+void Emulator::set_gdtr(uint32_t base, uint16_t limit){
+	set_dtreg(GDTR, 0, base, limit);
 }
 
 //各レジスタの初期化
 void Emulator::InitRegisters(){
-	GDTR.base_addr	= 0;
-	GDTR.table_limit= 0xffff;	// GDTRの初期値はIntel*3巻2.4.1参照
-	IDTR.base_addr	= 0;
-	IDTR.table_limit= 0xffff;	// 同上2.4.3
+	dtregs[GDTR].base_addr	= 0;
+	dtregs[GDTR].table_limit= 0xffff;	// GDTRの初期値はIntel*3巻2.4.1参照
+	dtregs[IDTR].base_addr	= 0;
+	dtregs[IDTR].table_limit= 0xffff;	// 同上2.4.3
 }
 
 void Emulator::LoadBinary(const char* fname, uint32_t addr, int size){
@@ -146,6 +151,10 @@ void Emulator::SetRegister16(int index, uint16_t val){
 void Emulator::io_out8(uint16_t, uint8_t) {
 
 }
+
+uint16_t Emulator::in_io8(uint16_t) {
+}
+
 
 void Emulator::set_interrupt(bool interrupt){
 	eflags.IF = interrupt;
