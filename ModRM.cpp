@@ -183,7 +183,16 @@ void ModRM::SetR32(uint32_t val){
 }
 
 void ModRM::SetTR(uint16_t sel){
+    uint32_t gdt_base = emu->dtregs[GDTR].base_addr;
+    uint16_t gdt_limit = emu->dtregs[GDTR].table_limit;
+    TSSDesc tssdesc;
 
+    emu->read_data(&tssdesc, gdt_base + sel, sizeof(TSSDesc));
+
+	uint32_t base = (tssdesc.base_h << 24) + (tssdesc.base_m << 16) + tssdesc.base_l;
+    uint16_t limit = (tssdesc.limit_h << 16) + tssdesc.limit_l;
+
+	emu->set_dtreg(TR, sel, base, limit);
 }
 
 uint32_t ModRM::CalcMemAddr32(Emulator *emu){

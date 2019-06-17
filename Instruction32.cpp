@@ -13,6 +13,11 @@ void nop(Emulator *emu){
 	emu->EIP++;
 }
 
+void ltr_rm16(Emulator *emu, ModRM *modrm){
+	uint16_t rm16 = modrm->GetRM16();
+	modrm->SetTR(rm16);
+}
+
 void lgdt_m32(Emulator *emu, ModRM *modrm) {
 	uint32_t m48 = modrm->get_m();
 	uint16_t limit = emu->GetMemory16(m48);
@@ -524,6 +529,18 @@ void code_c0(Emulator *emu){
 	delete modrm;
 }
 
+void code_0f00(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 3: ltr_rm16(emu, modrm);  break;
+		default:
+			cout<<"not implemented: 0f00 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
+}
+
 void code_c1(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -808,12 +825,6 @@ void imul_r32_rm32_imm32(Emulator *emu){
 	emu->EIP += 4;
 }
 
-void ltr_rm16(Emulator *emu){
-	emu->EIP++;
-	ModRM modrm(emu);
-	uint16_t rm16 = modrm.GetRM16();
-	modrm.SetTR(rm16);
-}
 
 } // namespace instruction32
 
@@ -928,7 +939,7 @@ void InitInstructions32(void){
 	for(i=0;i<8;i++){
 		func[0xB0 + i]	= mov_r8_imm8;
 	}
-	
+
 	for(i=0;i<8;i++){
 		func[0xB8 + i]	= mov_r32_imm32;
 	}
@@ -954,6 +965,7 @@ void InitInstructions32(void){
 	func[0xFB]	= sti;
 	func[0xFF]	= code_ff;
 
+	func[0x0f00]	= code_0f00;
 	func[0x0f01]	= code_0f01;
 	func[0x0fbf]	= movsx_r32_rm16;
 

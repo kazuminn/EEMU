@@ -24,6 +24,31 @@ struct SIB {
 	uint8_t scale :2;
 };
 
+struct TSSDesc {
+	uint16_t limit_l;
+	uint16_t base_l;
+	uint8_t base_m;
+	union {
+		struct {
+			uint8_t : 1;
+			uint8_t B : 1;
+		};
+
+		struct {
+			uint8_t type : 3;	// 1 or 3
+			uint8_t D : 1;		// 0:16bit, 1:32bit
+			uint8_t S : 1;		// 0
+			uint8_t DPL : 2;
+			uint8_t P : 1;
+		};
+	};
+	uint8_t limit_h : 4;
+	uint8_t AVL : 1;
+	uint8_t : 2;
+	uint8_t G : 1;
+	uint8_t base_h;
+};
+
 struct InstrData {
     uint16_t opcode;
 	int prefix;
@@ -169,6 +194,8 @@ public:				// member funcs
 	size_t GetMemSize(){	return memory_size;	}
 
 	void set_interrupt(bool);
+
+	size_t read_data(void *dst, uint32_t src_addr, size_t size);
 
 	void LoadBinary(const char* fname, uint32_t addr, int size);	//バイナリファイルを読み込んでメモリの指定番地に指定サイズだけ転送する
 

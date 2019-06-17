@@ -58,7 +58,10 @@ int Emulator::parse_prefix(Emulator *emu){
 	}
 }
 
-
+size_t Emulator::read_data(void *dst, uint32_t src_addr, size_t size){
+    memcpy(dst, &memory[src_addr], size);
+    return size;
+}
 
 void Emulator::set_dtreg(enum dtreg_t n, uint16_t sel, uint32_t base, uint16_t limit){
 	dtregs[n].selector = sel;
