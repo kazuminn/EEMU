@@ -76,9 +76,9 @@ void Emulator::set_gdtr(uint32_t base, uint16_t limit){
 
 //各レジスタの初期化
 void Emulator::InitRegisters(){
-	dtregs[GDTR].base_addr	= 0;
+	dtregs[GDTR].base_addr	= 0x0000;
 	dtregs[GDTR].table_limit= 0xffff;	// GDTRの初期値はIntel*3巻2.4.1参照
-	dtregs[IDTR].base_addr	= 0;
+	dtregs[IDTR].base_addr	= 0x0000;
 	dtregs[IDTR].table_limit= 0xffff;	// 同上2.4.3
 }
 
