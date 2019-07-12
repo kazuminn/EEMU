@@ -164,9 +164,6 @@ void mov_r32_rm32(Emulator *emu){
 	ModRM modrm(emu);
 	uint32_t rm32 = modrm.GetRM32();
 	modrm.SetR32(rm32);
-	for(size_t i = 0; i < 20; i++){
-		printf("ebp %x \n", emu->memory[emu->EBP + (i*4)]);
-	}
 }
 
 void inc_r32(Emulator *emu){
@@ -179,8 +176,6 @@ void lea_r32_m32(Emulator *emu){
     emu->EIP++;
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
-		printf("hogem32 %x \n", emu->memory[-1036 + emu->EBP]);
-		printf("m32 %x \n", m32);
     modrm.SetR32(m32);
 }
 
@@ -258,16 +253,14 @@ void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_sub(rm32, imm32);
 }
 void push_imm32(Emulator *emu) {
-	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
+	uint32_t imm32 = (int32_t)emu->GetSignCode32(1);
 	emu->Push32(imm32);
 	emu->EIP += 5;
 }
 
 void sub_rm32_imm8(Emulator *emu, ModRM *modrm){
     uint32_t rm32 = modrm->GetRM32();
-    printf("rm32 %x \n", rm32);
     uint8_t imm8 = (uint8_t)emu->GetSignCode8(0);
-	printf("imm8 %x \n", imm8);
     emu->EIP++;
     modrm->SetRM32(rm32 - imm8);
 	emu->update_eflags_sub(rm32, imm8);
@@ -478,6 +471,13 @@ void cmp_rm8_imm8(Emulator *emu, ModRM *modrm) {
 	emu->EIP++;
 }
 
+void movzs_r32_rm8(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+	uint8_t rm8 = modrm->GetRM8();
+	modrm->SetR32(rm8);
+}
+
 void code_80(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -606,7 +606,6 @@ void pop_r32(Emulator *emu){
 
 void push_imm8(Emulator *emu){
 	uint32_t val = emu->GetCode8(1);
-	printf("val %x \n", val);
 	emu->Push32(val);
 	emu->EIP += 2;
 }
@@ -725,11 +724,6 @@ void jnl(Emulator *emu){
 }
 
 void jnle(Emulator *emu){
-	if(emu->GetSignCode8(1) == 0x1B) {
-		printf("zero :%x \n", emu->IsZero());
-		printf("sign :%x \n", emu->IsSign());
-		printf("overflow :%x \n", emu->IsOverflow());
-	}
 	int diff = (!emu->IsZero() && (emu->IsSign() == emu->IsOverflow())) ? emu->GetSignCode8(1) : 0;
 	emu->EIP += (diff + 2);
 }
@@ -739,21 +733,12 @@ void cmp_rm32_r32(Emulator *emu){
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
-	printf("disp28 %x \n",emu->memory[28 + emu->EBP]);
-	printf("disp24 %x \n",emu->memory[24 + emu->EBP]);
-	printf("disp20 %x \n",emu->memory[20 + emu->EBP]);
-	printf("disp16 %x \n",emu->memory[16 + emu->EBP]);
-	printf("disp12 %x \n",emu->memory[12 + emu->EBP]);
-	printf("disp8 %x \n",emu->memory[8 + emu->EBP]);
-	printf("disp4 %x \n",emu->memory[4 + emu->EBP]);
-	printf("disp0 %x \n",emu->memory[0 + emu->EBP]);
-	printf("disp-4 %x \n",emu->memory[-4 + emu->EBP]);
-	printf("rm32 %x \n", rm32);
-	printf("r32 %x \n", r32);
 	emu->update_eflags_sub(rm32, r32);
-	for(size_t i = 0; i < 10; i++){
-		printf("ebp %x \n", emu->memory[emu->EBP + (i*4)]);
-	}
+	printf("EBX %x \n", emu->EBX);
+	printf("EDI %x \n", emu->EDI);
+	printf("8 + ebp %x \n", emu->memory[8 + emu->EBP]);
+	printf("12 + ebp %x \n", emu->memory[12 + emu->EBP]);
+	printf("16 + ebp %x \n", emu->memory[16 + emu->EBP]);
 }
 
 void cmp_r32_rm32(Emulator *emu){
@@ -1002,6 +987,7 @@ void InitInstructions32(void){
 
 	func[0x0f00]	= code_0f00;
 	func[0x0f01]	= code_0f01;
+	func[0x0fb6]	= movzs_r32_rm8;
 	func[0x0fbf]	= movsx_r32_rm16;
 
 	func[0x0fAF]	= imul_r32_rm32;
