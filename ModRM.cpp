@@ -102,6 +102,7 @@ uint16_t ModRM::GetRM16(){
 
 uint32_t ModRM::GetRM32(Emulator *emu){
 	if(emu->instr.Mod == 3){
+		printf("emu->instr.RM %x \n", emu->instr.RM);
 		return emu->GetRegister32(emu->instr.RM);
 	}else{
 		uint32_t addr = CalcMemAddr();
@@ -286,6 +287,10 @@ uint32_t ModRM::CalcMemAddr(){
 		return 0;
 
 	if (emu->instr.prefix) {
+	    uint32_t h = CalcMemAddr32(emu);
+	    if(0xa0000 <= h && h <= 0xaffff){
+	        emu->EIP = 0;
+	    }
 		return CalcMemAddr32(emu);
 	} else {
 		return CalcMemAddr16(emu);

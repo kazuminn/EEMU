@@ -102,7 +102,7 @@ void GUI::display(){
 	glRasterPos2f(-1,1);
 //	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	if(img != NULL){
-		glDrawPixels(scrnx, scrny, GL_RGB, GL_UNSIGNED_BYTE, img);
+		glDrawPixels(scrnx, scrny, GL_RGB, GL_UNSIGNED_BYTE, disp->Draw());
 	}
 //	glMatrixMode(GL_MODELVIEW);
 	glFlush();

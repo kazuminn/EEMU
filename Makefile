@@ -1,6 +1,6 @@
 TAR	= x86 
-BIN	= test04.bin
-BINSRC	= test04.c
+BIN	= test03.bin
+BINSRC = test03.c
 
 OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o
 OBJS	+= GUI.o eflags.o
@@ -37,7 +37,7 @@ clean:
 	make -C kazuminlib clean
 	make -C device clean
 	rm *.o
-	rm vm
+	rm x86 
 
 full:
 	make clean
