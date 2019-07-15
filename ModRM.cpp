@@ -199,8 +199,7 @@ void ModRM::SetTR(uint16_t sel){
 uint32_t ModRM::CalcMemAddr32(Emulator *emu){
 	if(emu->instr.Mod == 0){
 		if(emu->instr.RM == 4){
-			cout<<"not implemented ModRM Mod = 0, RM = 4"<<endl;
-			return 0;
+			return calc_sib();
 		}else if(emu->instr.RM == 5){
 			return emu->instr.disp32;
 		}else{

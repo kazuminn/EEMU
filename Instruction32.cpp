@@ -174,6 +174,11 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
+  	printf("ESP %x \n", emu->memory[emu->ESP]);
+	printf("4088 %x \n", emu->memory[4088]);
+	printf("4089 %x \n", emu->memory[4089]);
+	printf("4090 %x \n", emu->memory[4090]);
+	printf("4091 %x \n", emu->memory[4091]);
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -606,6 +611,7 @@ void pop_r32(Emulator *emu){
 
 void push_imm8(Emulator *emu){
 	uint32_t val = emu->GetCode8(1);
+	printf("val %x \n", val);
 	emu->Push32(val);
 	emu->EIP += 2;
 }
@@ -615,14 +621,24 @@ void inc_rm32(Emulator *emu, ModRM *modrm){
 	modrm->SetRM32(val + 1);
 }
 
+void push_rm32(Emulator *emu, ModRM *modrm){
+	emu->Push32(modrm->GetRM32());
+}
+
+void dec_rm32(Emulator *emu, ModRM *modrm){
+	uint32_t val = modrm->GetRM32();
+	modrm->SetRM32(val - 1);
+	emu->update_eflags_sub(val, 1);
+}
+
 void code_ff(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	
 	switch(emu->instr.opecode){
-	case 0:
-		inc_rm32(emu, modrm);
-		break;
+	case 0: inc_rm32(emu, modrm); break;
+    case 1: dec_rm32(emu, modrm); break;
+	case 6: push_rm32(emu, modrm); break;
 	default:
 		cout<<"not implemented: 0xFF /"<<(int)emu->instr.opecode<<endl;
 	}
@@ -634,9 +650,6 @@ void call_rel32(Emulator *emu){
 	int32_t diff = emu->GetSignCode32(1);
 	emu->Push32(emu->EIP + 5);	//call命令は全体で5バイト
 	emu->EIP += (diff + 5);
-	if( diff == 0xffffff71){
-		emu->EIP = 0;
-	}
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
@@ -728,17 +741,32 @@ void jnle(Emulator *emu){
 	emu->EIP += (diff + 2);
 }
 
+void ja(Emulator *emu){
+	int diff = !(emu->IsCarry() || emu->IsZero()) ? emu->GetSignCode8(1) : 0;
+	emu->EIP += (diff + 2);
+}
+
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
 	emu->update_eflags_sub(rm32, r32);
-	printf("EBX %x \n", emu->EBX);
-	printf("EDI %x \n", emu->EDI);
-	printf("8 + ebp %x \n", emu->memory[8 + emu->EBP]);
-	printf("12 + ebp %x \n", emu->memory[12 + emu->EBP]);
-	printf("16 + ebp %x \n", emu->memory[16 + emu->EBP]);
+	printf("disp28 %x \n",emu->memory[28 + emu->EBP]);
+	printf("disp24 %x \n",emu->memory[24 + emu->EBP]);
+	printf("disp20 %x \n",emu->memory[20 + emu->EBP]);
+	printf("disp16 %x \n",emu->memory[16 + emu->EBP]);
+	printf("disp12 %x \n",emu->memory[12 + emu->EBP]);
+	printf("disp11 %x \n",emu->memory[11 + emu->EBP]);
+	printf("disp10 %x \n",emu->memory[10 + emu->EBP]);
+	printf("disp9  %x \n",emu->memory[9 + emu->EBP]);
+	printf("disp8  %x \n",emu->memory[8 + emu->EBP]);
+	printf("disp4  %x \n",emu->memory[4 + emu->EBP]);
+	printf("disp0  %x \n",emu->memory[0 + emu->EBP]);
+	printf("disp-4 %x \n",emu->memory[-4 + emu->EBP]);
+
+	printf("rm32 %x \n", rm32);
+	printf("r32 %x \n", r32);
 }
 
 void cmp_r32_rm32(Emulator *emu){
@@ -925,6 +953,7 @@ void InitInstructions32(void){
 	func[0x74]	= jz;
 	func[0x75]	= jnz;
 	func[0x76]	= jbe;
+	func[0x77]	= ja;
 	func[0x78]	= js;
 	func[0x79]	= jns;
 	func[0x7C]	= jl;
