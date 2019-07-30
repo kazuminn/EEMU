@@ -395,6 +395,7 @@ void shl_rm32_imm8(Emulator *emu, ModRM *modrm){
 	uint32_t imm8 = emu->GetCode8(0);
 	modrm->SetRM32(rm32<<imm8);
 	emu->update_eflags_shl(rm32, imm8);
+	emu->EIP++;
 }
 
 void shl_rm32_cl(Emulator *emu, ModRM *modrm){
@@ -483,6 +484,28 @@ void movzs_r32_rm8(Emulator *emu){
 	modrm->SetR32(rm8);
 }
 
+void idiv_edx_eax_rm32(Emulator *emu, ModRM *modrm){
+    int32_t rm32_s = modrm->GetRM32();
+    int64_t val_s = emu->EDX;
+    val_s <<= 32;
+    val_s |= emu->EAX;
+
+    emu->EAX = val_s/rm32_s;
+    emu->EDX = val_s%rm32_s;
+}
+
+void code_f7(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 7: idiv_edx_eax_rm32(emu, modrm);  break;
+		default:
+			cout<<"not implemented: f7 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
+}
+
 void code_80(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -537,7 +560,7 @@ void code_c0(Emulator *emu){
 		case 5: shr_rm8_imm8(emu, modrm); break;
 		case 7: sar_rm8_imm8(emu, modrm); break;
 		default:
-			cout<<"not implemented: c1 "<<(uint32_t)emu->instr.opecode<<endl;
+			cout<<"not implemented: c0 "<<(uint32_t)emu->instr.opecode<<endl;
 	}
 	delete modrm;
 }
@@ -557,6 +580,7 @@ void code_0f00(Emulator *emu){
 void code_c1(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
+	cout<<"opecode "<<(uint32_t)emu->instr.opecode<<endl;
 
 	switch(emu->instr.opecode){
 		case 4: shl_rm32_imm8(emu, modrm); break;
@@ -623,6 +647,7 @@ void inc_rm32(Emulator *emu, ModRM *modrm){
 
 void push_rm32(Emulator *emu, ModRM *modrm){
 	emu->Push32(modrm->GetRM32());
+	printf("hoge %x \n", modrm->GetRM32());
 }
 
 void dec_rm32(Emulator *emu, ModRM *modrm){
@@ -644,6 +669,13 @@ void code_ff(Emulator *emu){
 	}
 	
 	delete modrm;
+}
+
+void movsx_r32_rm8(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	int8_t rm8_s = modrm.GetRM8();
+	modrm.SetR32(rm8_s);
 }
 
 void call_rel32(Emulator *emu){
@@ -698,9 +730,13 @@ void jc(Emulator *emu){
 	int diff = emu->IsCarry() ? emu->GetSignCode8(1) : 0;
 	emu->EIP += (diff + 2);
 }
-void jz(Emulator *emu){
+void jz_rel8(Emulator *emu){
 	int diff = emu->IsZero() ? emu->GetSignCode8(1) : 0;
 	emu->EIP += (diff + 2);
+}
+void jz_rel32(Emulator *emu){
+	int diff = emu->IsZero() ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
 }
 void js(Emulator *emu){
 	int diff = emu->IsSign() ? emu->GetSignCode8(1) : 0;
@@ -746,27 +782,61 @@ void ja(Emulator *emu){
 	emu->EIP += (diff + 2);
 }
 
+void jle_rel32(Emulator *emu){
+	int diff = emu->IsZero() || (emu->IsSign() != emu->IsOverflow()) ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
+void js_rel32(Emulator *emu){
+	int diff = emu->IsSign() ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
+void jnle_rel32(Emulator *emu){
+	int diff = (!emu->IsZero() && (emu->IsSign() == emu->IsOverflow())) ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
+void jnz_rel32(Emulator *emu){
+	int diff = !emu->IsZero() ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
+void jnl_rel32(Emulator *emu){
+	int diff = emu->IsSign() == emu->IsOverflow() ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
+void setnz_rm8(Emulator *emu){
+	emu->reg[emu->instr.RM].reg32 = !emu->IsZero();
+	emu->EIP += 2;
+}
+
+void sub_rm8_r8(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+	uint8_t rm8 = modrm->GetRM8();
+	uint8_t r8 = modrm->GetR8();
+	modrm->SetRM8(rm8-r8);
+	emu->update_eflags_sub(rm8, r8);
+}
+
+void cmp_rm8_r8(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+	uint8_t	rm8 = modrm->GetRM8();
+	uint8_t r8 = modrm->GetR8();
+	emu->update_eflags_sub(rm8, r8);
+}
+
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
 	emu->update_eflags_sub(rm32, r32);
-	printf("disp28 %x \n",emu->memory[28 + emu->EBP]);
-	printf("disp24 %x \n",emu->memory[24 + emu->EBP]);
-	printf("disp20 %x \n",emu->memory[20 + emu->EBP]);
-	printf("disp16 %x \n",emu->memory[16 + emu->EBP]);
-	printf("disp12 %x \n",emu->memory[12 + emu->EBP]);
-	printf("disp11 %x \n",emu->memory[11 + emu->EBP]);
-	printf("disp10 %x \n",emu->memory[10 + emu->EBP]);
-	printf("disp9  %x \n",emu->memory[9 + emu->EBP]);
-	printf("disp8  %x \n",emu->memory[8 + emu->EBP]);
-	printf("disp4  %x \n",emu->memory[4 + emu->EBP]);
-	printf("disp0  %x \n",emu->memory[0 + emu->EBP]);
-	printf("disp-4 %x \n",emu->memory[-4 + emu->EBP]);
-
-	printf("rm32 %x \n", rm32);
-	printf("r32 %x \n", r32);
+	printf("EAX %x \n", emu->EAX);
+	printf("EBP - 16  %x \n", emu->memory[-16 + emu->EBP]);
 }
 
 void cmp_r32_rm32(Emulator *emu){
@@ -876,6 +946,19 @@ void imul_r32_rm32(Emulator *emu){
 
 } // namespace instruction32
 
+void cdq(Emulator *emu){
+	uint32_t eax = emu->EAX;
+	emu->EDX = eax&(1<<31) ? -1 : 0;
+	emu->EIP++;
+}
+
+void cmp_r8_rm8(Emulator *emu){
+	emu->EIP++;
+	ModRM modrm(emu);
+	uint8_t r8 = modrm.GetR8();
+	uint8_t rm8 = modrm.GetRM8();
+	emu->update_eflags_sub(r8, rm8);
+}
 
 
 using namespace instruction32;
@@ -902,6 +985,7 @@ void InitInstructions32(void){
 
 	func[0x25]  = and_eax_imm32;
 
+	func[0x28]  = sub_rm8_r8;
 	func[0x29]  = sub_rm32_r32;
 	func[0x2b]  = sub_r32_rm32;
 	func[0x2d]  = sub_eax_imm32;
@@ -912,7 +996,9 @@ void InitInstructions32(void){
 	func[0x33]	= xor_r32_rm32;
 	func[0x35]	= xor_eax_imm32;
 
+	//func[0x38]	= cmp_rm8_r8;
 	func[0x39]  = cmp_rm32_r32;
+	func[0x3a]  = cmp_r8_rm8;
 	func[0x3b]  = cmp_r32_rm32;
 	func[0x3d]  = cmp_eax_imm32;
 
@@ -950,7 +1036,7 @@ void InitInstructions32(void){
 	func[0x71]	= jno;
 	func[0x72]	= jc;
 	func[0x73]	= jnc;
-	func[0x74]	= jz;
+	func[0x74]	= jz_rel8;
 	func[0x75]	= jnz;
 	func[0x76]	= jbe;
 	func[0x77]	= ja;
@@ -976,6 +1062,7 @@ void InitInstructions32(void){
 	func[0x8D]	= lea_r32_m32;
 
 	func[0x90]	= nop;
+	func[0x99]	= cdq;
 	func[0x9C]	= pushfd;
 	func[0x9D]	= popfd;
 
@@ -1010,16 +1097,25 @@ void InitInstructions32(void){
 	func[0xEC]	= in_al_dx;
 	func[0xEE]	= out_dx_al;
 
+	func[0xF7]	= code_f7;
 	func[0xFA]	= cli;
 	func[0xFB]	= sti;
 	func[0xFF]	= code_ff;
 
 	func[0x0f00]	= code_0f00;
 	func[0x0f01]	= code_0f01;
+	func[0x0f84]	= jz_rel32;
+	func[0x0f85]	= jnz_rel32;
+	func[0x0f88]	= js_rel32;
+	func[0x0f8d]	= jnl_rel32;
+	func[0x0f8e]	= jle_rel32;
+	func[0x0f8f]	= jnle_rel32;
+	func[0x0f95]	= setnz_rm8;
 	func[0x0fb6]	= movzs_r32_rm8;
 	func[0x0fbf]	= movsx_r32_rm16;
 
 	func[0x0fAF]	= imul_r32_rm32;
+	func[0x0fBE]	= movsx_r32_rm8;
 
 }
 
