@@ -174,11 +174,10 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
-  	printf("ESP %x \n", emu->memory[emu->ESP]);
-	printf("4088 %x \n", emu->memory[4088]);
-	printf("4089 %x \n", emu->memory[4089]);
-	printf("4090 %x \n", emu->memory[4090]);
-	printf("4091 %x \n", emu->memory[4091]);
+	printf("EBX %x \n", emu->memory[4088]);
+	printf("EBX %x \n", emu->memory[4089]);
+	printf("EBX %x \n", emu->memory[4090]);
+	printf("EBX %x \n", emu->memory[4091]);
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -251,6 +250,9 @@ void pushfd(Emulator *emu){
 }
 
 void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
+		for (size_t i=0 ; i <65; i++){
+			printf("memman %x \n", emu->memory[0x3c0000 + i]);
+		}
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
 	emu->EIP += 4;

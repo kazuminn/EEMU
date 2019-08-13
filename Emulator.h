@@ -65,7 +65,11 @@ struct InstrData {
 		int16_t disp16;
 		uint32_t disp32;
 	};
-	struct SIB sib;
+
+	union {
+	    uint8_t _SIB;
+		struct SIB sib;
+	};
 };
 
 #define REGISTERS_COUNT32 8

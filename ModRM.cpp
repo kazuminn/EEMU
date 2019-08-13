@@ -23,6 +23,10 @@ void ModRM::Parse(Emulator *emu){	//cout<<"parse"<<endl;
 
 	emu->EIP++;
 
+	if (emu->instr.Mod !=3 && emu->instr.RM == 4){
+		emu->instr._SIB = emu->GetCode8(0);
+	}
+
     if(emu->instr.prefix) {
 		if (emu->instr.Mod != 3 && emu->instr.RM == 4) {
 			emu->instr.SIB = emu->GetCode8(0);
@@ -102,7 +106,6 @@ uint16_t ModRM::GetRM16(){
 
 uint32_t ModRM::GetRM32(Emulator *emu){
 	if(emu->instr.Mod == 3){
-		printf("emu->instr.RM %x \n", emu->instr.RM);
 		return emu->GetRegister32(emu->instr.RM);
 	}else{
 		uint32_t addr = CalcMemAddr();
