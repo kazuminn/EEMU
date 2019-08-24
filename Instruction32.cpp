@@ -1,6 +1,9 @@
 #include <iostream>
 using namespace std;
 
+//memo
+//fprintf(stderr, "%x \n", emu->memory[0xff8]);
+
 #include "Emulator.h"
 #include "ModRM.h"
 
@@ -95,6 +98,7 @@ void add_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->EIP += 4;
 	modrm->SetRM32(rm32 + imm32);
 	emu->update_eflags_add(rm32, imm32);
+	printf("hoge %x \n", emu->memory[emu->EIP + emu->sgregs[1].base + 1]);
 }
 
 //void add_al_imm8(Emulator *emu){
@@ -174,10 +178,9 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
-	printf("EBX %x \n", emu->memory[4088]);
-	printf("EBX %x \n", emu->memory[4089]);
-	printf("EBX %x \n", emu->memory[4090]);
-	printf("EBX %x \n", emu->memory[4091]);
+    if(emu->GetCode8(0) == 0x9D){
+		printf("EBX %x \n", emu->EBX);
+    }
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -209,6 +212,11 @@ void mov_rm32_imm32(Emulator *emu){
 
 void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
 	emu->EIP++;
+	if(emu->GetCode8(0) == 0xc3){
+		for(size_t i=0; i< 32; i++){
+			printf("memmen %x \n", emu->memory[ 0x3c0000 + i]);
+		}
+	}
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(r32);
@@ -250,9 +258,6 @@ void pushfd(Emulator *emu){
 }
 
 void sub_rm32_imm32(Emulator *emu, ModRM *modrm){
-		for (size_t i=0 ; i <65; i++){
-			printf("memman %x \n", emu->memory[0x3c0000 + i]);
-		}
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t imm32 = (int32_t)emu->GetSignCode32(0);
 	emu->EIP += 4;
@@ -496,6 +501,34 @@ void idiv_edx_eax_rm32(Emulator *emu, ModRM *modrm){
     emu->EDX = val_s%rm32_s;
 }
 
+void test_rm8_imm8(Emulator *emu, ModRM *modrm){
+	uint8_t	rm8 = modrm->GetRM8();
+	uint8_t imm8 = emu->GetCode8(0);
+	emu->EIP++;
+	emu->update_eflags_add(rm8, imm8);
+}
+
+void and_rm32_imm32(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm32 = emu->GetCode32(0);
+
+	modrm->SetRM32(rm32&imm32);
+	emu->update_eflags_add(rm32, imm32);
+	emu->EIP += 4;
+}
+
+void code_f6(Emulator *emu){
+	emu->EIP++;
+	ModRM *modrm = new ModRM(emu);
+
+	switch(emu->instr.opecode){
+		case 0: test_rm8_imm8(emu, modrm);  break;
+		default:
+			cout<<"not implemented: f6 "<<(uint32_t)emu->instr.opecode<<endl;
+	}
+	delete modrm;
+}
+
 void code_f7(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -527,6 +560,7 @@ void code_81(Emulator *emu){
 	switch(emu->instr.opecode){
 		case 0: add_rm32_imm32(emu, modrm);  break;
 		case 1: or_rm32_imm32(emu, modrm);   break;
+		case 4: and_rm32_imm32(emu, modrm);  break;
 		case 5: sub_rm32_imm32(emu, modrm);  break;
 		case 6: xor_rm32_imm32(emu, modrm);  break;
 		case 7: cmp_rm32_imm32(emu, modrm);  break;
@@ -687,6 +721,11 @@ void call_rel32(Emulator *emu){
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
+	if (emu->GetCode8(1) == 0x68){
+		for(size_t i=0; i <32; i++){
+			printf("memman %x \n", emu->memory[0x3C0000 + i]);
+		}
+	}
 	emu->EIP = emu->Pop32();
 }
 
@@ -882,6 +921,7 @@ void and_eax_imm32(Emulator *emu){
 	emu->EIP++;
 	uint32_t imm32 = emu->GetSignCode32(0);
 	uint32_t eax = emu->EAX;
+	emu->EAX = eax & imm32;
 	emu->update_eflags_add(eax,imm32);
 	emu->EIP += 4;
 }
@@ -963,6 +1003,7 @@ void cmp_r8_rm8(Emulator *emu){
 }
 
 
+
 using namespace instruction32;
 
 void InitInstructions32(void){
@@ -1011,14 +1052,14 @@ void InitInstructions32(void){
 		func[0x48 + i]	= dec_r32;
 	}
 
-	
-	
+
+
 	for(i=0;i<8;i++){
 		func[0x50 + i]	= push_r32;
 	}
-	
-	
-	
+
+
+
 	for(i=0;i<8;i++){
 		func[0x58 + i]	= pop_r32;
 	}
@@ -1099,6 +1140,8 @@ void InitInstructions32(void){
 	func[0xEC]	= in_al_dx;
 	func[0xEE]	= out_dx_al;
 
+
+	func[0xF6]	= code_f6;
 	func[0xF7]	= code_f7;
 	func[0xFA]	= cli;
 	func[0xFB]	= sti;
