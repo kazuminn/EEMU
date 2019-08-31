@@ -177,6 +177,7 @@ uint32_t ModRM::GetR32(){
 }
 
 void ModRM::SetR32(Emulator *emu, uint32_t val){
+    printf("reg_index : %x, val : %x", emu->instr.reg_index, val);
 	emu->SetRegister32(emu->instr.reg_index, val);
 }
 
@@ -290,9 +291,6 @@ uint32_t ModRM::CalcMemAddr(){
 
 	if (emu->instr.prefix) {
 	    uint32_t h = CalcMemAddr32(emu);
-	    if(0xa0000 <= h && h <= 0xaffff){
-	        emu->EIP = 0;
-	    }
 		return CalcMemAddr32(emu);
 	} else {
 		return CalcMemAddr16(emu);
