@@ -3,6 +3,9 @@ using namespace std;
 
 //memo
 //fprintf(stderr, "%x \n", emu->memory[0xff8]);
+//if(emu->GetCode8(0) == 0x75){
+//fprintf(stderr,  "%x : %x \n", emu->EIP, emu->ESI);
+//}
 
 #include "Emulator.h"
 #include "ModRM.h"
@@ -80,14 +83,14 @@ void add_r32_rm32(Emulator *emu){
     ModRM modrm(emu);
     uint32_t r32 = modrm.GetR32();
     uint32_t rm32 = modrm.GetRM32();
-    modrm.SetRM32(rm32 + r32);
+    modrm.SetR32(rm32 + r32);
 	emu->update_eflags_add(r32, rm32);
 }
 
 void add_eax_imm32(Emulator *emu){
     uint32_t imm32 = emu->GetSignCode32(1);
-    uint32_t eax = emu->reg[0].reg32;
-	emu->reg[0].reg32 = emu->reg[0].reg32 + imm32;
+    uint32_t eax = emu->EAX;
+	emu->EAX = eax + imm32;
 	emu->EIP += 5;
 	emu->update_eflags_add(eax, imm32);
 }
@@ -98,7 +101,6 @@ void add_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->EIP += 4;
 	modrm->SetRM32(rm32 + imm32);
 	emu->update_eflags_add(rm32, imm32);
-	printf("hoge %x \n", emu->memory[emu->EIP + emu->sgregs[1].base + 1]);
 }
 
 //void add_al_imm8(Emulator *emu){
@@ -148,12 +150,10 @@ void mov_r8_rm8(Emulator *emu){//		cout<<"mov_r8_rm8"<<endl;
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint8_t rm8 = modrm.GetRM8();
-	printf("reg_index %x\n", emu->instr.reg_index);
 	modrm.SetR8(rm8);
 }
 
 void out_dx_al(Emulator *emu){
-    printf("DX %x\n", emu->DX);
 	emu->io_out8(emu->DX, emu->AL);
 	emu->EIP++;
 }
@@ -178,9 +178,6 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
-    if(emu->GetCode8(0) == 0x9D){
-		printf("EBX %x \n", emu->EBX);
-    }
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -205,18 +202,16 @@ void add_rm32_imm8(Emulator *emu, ModRM *modrm){
 void mov_rm32_imm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t val = emu->GetCode32(0);
+	uint32_t imm32 = emu->GetCode32(0);
 	emu->EIP+=4;
-	modrm.SetRM32(val);		cout<<"mov val="<<val<<endl;
+	modrm.SetRM32(imm32);		cout<<"mov val="<<imm32<<endl;
+	if(imm32 == 0xffffffff){
+		fprintf(stderr, "%x %x \n", emu->EAX, emu->memory[4 + emu->EAX]);
+	}
 }
 
 void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
 	emu->EIP++;
-	if(emu->GetCode8(0) == 0xc3){
-		for(size_t i=0; i< 32; i++){
-			printf("memmen %x \n", emu->memory[ 0x3c0000 + i]);
-		}
-	}
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(r32);
@@ -517,6 +512,14 @@ void and_rm32_imm32(Emulator *emu, ModRM *modrm){
 	emu->EIP += 4;
 }
 
+void cmp_al_imm8(Emulator *emu){
+	uint8_t	al = emu->AL;
+	uint8_t imm8 = emu->GetCode8(1);
+
+	emu->update_eflags_sub(al, imm8);
+	emu->EIP += 2;
+}
+
 void code_f6(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -683,7 +686,6 @@ void inc_rm32(Emulator *emu, ModRM *modrm){
 
 void push_rm32(Emulator *emu, ModRM *modrm){
 	emu->Push32(modrm->GetRM32());
-	printf("hoge %x \n", modrm->GetRM32());
 }
 
 void dec_rm32(Emulator *emu, ModRM *modrm){
@@ -699,7 +701,7 @@ void code_ff(Emulator *emu){
 	switch(emu->instr.opecode){
 	case 0: inc_rm32(emu, modrm); break;
     case 1: dec_rm32(emu, modrm); break;
-	case 6: push_rm32(emu, modrm); break;
+	case 6: push_rm32(emu, modrm);break;
 	default:
 		cout<<"not implemented: 0xFF /"<<(int)emu->instr.opecode<<endl;
 	}
@@ -721,11 +723,6 @@ void call_rel32(Emulator *emu){
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
-	if (emu->GetCode8(1) == 0x68){
-		for(size_t i=0; i <32; i++){
-			printf("memman %x \n", emu->memory[0x3C0000 + i]);
-		}
-	}
 	emu->EIP = emu->Pop32();
 }
 
@@ -876,8 +873,6 @@ void cmp_rm32_r32(Emulator *emu){
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
 	emu->update_eflags_sub(rm32, r32);
-	printf("EAX %x \n", emu->EAX);
-	printf("EBP - 16  %x \n", emu->memory[-16 + emu->EBP]);
 }
 
 void cmp_r32_rm32(Emulator *emu){
@@ -964,7 +959,7 @@ void movsx_r32_rm16(Emulator *emu){
 
 void mov_eax_moffs32(Emulator *emu){
 	emu->EIP++;
-	emu->EAX = emu->memory[emu->sgregs[1].base + emu->GetSignCode32(0)];
+	emu->EAX = emu->memory[emu->GetSignCode32(0)];
 	emu->EIP += 4;
 }
 void imul_r32_rm32_imm32(Emulator *emu){
@@ -1043,6 +1038,7 @@ void InitInstructions32(void){
 	func[0x39]  = cmp_rm32_r32;
 	func[0x3a]  = cmp_r8_rm8;
 	func[0x3b]  = cmp_r32_rm32;
+	func[0x3c]  = cmp_al_imm8;
 	func[0x3d]  = cmp_eax_imm32;
 
 	for(i=0;i<8;i++){
