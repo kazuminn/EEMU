@@ -56,6 +56,7 @@ int Emulator::parse_prefix(Emulator *emu){
 
 		break;
 	}
+	return -1;
 }
 
 size_t Emulator::read_data(void *dst, uint32_t src_addr, size_t size){

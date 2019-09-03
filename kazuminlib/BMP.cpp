@@ -95,13 +95,12 @@ bool BMP::IsSame(unsigned char *rgba, rgbQUAD *quad){
 }
 
 int BMP::GetPaletteNum(unsigned char *rgba){
-	for(int i=0;i<COLOR_USE_NUM;i++){
-		if(IsSame(rgba, &(palette[i]))){
+	for(int i=0;i<COLOR_USE_NUM;i++) {
+		if (IsSame(rgba, &(palette[i]))) {
 			return i;
-		}else{
-			return -1;	printf("e");
 		}
 	}
+	return -1;	printf("e");
 }
 
 void BMP::Write(const char *fname){
