@@ -122,6 +122,9 @@ void mov_rm8_r8(Emulator *emu){
 	ModRM modrm(emu);
 	uint8_t r8 = modrm.GetR8();
 	modrm.SetRM8(r8);
+    if(emu->GetCode8(1) == 0x75 && emu->GetCode8(2) == 0xe4){
+        fprintf(stderr, "EAX %x : %x : %x : %x \n", emu->EIP, emu->EDI, emu->AL, emu->ESI);
+    }
 }
 
 void mov_r8_imm8(Emulator *emu){
@@ -187,6 +190,7 @@ void mov_al_moffs8(Emulator *emu) {
 	emu->EIP++;
 	uint8_t moffs = emu->memory[emu->sgregs[1].base + emu->GetSignCode32(0)];
 	emu->AL = moffs;
+	emu->EAX = (emu->EAX & ~0xff) | emu->AL;
 	emu->EIP += 4;
 }
 
@@ -205,9 +209,6 @@ void mov_rm32_imm32(Emulator *emu){
 	uint32_t imm32 = emu->GetCode32(0);
 	emu->EIP+=4;
 	modrm.SetRM32(imm32);		cout<<"mov val="<<imm32<<endl;
-	if(imm32 == 0xffffffff){
-		fprintf(stderr, "%x %x \n", emu->EAX, emu->memory[4 + emu->EAX]);
-	}
 }
 
 void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
@@ -244,6 +245,7 @@ void mov_moffs32_eax(Emulator *emu){
 void in_al_dx(Emulator *emu){
 	uint16_t dx = emu->DX;
 	emu->AL = emu->in_io8(dx);
+	emu->EAX = (emu->EAX & ~0xff) | emu->AL;
 	emu->EIP++;
 }
 
@@ -294,7 +296,10 @@ void sub_r32_rm32(Emulator *emu){
 
 void sub_eax_imm32(Emulator *emu) {
     uint32_t imm32 = emu->GetSignCode32(1); uint32_t eax = emu->reg[0].reg32;
-	emu->reg[0].reg32 = emu->reg[0].reg32 ^ imm32;
+	emu->reg[0].reg32 = emu->reg[0].reg32 - imm32;
+	if( emu->GetCode8(0) == 0x2d && emu->GetCode32(1) == 0x00000414){
+		fprintf(stderr, "hoge %x : %x", emu->EAX , emu->ECX);
+	}
 	emu->EIP += 5;
 	emu->update_eflags_sub(eax , imm32);
 }
@@ -437,8 +442,8 @@ void sal_rm32_cl(Emulator *emu, ModRM *modrm){
 }
 
 void sar_rm32_imm8(Emulator *emu, ModRM *modrm){
-	uint32_t rm32 = modrm->GetRM32();
-	uint32_t imm8 = emu->GetCode8(0);
+	int32_t rm32 = modrm->GetRM32();
+	int32_t imm8 = emu->GetCode8(0);
 	modrm->SetRM32(rm32>>imm8);
 	emu->EIP++;
 	//emu->update_eflags_shr(rm32, imm8);
@@ -520,6 +525,14 @@ void cmp_al_imm8(Emulator *emu){
 	emu->EIP += 2;
 }
 
+void test_rm32_imm32(Emulator *emu, ModRM *modrm){
+	uint32_t rm32 = modrm->GetRM32();
+	uint32_t imm32 = emu->GetCode32(0);
+
+	emu->update_eflags_add(rm32, imm32);
+	emu->EIP += 4;
+}
+
 void code_f6(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -537,6 +550,7 @@ void code_f7(Emulator *emu){
 	ModRM *modrm = new ModRM(emu);
 
 	switch(emu->instr.opecode){
+		case 0: test_rm32_imm32(emu, modrm);  break;
 		case 7: idiv_edx_eax_rm32(emu, modrm);  break;
 		default:
 			cout<<"not implemented: f7 "<<(uint32_t)emu->instr.opecode<<endl;
@@ -845,6 +859,11 @@ void jnl_rel32(Emulator *emu){
 	emu->EIP += (diff + 5);
 }
 
+void jl_rel32(Emulator *emu){
+	int diff = emu->IsSign() != emu->IsOverflow() ? emu->GetSignCode32(1) : 0;
+	emu->EIP += (diff + 5);
+}
+
 void setnz_rm8(Emulator *emu){
 	emu->reg[emu->instr.RM].reg32 = !emu->IsZero();
 	emu->EIP += 2;
@@ -943,8 +962,8 @@ void cli(Emulator *emu){
 void imul_r32_rm32_imm8(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t rm32_s = modrm.GetRM32();
-	uint32_t imm8 = emu->GetSignCode8(0);
+	int32_t rm32_s = modrm.GetRM32();
+	int32_t imm8 = emu->GetSignCode8(0);
 	modrm.SetR32(rm32_s * imm8);
 	emu->update_eflags_imul(rm32_s, imm8);
 	emu->EIP++;
@@ -965,10 +984,11 @@ void mov_eax_moffs32(Emulator *emu){
 void imul_r32_rm32_imm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	uint32_t rm32_s = modrm.GetRM32();
-	uint32_t imm32 = emu->GetSignCode32(0);
+	int32_t rm32_s = modrm.GetRM32();
+	int32_t imm32 = emu->GetSignCode32(0);
 	modrm.SetR32(rm32_s * imm32);
 	emu->update_eflags_imul(rm32_s, imm32);
+	fprintf(stderr, " %x : %x : %x", imm32, rm32_s, emu->EAX);
 	emu->EIP += 4;
 }
 
@@ -978,7 +998,7 @@ void imul_r32_rm32(Emulator *emu){
    	int16_t r32_s = modrm.GetR32();
    	int16_t rm32_s = modrm.GetRM32();
    	modrm.SetR32(r32_s * rm32_s);
-   	emu->update_eflags_imul((uint32_t)r32_s, (uint32_t)rm32_s);
+   	emu->update_eflags_imul((int32_t)r32_s, (int32_t)rm32_s);
 }
 
 } // namespace instruction32
@@ -1034,7 +1054,7 @@ void InitInstructions32(void){
 	func[0x33]	= xor_r32_rm32;
 	func[0x35]	= xor_eax_imm32;
 
-	//func[0x38]	= cmp_rm8_r8;
+	func[0x38]	= cmp_rm8_r8;
 	func[0x39]  = cmp_rm32_r32;
 	func[0x3a]  = cmp_r8_rm8;
 	func[0x3b]  = cmp_r32_rm32;
@@ -1151,6 +1171,7 @@ void InitInstructions32(void){
 	func[0x0f8d]	= jnl_rel32;
 	func[0x0f8e]	= jle_rel32;
 	func[0x0f8f]	= jnle_rel32;
+	func[0x0f8c]	= jl_rel32;
 	func[0x0f95]	= setnz_rm8;
 	func[0x0fb6]	= movzs_r32_rm8;
 	func[0x0fbf]	= movsx_r32_rm16;

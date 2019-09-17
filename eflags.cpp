@@ -91,10 +91,10 @@ template <class T> uint32_t Emulator::update_eflags_shr(T v, uint8_t c){
     return eflags.reg32;
 }
 
-template uint32_t Emulator::update_eflags_imul(uint32_t v1, uint32_t v2);
-template uint32_t Emulator::update_eflags_imul(uint16_t v1, uint32_t v2);
-template uint32_t Emulator::update_eflags_imul(uint8_t v1, uint32_t v2);
-template <class T> uint32_t Emulator::update_eflags_imul(T v1, uint32_t v2){
+template uint32_t Emulator::update_eflags_imul(int32_t v1, int32_t v2);
+template uint32_t Emulator::update_eflags_imul(int16_t v1, int32_t v2);
+template uint32_t Emulator::update_eflags_imul(int8_t v1, int32_t v2);
+template <class T> uint32_t Emulator::update_eflags_imul(T v1, int32_t v2){
     int64_t result;
     uint8_t size;
 

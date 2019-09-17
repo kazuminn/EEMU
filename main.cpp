@@ -87,6 +87,7 @@ int main(int argc, char **argv){
 //	emu->DumpRegisters(32);
 	//emulation
 	for(size_t i = 0; true; i++){
+	    emu->AL = emu->EAX;
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
