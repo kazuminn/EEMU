@@ -126,9 +126,9 @@ int32_t Emulator::GetSignCode32(int index){
 
 uint8_t Emulator::GetRegister8(int index){
 	if(index < 4){
-		return reg[index].high8;
+		return reg[index].low8;
 	}else{
-		return reg[index - 4].low8;
+		return reg[index - 4].high8;
 	}
 }
 

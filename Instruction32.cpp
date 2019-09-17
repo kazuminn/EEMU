@@ -121,10 +121,10 @@ void mov_rm8_r8(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint8_t r8 = modrm.GetR8();
+	if ( emu->GetCode8(1) == 0x75 && emu->GetCode8(2) == 0xe4){
+		fprintf(stderr, " %x : %x : %x", r8, emu->AH , emu->ESI);
+	}
 	modrm.SetRM8(r8);
-    if(emu->GetCode8(1) == 0x75 && emu->GetCode8(2) == 0xe4){
-        fprintf(stderr, "EAX %x : %x : %x : %x \n", emu->EIP, emu->EDI, emu->AL, emu->ESI);
-    }
 }
 
 void mov_r8_imm8(Emulator *emu){
@@ -297,9 +297,6 @@ void sub_r32_rm32(Emulator *emu){
 void sub_eax_imm32(Emulator *emu) {
     uint32_t imm32 = emu->GetSignCode32(1); uint32_t eax = emu->reg[0].reg32;
 	emu->reg[0].reg32 = emu->reg[0].reg32 - imm32;
-	if( emu->GetCode8(0) == 0x2d && emu->GetCode32(1) == 0x00000414){
-		fprintf(stderr, "hoge %x : %x", emu->EAX , emu->ECX);
-	}
 	emu->EIP += 5;
 	emu->update_eflags_sub(eax , imm32);
 }
@@ -988,7 +985,6 @@ void imul_r32_rm32_imm32(Emulator *emu){
 	int32_t imm32 = emu->GetSignCode32(0);
 	modrm.SetR32(rm32_s * imm32);
 	emu->update_eflags_imul(rm32_s, imm32);
-	fprintf(stderr, " %x : %x : %x", imm32, rm32_s, emu->EAX);
 	emu->EIP += 4;
 }
 
