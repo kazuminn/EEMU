@@ -12,8 +12,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fcb44221-37ac-44fa-b2ca-4dfa20390124" name="Default Changelist" comment="kkj">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Emulator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Emulator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Emulator.h" beforeDir="false" afterPath="$PROJECT_DIR$/Emulator.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Instruction32.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Instruction32.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ModRM.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ModRM.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eflags.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/eflags.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/x86" beforeDir="false" afterPath="$PROJECT_DIR$/x86" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -25,11 +29,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Emulator.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="130" column="33" selection-start-line="130" selection-start-column="33" selection-end-line="130" selection-end-column="33" />
+            <state relative-caret-position="225">
+              <caret line="147" column="4" selection-start-line="147" selection-start-column="4" selection-end-line="147" selection-end-column="4" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -40,7 +44,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="93">
+            <state relative-caret-position="167">
               <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
             </state>
           </provider>
@@ -49,12 +53,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Emulator.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="76" selection-start-line="76" selection-end-line="76" />
+            <state relative-caret-position="159">
+              <caret line="272" column="49" selection-start-line="272" selection-start-column="49" selection-end-line="272" selection-end-column="49" />
               <folding>
                 <element signature="e#41#59#0" expanded="true" />
-                <element signature="e#5948#5957#0" expanded="true" />
-                <element signature="e#6013#6022#0" expanded="true" />
+                <element signature="e#5814#5823#0" expanded="true" />
+                <element signature="e#5884#5893#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -84,11 +88,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/eflags.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="96" selection-start-line="96" selection-end-line="96" />
+            <state relative-caret-position="300">
+              <caret line="20" selection-start-line="20" selection-end-line="20" />
               <folding>
                 <element signature="e#250#259#0" expanded="true" />
-                <element signature="e#2788#2797#0" expanded="true" />
+                <element signature="e#250#259#0" expanded="true" />
+                <element signature="e#2782#2791#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -97,8 +102,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ModRM.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="139" column="16" selection-start-line="139" selection-start-column="16" selection-end-line="139" selection-end-column="16" />
+            <state relative-caret-position="189">
+              <caret line="157" column="34" selection-start-line="157" selection-start-column="34" selection-end-line="157" selection-end-column="34" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -106,11 +111,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Instruction32.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="125" column="4" selection-start-line="125" selection-start-column="4" selection-end-line="125" selection-end-column="4" />
+            <state relative-caret-position="144">
+              <caret line="903" column="33" selection-start-line="903" selection-start-column="33" selection-end-line="903" selection-end-column="33" />
+              <folding>
+                <element signature="e#188#209#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -150,13 +158,13 @@
         <option value="$PROJECT_DIR$/Instruction16.cpp" />
         <option value="$PROJECT_DIR$/ModRM.h" />
         <option value="$PROJECT_DIR$/GUI.cpp" />
-        <option value="$PROJECT_DIR$/ModRM.cpp" />
         <option value="$PROJECT_DIR$/kazuminlib/BMP.cpp" />
-        <option value="$PROJECT_DIR$/eflags.cpp" />
-        <option value="$PROJECT_DIR$/Emulator.h" />
         <option value="$PROJECT_DIR$/main.cpp" />
-        <option value="$PROJECT_DIR$/Instruction32.cpp" />
+        <option value="$PROJECT_DIR$/Emulator.h" />
+        <option value="$PROJECT_DIR$/eflags.cpp" />
+        <option value="$PROJECT_DIR$/ModRM.cpp" />
         <option value="$PROJECT_DIR$/Emulator.cpp" />
+        <option value="$PROJECT_DIR$/Instruction32.cpp" />
       </list>
     </option>
   </component>
@@ -238,12 +246,15 @@
       <workItem from="1567166340343" duration="29281000" />
       <workItem from="1568215539588" duration="1847000" />
       <workItem from="1568644474664" duration="3783000" />
-      <workItem from="1568701228938" duration="8159000" />
+      <workItem from="1568701228938" duration="10197000" />
+      <workItem from="1568794684776" duration="7631000" />
+      <workItem from="1568886593757" duration="1147000" />
+      <workItem from="1568966020507" duration="8635000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="388132000" />
+    <option name="totallyTimeSpent" value="407583000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1213" height="775" extended-state="6" />
@@ -336,6 +347,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/eflags.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
+          <folding>
+            <element signature="e#250#259#0" expanded="true" />
+            <element signature="e#250#259#0" expanded="true" />
+            <element signature="e#2782#2791#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/kazuminlib/BMP.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1440">
@@ -353,47 +376,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eflags.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="96" selection-start-line="96" selection-end-line="96" />
-          <folding>
-            <element signature="e#250#259#0" expanded="true" />
-            <element signature="e#2788#2797#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Emulator.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="76" selection-start-line="76" selection-end-line="76" />
+        <state relative-caret-position="159">
+          <caret line="272" column="49" selection-start-line="272" selection-start-column="49" selection-end-line="272" selection-end-column="49" />
           <folding>
             <element signature="e#41#59#0" expanded="true" />
-            <element signature="e#5948#5957#0" expanded="true" />
-            <element signature="e#6013#6022#0" expanded="true" />
+            <element signature="e#5814#5823#0" expanded="true" />
+            <element signature="e#5884#5893#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Instruction32.cpp">
+    <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="125" column="4" selection-start-line="125" selection-start-column="4" selection-end-line="125" selection-end-column="4" />
+        <state relative-caret-position="167">
+          <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ModRM.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="139" column="16" selection-start-line="139" selection-start-column="16" selection-end-line="139" selection-end-column="16" />
+        <state relative-caret-position="189">
+          <caret line="157" column="34" selection-start-line="157" selection-start-column="34" selection-end-line="157" selection-end-column="34" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -402,10 +407,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Emulator.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="130" column="33" selection-start-line="130" selection-start-column="33" selection-end-line="130" selection-end-column="33" />
+        <state relative-caret-position="225">
+          <caret line="147" column="4" selection-start-line="147" selection-start-column="4" selection-end-line="147" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Instruction32.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="903" column="33" selection-start-line="903" selection-start-column="33" selection-end-line="903" selection-end-column="33" />
+          <folding>
+            <element signature="e#188#209#0" expanded="true" />
           </folding>
         </state>
       </provider>

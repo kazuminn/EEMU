@@ -154,6 +154,9 @@ uint16_t ModRM::GetR16(){
 
 void ModRM::SetR8(Emulator *emu, uint8_t val){
 	emu->SetRegister8(emu->instr.reg_index, val);
+	if(emu->instr.reg_index == 0){
+		emu->EAX = (emu->EAX & ~0xff) | emu->AL;
+	}
 }
 
 uint16_t ModRM::SetR16(uint16_t val){

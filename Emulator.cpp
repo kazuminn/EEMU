@@ -142,9 +142,9 @@ uint32_t Emulator::GetRegister32(int index){
 
 void Emulator::SetRegister8(int index, uint8_t val){
 	if(index < 4){
-		reg[index].high8 = val;
+		reg[index].low8 = val;
 	}else{
-		reg[index - 4].low8 = val;
+		reg[index - 4].high8 = val;
 	}
 }
 

@@ -1,5 +1,25 @@
 #include "Emulator.h"
 
+template uint32_t Emulator::update_eflags_and(uint32_t v1, uint32_t v2);
+template uint32_t Emulator::update_eflags_and(uint16_t v1, uint32_t v2);
+template uint32_t Emulator::update_eflags_and(uint8_t v1, uint32_t v2);
+template <class T> uint32_t Emulator::update_eflags_and(T v1, uint32_t v2){
+    T result;
+    uint8_t size;
+
+    v2 = (T)v2;
+    result = (uint64_t)v1 & v2;
+    size = sizeof(T)*8;
+
+    SetCarry(0);
+    SetParity(chk_parity(result & 0xff));
+    SetZero(!result);
+    SetSign(result >> (size -1) & 1);
+    SetOverflow(0);
+
+    return eflags.reg32;
+}
+
 template uint32_t Emulator::update_eflags_add(uint32_t v1, uint32_t v2);
 template uint32_t Emulator::update_eflags_add(uint16_t v1, uint32_t v2);
 template uint32_t Emulator::update_eflags_add(uint8_t v1, uint32_t v2);

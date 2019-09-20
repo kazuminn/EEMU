@@ -270,6 +270,7 @@ public:
 	}
 
 	template <class T> uint32_t update_eflags_add(T v1, uint32_t v2);
+    template <class T> uint32_t update_eflags_and(T v1, uint32_t v2);
     template <class T> uint32_t update_eflags_shl(T v, uint8_t c);
 	template <class T> uint32_t update_eflags_imul(T v, int32_t c);
 	template <class T> uint32_t update_eflags_shr(T v, uint8_t c);
