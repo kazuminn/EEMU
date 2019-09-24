@@ -77,7 +77,7 @@ int main(int argc, char **argv){
 	//set vmode scrnx scrny vram
 	emu->memory[0xff2] = 8;
 	emu->SetMemory16(0xff4, 320);
-    emu->memory[0xff6] = 200;
+    emu->SetMemory16(0xff6, 200);
 	emu->SetMemory32(0xff8, 0xa0000);
 //	emu->memory[0xff8] = 0xa0;
 

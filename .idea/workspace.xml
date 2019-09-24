@@ -13,9 +13,11 @@
   <component name="ChangeListManager">
     <list default="true" id="fcb44221-37ac-44fa-b2ca-4dfa20390124" name="Default Changelist" comment="kkj">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instruction32.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Instruction32.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GUI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/GUI.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/device/Device.a" beforeDir="false" afterPath="$PROJECT_DIR$/device/Device.a" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/x86" beforeDir="false" afterPath="$PROJECT_DIR$/x86" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/device/Display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/device/Display.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/x86" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -29,8 +31,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1275">
-              <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
+            <state relative-caret-position="227">
+              <caret line="80" column="23" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -49,11 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/GUI.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1185">
-              <caret line="79" selection-start-line="79" selection-end-line="79" />
+            <state relative-caret-position="210">
+              <caret line="34" column="29" selection-start-line="34" selection-start-column="29" selection-end-line="34" selection-end-column="29" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -61,11 +63,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/device/Display.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="123">
-              <caret line="61" selection-start-line="61" selection-end-line="61" />
+            <state relative-caret-position="108">
+              <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -147,15 +149,15 @@
         <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/Instruction16.cpp" />
         <option value="$PROJECT_DIR$/ModRM.h" />
-        <option value="$PROJECT_DIR$/GUI.cpp" />
         <option value="$PROJECT_DIR$/kazuminlib/BMP.cpp" />
-        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/Emulator.h" />
         <option value="$PROJECT_DIR$/eflags.cpp" />
         <option value="$PROJECT_DIR$/ModRM.cpp" />
         <option value="$PROJECT_DIR$/Emulator.cpp" />
         <option value="$PROJECT_DIR$/Instruction32.cpp" />
         <option value="$PROJECT_DIR$/device/Display.cpp" />
+        <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/GUI.cpp" />
       </list>
     </option>
   </component>
@@ -242,12 +244,12 @@
       <workItem from="1568886593757" duration="1147000" />
       <workItem from="1568966020507" duration="8635000" />
       <workItem from="1569300638417" duration="4287000" />
-      <workItem from="1569316198038" duration="495000" />
+      <workItem from="1569316198038" duration="1124000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="412365000" />
+    <option name="totallyTimeSpent" value="412994000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1213" height="775" extended-state="6" />
@@ -330,13 +332,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1275">
-          <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Emulator.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4080">
@@ -345,16 +340,6 @@
             <element signature="e#41#59#0" expanded="true" />
             <element signature="e#5814#5823#0" expanded="true" />
             <element signature="e#5884#5893#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GUI.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1185">
-          <caret line="79" selection-start-line="79" selection-end-line="79" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -413,8 +398,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/device/Display.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="123">
-          <caret line="61" selection-start-line="61" selection-end-line="61" />
+        <state relative-caret-position="108">
+          <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="80" column="23" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GUI.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="34" column="29" selection-start-line="34" selection-start-column="29" selection-end-line="34" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

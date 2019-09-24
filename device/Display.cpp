@@ -58,7 +58,7 @@ unsigned char* Display::Draw(){
 	
 	for(int x=0;x<scrnx;x++){
 		for(int y=0;y<scrny;y++){
-			int i=(y*scrnx + x);
+			int i=(y*scrnx + x)*3;
 			char n = vram[y*scrnx + x];	//当該座標の色番号
 			img[i]	= palette[n*3];	//色番号に対応したRGB
 			img[i+1]= palette[n*3+1];	//green

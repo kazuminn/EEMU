@@ -23,16 +23,16 @@ void test(int val){
 	//PPMのテスト
 	PPM *ppm;
 	ppm = new PPM();
-	ppm->ChangeSize(320, 200);
-	ppm->LoadRGB(g_img, 320, 200);
+	ppm->ChangeSize(640, 400);
+	ppm->LoadRGB(g_img, 640, 400);
 	ppm->Write("screenshot.ppm");
 	delete ppm;
 	
 	//Bitmapのテスト
 	BMP *bmp;
 	bmp = new BMP();
-	bmp->ChangeSize(320, 200);
-	bmp->LoadRGB(g_img, 320, 200);
+	bmp->ChangeSize(640, 400);
+	bmp->LoadRGB(g_img, 640, 400);
 	bmp->Write("screenshot.bmp");
 	delete bmp;
 	
