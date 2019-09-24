@@ -178,6 +178,9 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
+	if(emu->GetCode8(0) == 0x55 && emu->GetCode8(1) == 0x84){
+			fprintf(stderr, "%x : %x \n", emu->EIP, emu->EAX);
+	}
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -292,7 +295,7 @@ void sub_r32_rm32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();
-	uint32_t rm32 = modrm.GetRM8();
+	uint32_t rm32 = modrm.GetRM32();
 	modrm.SetR32(rm32 - r32);
 	emu->update_eflags_sub(r32, rm32);
 }
@@ -900,9 +903,6 @@ void cmp_rm8_r8(Emulator *emu){
 
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
-	if(emu->GetCode8(0) == 0x5d && emu->GetCode8(1) == 0xf0){
-		fprintf(stderr, "%x : %x \n", emu->EIP, emu->EBX);
-	}
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
@@ -966,7 +966,9 @@ void test_rm8_r8(Emulator *emu){
 void test_rm32_r32(Emulator *emu){
 	emu->EIP++;
 	ModRM modrm(emu);
-	emu->update_eflags_and(modrm.GetRM32(), modrm.GetR32());
+	uint32_t rm32 = modrm.GetRM32();
+	uint32_t r32 = modrm.GetR32();
+	emu->update_eflags_and(rm32, r32);
 }
 
 void cli(Emulator *emu){
