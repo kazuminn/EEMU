@@ -178,9 +178,6 @@ void inc_r32(Emulator *emu){
 
 void lea_r32_m32(Emulator *emu){
     emu->EIP++;
-	if(emu->GetCode8(0) == 0x55 && emu->GetCode8(1) == 0x84){
-			fprintf(stderr, "%x : %x \n", emu->EIP, emu->EAX);
-	}
 	ModRM modrm(emu);
     uint32_t m32 = modrm.get_m();
     modrm.SetR32(m32);
@@ -903,6 +900,9 @@ void cmp_rm8_r8(Emulator *emu){
 
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
+	if(emu->GetCode8(0) == 0xde && emu->GetCode8(1) == 0x75){
+		fprintf(stderr, "%x : %x : %x : %x\n", emu->EIP, emu->memory[ 0x4 + 0x14ff8], emu->ESI, emu->EBX);
+	}
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
