@@ -235,10 +235,9 @@ void near_jump(Emulator *emu){
 }
 
 void mov_moffs32_eax(Emulator *emu){
-	uint32_t eax = emu->EAX;
 	emu->EIP++;
-	uint32_t moffs = emu->GetSignCode32(0);
-	emu->SetMemory32(moffs, eax);
+    uint32_t moffs = emu->GetSignCode32(0);
+	emu->SetMemory32(moffs, emu->EAX);
 	emu->EIP += 4;
 }
 
@@ -900,9 +899,6 @@ void cmp_rm8_r8(Emulator *emu){
 
 void cmp_rm32_r32(Emulator *emu){
 	emu->EIP++;
-	if(emu->GetCode8(0) == 0xde && emu->GetCode8(1) == 0x75){
-		fprintf(stderr, "%x : %x : %x : %x\n", emu->EIP, emu->memory[ 0x4 + 0x14ff8], emu->ESI, emu->EBX);
-	}
 	ModRM *modrm = new ModRM(emu);
 	uint32_t rm32 = modrm->GetRM32();
 	uint32_t r32 = modrm->GetR32();
@@ -995,7 +991,10 @@ void movsx_r32_rm16(Emulator *emu){
 
 void mov_eax_moffs32(Emulator *emu){
 	emu->EIP++;
-	emu->EAX = emu->memory[emu->GetSignCode32(0)];
+	emu->EAX = emu->GetMemory32(emu->GetSignCode32(0));
+    if(emu->GetCode32(0) == 0x31399c){
+        fprintf(stderr, "%x : %x : %x\n", emu->EIP, emu->memory[0x31399d], emu->EAX);
+    }
 	emu->EIP += 4;
 }
 void imul_r32_rm32_imm32(Emulator *emu){
