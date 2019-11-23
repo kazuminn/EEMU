@@ -29,7 +29,6 @@ void lgdt_m32(Emulator *emu, ModRM *modrm) {
 	uint16_t limit = emu->GetMemory16(m48);
 	uint32_t base = emu->GetMemory32(m48 + 2);
 
-	emu->EIP = 0;
 	emu->set_gdtr(base, limit);
 }
 
