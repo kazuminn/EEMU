@@ -23,15 +23,12 @@ void ModRM::Parse(Emulator *emu){	//cout<<"parse"<<endl;
 
 	emu->EIP++;
 
-	if (emu->instr.Mod !=3 && emu->instr.RM == 4){
-		emu->instr._SIB = emu->GetCode8(0);
-	}
+    if (emu->instr.Mod !=3 && emu->instr.RM == 4){
+        emu->instr._SIB = emu->GetCode8(0);
+        emu->EIP++;
+    }
 
     if(emu->instr.prefix) {
-		if (emu->instr.Mod != 3 && emu->instr.RM == 4) {
-			emu->instr.SIB = emu->GetCode8(0);
-			emu->EIP++;
-		}
 
 		if ((emu->instr.Mod == 0 && emu->instr.RM == 5) || emu->instr.Mod == 2) {
 			emu->instr.disp32 = emu->GetSignCode32(0);
@@ -149,7 +146,7 @@ uint16_t ModRM::GetR16(Emulator *emu){
 }
 
 uint16_t ModRM::GetR16(){
-	if(emu != NULL) return GetR8(emu);
+	if(emu != NULL) return GetR16(emu);
 }
 
 void ModRM::SetR8(Emulator *emu, uint8_t val){
@@ -244,7 +241,7 @@ uint32_t ModRM::CalcMemAddr16(Emulator *emu) {
 	switch(emu->instr.RM){
 		case 4:
 			addr += calc_sib();
-			emu->EIP++;
+            break;
 		case 7:
 			addr += emu->reg[3].reg16;
 			break;
