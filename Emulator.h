@@ -24,30 +24,6 @@ struct SIB {
 	uint8_t scale :2;
 };
 
-struct TSSDesc {
-	uint16_t limit_l;
-	uint16_t base_l;
-	uint8_t base_m;
-	union {
-		struct {
-			uint8_t : 1;
-			uint8_t B : 1;
-		};
-
-		struct {
-			uint8_t type : 3;	// 1 or 3
-			uint8_t D : 1;		// 0:16bit, 1:32bit
-			uint8_t S : 1;		// 0
-			uint8_t DPL : 2;
-			uint8_t P : 1;
-		};
-	};
-	uint8_t limit_h : 4;
-	uint8_t AVL : 1;
-	uint8_t : 2;
-	uint8_t G : 1;
-	uint8_t base_h;
-};
 
 struct InstrData {
     uint16_t opcode;
@@ -70,6 +46,25 @@ struct InstrData {
 	    uint8_t _SIB;
 		struct SIB sib;
 	};
+};
+
+struct TSS {
+    uint32_t eip;
+    uint32_t eflags;
+    uint32_t eax;
+    uint32_t ecx;
+    uint32_t edx;
+    uint32_t ebx;
+    uint32_t esp;
+    uint32_t ebp;
+    uint32_t esi;
+    uint32_t edi;
+    uint16_t es;
+    uint16_t cs;
+    uint16_t ss;
+    uint16_t ds;
+    uint16_t fs;
+    uint16_t gs;
 };
 
 #define REGISTERS_COUNT32 8
