@@ -719,6 +719,50 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_sub(val, 1);
 }
 
+void task_switch(Emulator *emu) {
+
+}
+
+void farjump(Emulator *emu, ModRM *modrm){
+    uint32_t m48 = modrm->get_m();
+    uint32_t eip = emu->GetMemory32(m48);
+    uint16_t cs = emu->GetMemory16(m48 + 4);
+
+    cs = cs & 0xfffc;
+    if (cs == 0) {
+       emu->EIP = 0;
+    }
+
+    cs = (cs >> 2) & 1;
+    if ( cs == 0){
+
+    }else if (cs == 1) {
+        emu->EIP = 0;
+        //LDT
+    }
+
+    uint32_t smtype = emu->memory[emu->dtregs[GDTR].base_addr + cs + 5] and 0x9f;
+    switch(smtype){
+        case 0x89:
+        case 0x8b:
+            task_switch(emu);
+            break;
+        case 0x98:
+        case 0x99:
+        case 0x9a:
+        case 0x9b:
+        case 0x9c:
+        case 0x9d:
+        case 0x9e:
+        case 0x9f:
+            emu->EIP = eip;
+            emu->sreg[1].sreg = cs;
+            break;
+    }
+
+}
+
+
 void code_ff(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
@@ -726,6 +770,7 @@ void code_ff(Emulator *emu){
 	switch(emu->instr.opecode){
 	case 0: inc_rm32(emu, modrm); break;
     case 1: dec_rm32(emu, modrm); break;
+    case 5: farjump(emu, modrm); break;
 	case 6: push_rm32(emu, modrm);break;
 	default:
 		cout<<"not implemented: 0xFF /"<<(int)emu->instr.opecode<<endl;
@@ -992,9 +1037,6 @@ void movsx_r32_rm16(Emulator *emu){
 void mov_eax_moffs32(Emulator *emu){
 	emu->EIP++;
 	emu->EAX = emu->GetMemory32(emu->GetSignCode32(0));
-    if(emu->GetCode32(0) == 0x31399c){
-        fprintf(stderr, "%x : %x : %x\n", emu->EIP, emu->memory[0x31399d], emu->EAX);
-    }
 	emu->EIP += 4;
 }
 void imul_r32_rm32_imm32(Emulator *emu){
