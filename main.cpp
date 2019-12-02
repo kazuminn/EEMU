@@ -39,6 +39,7 @@ void printVram(unsigned char *vram){
 	printf("vran[3] %x \n", vram[11]);
 	printf("vran[3] %x \n", vram[12]);
 }
+/*
 int main(int argc, char **argv){
 	
 	//TODO parse args
@@ -65,10 +66,6 @@ int main(int argc, char **argv){
 
 	std::memcpy(&emu->memory[dest], &emu->memory[source], interval);
 
-/*	printf("source : %p\n", (void *)(intptr_t )source);
-	printf("dest : %p\n", (void *)(intptr_t )dest);
-	printf("interval : %x\n", interval);
-*/
 
 	emu->EIP = 0x1b;
 	emu->ESP = dest;
@@ -147,5 +144,10 @@ int main(int argc, char **argv){
 	delete disp;
 	return 0;
 }
+*/
+#include <CppUTest/CommandLineTestRunner.h>
 
-
+int main(int argc, char *argv[])
+{
+    return CommandLineTestRunner::RunAllTests(argc, argv);
+}

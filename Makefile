@@ -2,14 +2,14 @@ TAR	= x86
 BIN	= test03.bin
 BINSRC = test03.c
 
-OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o
+OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o test.o
 OBJS	+= GUI.o eflags.o
 OBJS	+= kazuminlib/kazuminlib.a
 OBJS	+= device/Device.a
 #OBJS	+= GL/lib/libglut.a
 
 CFLAGS	= -std=c++11 -g
-LDFLAGS	= -lglut -lGLU -lGL
+LDFLAGS	= -lglut -lGLU -lGL -lCppUTest
 LDFLAGS += -pthread
 RUNFLAGS= $(BIN)
 

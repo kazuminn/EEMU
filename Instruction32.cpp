@@ -721,6 +721,25 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 
 void task_switch(Emulator *emu) {
 
+    uint16_t prev = emu->dtregs[TR].selector;
+
+    TSS oldTSS;
+    oldTSS.eflags = emu->get_eflags();
+    oldTSS.eip = emu->EIP;
+    oldTSS.eax = emu->EAX;
+    oldTSS.ecx = emu->ECX;
+    oldTSS.edx = emu->EDX;
+    oldTSS.ebx = emu->EBX;
+    oldTSS.esp = emu->ESP;
+    oldTSS.ebp = emu->EBP;
+    oldTSS.esi = emu->ESI;
+    oldTSS.edi = emu->EDI;
+    oldTSS.es = emu->sreg[0].sreg;
+    oldTSS.cs = emu->sreg[1].sreg;
+    oldTSS.ss = emu->sreg[2].sreg;
+    oldTSS.ds = emu->sreg[3].sreg;
+    oldTSS.fs = emu->sreg[4].sreg;
+    oldTSS.gs = emu->sreg[5].sreg;
 }
 
 void farjump(Emulator *emu, ModRM *modrm){
