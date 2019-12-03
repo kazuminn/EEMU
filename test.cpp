@@ -9,7 +9,7 @@ TEST(emu, farjump){
     CHECK_EQUAL(1,1);
 };
 
-TEST(test, test2){
+TEST(emu, test2){
 CHECK_EQUAL(1,1);
 };
 

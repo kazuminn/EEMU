@@ -719,11 +719,11 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 	emu->update_eflags_sub(val, 1);
 }
 
-void task_switch(Emulator *emu) {
+void task_switch(Emulator *emu, uint16_t cs) {
 
     uint16_t prev = emu->dtregs[TR].selector;
 
-    TSS oldTSS;
+    TSS oldTSS, newTSS;
     oldTSS.eflags = emu->get_eflags();
     oldTSS.eip = emu->EIP;
     oldTSS.eax = emu->EAX;
@@ -740,6 +740,28 @@ void task_switch(Emulator *emu) {
     oldTSS.ds = emu->sreg[3].sreg;
     oldTSS.fs = emu->sreg[4].sreg;
     oldTSS.gs = emu->sreg[5].sreg;
+
+    emu->set_dtreg(TR, cs, 0, 0);
+
+    emu->read_data(&newTSS, cs, sizeof(TSS));
+
+    emu->set_eflags(newTSS.eflags);
+    emu->EIP = newTSS.eip;
+    emu->EAX = newTSS.eax;
+    emu->ECX = newTSS.ecx;
+    emu->EDX = newTSS.edx;
+    emu->EBX = newTSS.ebx;
+    emu->ESP = newTSS.esp;
+    emu->EBP = newTSS.ebp;
+    emu->ESI = newTSS.esi;
+    emu->EDI = newTSS.edi;
+    emu->sreg[0].sreg = newTSS.es;
+    emu->sreg[1].sreg = newTSS.cs;
+    emu->sreg[2].sreg = newTSS.ss;
+    emu->sreg[3].sreg = newTSS.ds;
+    emu->sreg[4].sreg = newTSS.fs;
+    emu->sreg[5].sreg = newTSS.gs;
+    emu->set_dtreg(LDTR, newTSS.ldtr, 0, 0);
 }
 
 void farjump(Emulator *emu, ModRM *modrm){
@@ -764,7 +786,7 @@ void farjump(Emulator *emu, ModRM *modrm){
     switch(smtype){
         case 0x89:
         case 0x8b:
-            task_switch(emu);
+            task_switch(emu, cs);
             break;
         case 0x98:
         case 0x99:

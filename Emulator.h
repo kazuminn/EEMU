@@ -49,6 +49,18 @@ struct InstrData {
 };
 
 struct TSS {
+    uint16_t prev_sel;
+    uint16_t : 16;
+    uint32_t esp0;
+    uint16_t ss0;
+    uint16_t : 16;
+    uint32_t esp1;
+    uint16_t ss1;
+    uint16_t : 16;
+    uint32_t esp2;
+    uint16_t ss2;
+    uint16_t : 16;
+    uint32_t cr3;
     uint32_t eip;
     uint32_t eflags;
     uint32_t eax;
@@ -60,11 +72,22 @@ struct TSS {
     uint32_t esi;
     uint32_t edi;
     uint16_t es;
+    uint16_t : 16;
     uint16_t cs;
+    uint16_t : 16;
     uint16_t ss;
+    uint16_t : 16;
     uint16_t ds;
+    uint16_t : 16;
     uint16_t fs;
+    uint16_t : 16;
     uint16_t gs;
+    uint16_t : 16;
+    uint16_t ldtr;
+    uint16_t : 16;
+    uint16_t T : 1;
+    uint16_t : 15;
+    uint16_t io_base;
 };
 
 #define REGISTERS_COUNT32 8
