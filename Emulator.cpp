@@ -20,7 +20,7 @@ const char* registers_name32[] = {"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI
 
 Emulator::Emulator(){
 	BitMode = DEFAULT_BIT_MODE;
-	memory_size = 32 * 1024 * 1024;
+	memory_size = 32 ;
 	memory = new (nothrow) uint8_t[memory_size];
 	if(memory == NULL){
 		cout<<"error new."<<endl;
