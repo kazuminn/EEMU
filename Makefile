@@ -2,7 +2,7 @@ TAR	= x86
 BIN	= test03.bin
 BINSRC = test03.c
 
-OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o test.o
+OBJS	= main.o Emulator.o Instruction16.o Instruction32.o ModRM.o
 OBJS	+= GUI.o eflags.o
 OBJS	+= kazuminlib/kazuminlib.a
 OBJS	+= device/Device.a

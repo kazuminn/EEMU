@@ -39,7 +39,6 @@ void printVram(unsigned char *vram){
 	printf("vran[3] %x \n", vram[11]);
 	printf("vran[3] %x \n", vram[12]);
 }
-/*
 int main(int argc, char **argv){
 	
 	//TODO parse args
@@ -144,11 +143,12 @@ int main(int argc, char **argv){
 	delete disp;
 	return 0;
 }
-*/
 #include <CppUTest/CommandLineTestRunner.h>
 
+/*
 int main(int argc, char *argv[])
 {
     MemoryLeakWarningPlugin::turnOffNewDeleteOverloads();
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }
+ */
