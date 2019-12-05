@@ -1280,27 +1280,3 @@ void InitInstructions32(void){
 }
 
 
-//test
-#include <CppUTest/CommandLineTestRunner.h>
-#include <CppUTest/MemoryLeakWarningPlugin.h>
-
-TEST_GROUP(emu){
-};
-
-TEST(emu, farjump){
-Emulator *emu = new Emulator();
-emu->EIP = 0;
-emu->memory[0] = 0xff;
-emu->memory[1] = 0x6c;
-emu->memory[2] = 0x24;
-emu->memory[3] = 0x04;
-emu->sgregs[1].base = 0;
-ModRM *modrm = new ModRM(emu);
-farjump(emu, modrm);
-CHECK_EQUAL(1,1);
-};
-
-TEST(emu, test2){
-CHECK_EQUAL(1,1);
-};
-

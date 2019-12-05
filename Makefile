@@ -9,7 +9,7 @@ OBJS	+= device/Device.a
 #OBJS	+= GL/lib/libglut.a
 
 CFLAGS	= -std=c++11 -g
-LDFLAGS	= -lglut -lGLU -lGL -lCppUTest
+LDFLAGS	= -lglut -lGLU -lGL
 LDFLAGS += -pthread
 RUNFLAGS= $(BIN)
 
