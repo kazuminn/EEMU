@@ -41,6 +41,22 @@ Emulator::Emulator(){
 //	test(this);
 }
 
+void Emulator::SetTR(uint16_t sel){
+    uint32_t gdt_base, base;
+    uint16_t gdt_limit, limit;
+    TSSDesc tssdesc;
+
+    gdt_base = dtregs[GDTR].base_addr;
+    gdt_limit = dtregs[GDTR].table_limit;
+
+    read_data(&tssdesc, gdt_base + sel, sizeof(TSSDesc));
+
+    base = (tssdesc.base_h << 24) + (tssdesc.base_m << 16) + tssdesc.base_l;
+    limit = (tssdesc.limit_h << 16) + tssdesc.limit_l;
+
+    set_dtreg(TR, sel, base, limit);
+}
+
 Emulator::~Emulator(){
 	delete[] memory;
 }
@@ -61,6 +77,10 @@ int Emulator::parse_prefix(Emulator *emu){
 
 size_t Emulator::read_data(void *dst, uint32_t src_addr, size_t size){
     memcpy(dst, &memory[src_addr], size);
+    return size;
+}
+size_t Emulator::write_data( uint32_t dst_addr, void *src,size_t size){
+    memcpy(&memory[dst_addr], src,  size);
     return size;
 }
 

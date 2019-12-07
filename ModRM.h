@@ -36,7 +36,6 @@ public:
     uint16_t SetR16(Emulator *emu, uint16_t val);
     uint16_t SetR16(uint16_t val);
 
-    void SetTR(uint16_t sel);
 
 	uint32_t calc_sib(void);
 

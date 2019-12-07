@@ -21,7 +21,7 @@ void nop(Emulator *emu){
 
 void ltr_rm16(Emulator *emu, ModRM *modrm){
 	uint16_t rm16 = modrm->GetRM16();
-	modrm->SetTR(rm16);
+	emu->SetTR(rm16);
 }
 
 void lgdt_m32(Emulator *emu, ModRM *modrm) {
@@ -721,9 +721,10 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 
 void task_switch(Emulator *emu, uint16_t cs) {
 
-    uint16_t prev = emu->dtregs[TR].selector;
 
     TSS oldTSS, newTSS;
+    uint32_t base = emu->dtregs[TR].base_addr;
+    emu->read_data(&oldTSS, base, sizeof(TSS));
     oldTSS.eflags = emu->get_eflags();
     oldTSS.eip = emu->EIP;
     oldTSS.eax = emu->EAX;
@@ -740,10 +741,12 @@ void task_switch(Emulator *emu, uint16_t cs) {
     oldTSS.ds = emu->sreg[3].sreg;
     oldTSS.fs = emu->sreg[4].sreg;
     oldTSS.gs = emu->sreg[5].sreg;
+    emu->write_data(base, &oldTSS, sizeof(TSS));
 
-    emu->set_dtreg(TR, cs, 0, 0);
+    emu->SetTR(cs);
+    base = emu->dtregs[TR].base_addr;
+    emu->read_data(&newTSS, base, sizeof(TSS));
 
-    emu->read_data(&newTSS, cs, sizeof(TSS));
 
     emu->set_eflags(newTSS.eflags);
     emu->EIP = newTSS.eip;

@@ -243,6 +243,7 @@ public:				// member funcs
 	void set_interrupt(bool);
 
 	size_t read_data(void *dst, uint32_t src_addr, size_t size);
+    size_t write_data(uint32_t dst_addr, void *src, size_t size);
 
 	void LoadBinary(const char* fname, uint32_t addr, int size);	//バイナリファイルを読み込んでメモリの指定番地に指定サイズだけ転送する
 
@@ -331,6 +332,7 @@ public:
 	uint16_t get_SS() {return SS;}
 	uint16_t get_DS() {return DS;}
 	uint16_t get_FS() {return FS;}
+    void SetTR(uint16_t sel);
 
 	void set_AL(uint8_t v) { reg[0].low8 = v;}
 	void set_CL(uint8_t v) { reg[1].low8 = v;}
