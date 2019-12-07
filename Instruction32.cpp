@@ -762,7 +762,7 @@ void task_switch(Emulator *emu, uint16_t cs) {
     emu->sreg[3].sreg = newTSS.ds;
     emu->sreg[4].sreg = newTSS.fs;
     emu->sreg[5].sreg = newTSS.gs;
-    emu->set_dtreg(LDTR, newTSS.ldtr, 0, 0);
+    emu->set_ldtr(newTSS.ldtr);
 }
 
 void farjump(Emulator *emu, ModRM *modrm){

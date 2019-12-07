@@ -321,7 +321,7 @@ public:
 
 	void set_gdtr(uint32_t base, uint16_t limit);
     void set_idtr(uint32_t base, uint16_t limit);
-
+    void set_ldtr(uint16_t sel);
 	inline void UpdateXor(){
 		eflags.CF = eflags.OF = 0;
 	}

@@ -91,6 +91,21 @@ void Emulator::set_dtreg(enum dtreg_t n, uint16_t sel, uint32_t base, uint16_t l
 
 }
 
+void Emulator::set_ldtr(uint16_t sel){
+    uint32_t gdt_base, base;
+    uint16_t gdt_limit, limit;
+    LDTDesc ldt;
+
+    gdt_base = dtregs[GDTR].base_addr;
+    gdt_limit = dtregs[GDTR].table_limit;
+
+    read_data(&ldt, gdt_base + sel, sizeof(LDTDesc));
+
+    base = (ldt.base_h << 24) + (ldt.base_m << 16) + ldt.base_l;
+    limit = (ldt.limit_h << 16) + ldt.limit_l;
+    set_dtreg(LDTR, sel, base, limit);
+}
+
 void Emulator::set_gdtr(uint32_t base, uint16_t limit){
 	set_dtreg(GDTR, 0, base, limit);
 }
