@@ -48,6 +48,22 @@ struct InstrData {
 	};
 };
 
+struct LDTDesc {
+    uint16_t limit_l;
+    uint16_t base_l;
+    uint8_t base_m;
+    uint8_t type : 3;	// 2
+    uint8_t D : 1;
+    uint8_t S : 1;		// 0
+    uint8_t DPL : 2;
+    uint8_t P : 1;
+    uint8_t limit_h : 4;
+    uint8_t AVL : 1;
+    uint8_t : 2;
+    uint8_t G : 1;
+    uint8_t base_h;
+};
+
 struct TSSDesc {
     uint16_t limit_l;
     uint16_t base_l;
