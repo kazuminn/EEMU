@@ -95,6 +95,10 @@ void Emulator::set_gdtr(uint32_t base, uint16_t limit){
 	set_dtreg(GDTR, 0, base, limit);
 }
 
+void Emulator::set_idtr(uint32_t base, uint16_t limit){
+    set_dtreg(IDTR, 0, base, limit);
+}
+
 //各レジスタの初期化
 void Emulator::InitRegisters(){
 	dtregs[GDTR].base_addr	= 0x0000;

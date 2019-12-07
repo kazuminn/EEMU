@@ -29,7 +29,7 @@ void lgdt_m32(Emulator *emu, ModRM *modrm) {
 	uint16_t limit = emu->GetMemory16(m48);
 	uint32_t base = emu->GetMemory32(m48 + 2);
 
-	emu->set_gdtr(base, limit);
+	emu->set_idtr(base, limit);
 }
 
 void lidt_m32(Emulator *emu, ModRM *modrm) {
@@ -720,8 +720,6 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 }
 
 void task_switch(Emulator *emu, uint16_t cs) {
-
-
     TSS oldTSS, newTSS;
     uint32_t base = emu->dtregs[TR].base_addr;
     emu->read_data(&oldTSS, base, sizeof(TSS));
