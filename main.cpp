@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "Emulator.h"
+#include "interrupt.h"
 #include "device/PIC.h"
 #include "GUI.h"
 #include "device/Device.h"
@@ -23,6 +24,7 @@ using namespace std;
 
 Emulator	*emu;
 PIC	*pic;
+Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
@@ -47,6 +49,7 @@ int main(int argc, char **argv){
 	
 	emu = new Emulator();
     pic = new PIC();
+    inter = new Interrupt();
 	cout<<"emulator created."<<endl;
 	
 	disp = new Display(emu->memory + VRAM_ADDR);
@@ -92,6 +95,8 @@ int main(int argc, char **argv){
 	    pic->chk_irq(emu);
 
 	    //exec INT xx instruction
+	    inter->exec_interrupt(pic);
+
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
