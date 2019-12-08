@@ -88,9 +88,10 @@ int main(int argc, char **argv){
 	for(size_t i = 0; true; i++){
 	    emu->AL = emu->EAX;
 
-	    //irq polling
-	    pic->chk_irq();
+	    //like irq hardware polling
+	    pic->chk_irq(emu);
 
+	    //exec INT xx instruction
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];

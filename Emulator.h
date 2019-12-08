@@ -232,8 +232,8 @@ class Emulator{
 private:
 	int BitMode;
 	int memory_size;
-	Register eflags;
 public:
+    Register eflags;
     Register sreg[6];
 	Register CR[5];		// CR0 ~ CR4 制御レジスタ
 
