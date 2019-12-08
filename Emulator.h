@@ -226,6 +226,18 @@ public:
 	};
 };
 
+struct IntGateDesc {
+    uint16_t offset_l;
+    uint16_t seg_sel;
+    uint8_t : 8;
+    uint8_t type : 3;	// 6
+    uint8_t D : 1;
+    uint8_t S : 1;		// 0
+    uint8_t DPL : 2;
+    uint8_t P : 1;
+    uint16_t offset_h;
+};
+
 
 //エミュレータクラス
 class Emulator{

@@ -6,7 +6,7 @@
 class Interrupt {
 private:
 public:
-    void exec_interrupt(PIC *pic);
+    void exec_interrupt(PIC *pic, Emulator *emu);
 };
 
 #endif

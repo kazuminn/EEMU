@@ -95,7 +95,7 @@ int main(int argc, char **argv){
 	    pic->chk_irq(emu);
 
 	    //exec INT xx instruction
-	    inter->exec_interrupt(pic);
+	    inter->exec_interrupt(pic, emu);
 
 		emu->instr.prefix = emu->parse_prefix(emu);
 
