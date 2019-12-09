@@ -1,6 +1,10 @@
 #include "interrupt.h"
 
 void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
+    if (emu->eflags.IF == false){
+        return;
+    }
+
     IntGateDesc idt;
     uint32_t idt_base;
     uint16_t idt_limit, idt_offset;
