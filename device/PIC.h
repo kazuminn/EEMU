@@ -12,7 +12,7 @@ public:
     std::queue<int> interrupt_queue;
     PIC();
     int INT[8];
-    bool irq[16];
+    bool IRR[16];
 	uint8_t out8(uint16_t addr, uint8_t data);
 	void in8(int port, uint8_t data);
 };
