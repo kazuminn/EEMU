@@ -1,6 +1,9 @@
 #include "interrupt.h"
 
 void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
+    if (pic->interrupt_queue.empty())
+        return;
+
     if (emu->eflags.IF == false){
         return;
     }
