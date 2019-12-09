@@ -7,7 +7,14 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
     idt_offset = pic->INT[pic->interrupt_queue.front()];
     pic->interrupt_queue.pop();
 
-    emu->read_data(&idt, idt_base + idt_offset, sizeof(IntGateDesc));
+    emu->read_data(&idt, idt_base + idt_offset * 8, sizeof(IntGateDesc));
 
+    save_regs(emu);
     emu->EIP = (idt.offset_h << 16) + idt.offset_l;
+}
+
+void Interrupt::save_regs(Emulator *emu){
+    emu->Push32(emu->get_eflags());
+    emu->Push32(emu->sreg[1].sreg);
+    emu->Push32(emu->EIP);
 }
