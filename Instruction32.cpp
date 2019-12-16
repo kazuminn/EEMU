@@ -770,34 +770,23 @@ void farjump(Emulator *emu, ModRM *modrm){
     uint32_t eip = emu->GetMemory32(m48);
     uint16_t cs = emu->GetMemory16(m48 + 4);
 
-    fprintf(stderr, "cs: %x \n", cs);
     cs = cs & 0xfffc;
     if (cs == 0) {
        emu->EIP = 0;
     }
-    fprintf(stderr, "cs: %x \n", cs);
 
     uint16_t bit = (cs >> 2) & 1;
-    fprintf(stderr, "bit: %x \n", bit);
     if ( bit == 0){
 
     }else if (bit == 1) {
         emu->EIP = 0;
         //LDT
     }
-    fprintf(stderr, "cs: %x \n", cs);
 
     uint32_t smtype = emu->memory[emu->dtregs[GDTR].base_addr + cs + 5] & 0x9f;
-    fprintf(stderr, "eip: %x \n", eip);
-    fprintf(stderr, "smtype: %x \n", smtype);
-    fprintf(stderr, "hoge: %x \n", emu->memory[emu->dtregs[GDTR].base_addr + cs + 5]);
-    fprintf(stderr, "base_addr: %x \n", emu->dtregs[GDTR].base_addr);
-    fprintf(stderr, "smtype: %x \n", smtype);
-    fprintf(stderr, "huga: %x \n", emu->memory[0x270000 + cs + 5]);
     switch(smtype) {
         case 0x89:
         case 0x8b:
-            fprintf(stderr, "1\n");
             task_switch(emu, cs);
             break;
         case 0x98:
@@ -809,11 +798,9 @@ void farjump(Emulator *emu, ModRM *modrm){
         case 0x9e:
         case 0x9f:
             emu->EIP = eip;
-            fprintf(stderr, "2\n");
             emu->sreg[1].sreg = cs;
             break;
     }
-    fprintf(stderr, "3\n");
 
 }
 
