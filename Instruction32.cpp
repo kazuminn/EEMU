@@ -787,7 +787,7 @@ void farjump(Emulator *emu, ModRM *modrm){
     }
     fprintf(stderr, "cs: %x \n", cs);
 
-    uint32_t smtype = emu->memory[emu->dtregs[GDTR].base_addr + cs + 5] and 0x9f;
+    uint32_t smtype = emu->memory[emu->dtregs[GDTR].base_addr + cs + 5] & 0x9f;
     fprintf(stderr, "eip: %x \n", eip);
     fprintf(stderr, "smtype: %x \n", smtype);
     fprintf(stderr, "hoge: %x \n", emu->memory[emu->dtregs[GDTR].base_addr + cs + 5]);
