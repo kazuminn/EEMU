@@ -249,7 +249,7 @@ uint32_t ModRM::CalcMemAddr16(Emulator *emu) {
 			addr += emu->reg[6].reg16;
 	}
 
-	return addr;
+    return addr;
 }
 
 uint32_t ModRM::calc_sib(void){
@@ -277,12 +277,14 @@ uint32_t ModRM::CalcMemAddr(){
 	if(emu == NULL)
 		return 0;
 
+	/*
 	if (emu->instr.prefix) {
 	    uint32_t h = CalcMemAddr32(emu);
-		return CalcMemAddr32(emu);
 	} else {
 		return CalcMemAddr16(emu);
 	}
+	*/
+    return CalcMemAddr32(emu);
 }
 
 uint32_t ModRM::get_m(void){

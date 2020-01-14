@@ -722,7 +722,8 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 void task_switch(Emulator *emu, uint16_t cs) {
     TSS oldTSS, newTSS;
     uint32_t base = emu->dtregs[TR].base_addr;
-    emu->read_data(&oldTSS, base, sizeof(TSS));
+    fprintf(stderr, "%x \n", base);
+    emu->read_data(&oldTSS, base, sizeof(TSS));//
     oldTSS.eflags = emu->get_eflags();
     oldTSS.eip = emu->EIP;
     oldTSS.eax = emu->EAX;
@@ -743,7 +744,7 @@ void task_switch(Emulator *emu, uint16_t cs) {
 
     emu->SetTR(cs);
     base = emu->dtregs[TR].base_addr;
-    emu->read_data(&newTSS, base, sizeof(TSS));
+    emu->read_data(&newTSS, base, sizeof(TSS));//
 
 
     emu->set_eflags(newTSS.eflags);

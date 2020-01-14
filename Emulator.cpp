@@ -50,9 +50,16 @@ void Emulator::SetTR(uint16_t sel){
     gdt_limit = dtregs[GDTR].table_limit;
 
     read_data(&tssdesc, gdt_base + sel, sizeof(TSSDesc));
+    fprintf(stderr , "gdt_base %x \n", gdt_base);
+    fprintf(stderr , "sel %x \n", sel);
+    for (int i = 0; i < 8; i++){
+        fprintf(stderr, "i %x \n" , memory[gdt_base + sel + i]);
+    }
 
     base = (tssdesc.base_h << 24) + (tssdesc.base_m << 16) + tssdesc.base_l;
+    fprintf(stderr , "base %x \n", base);
     limit = (tssdesc.limit_h << 16) + tssdesc.limit_l;
+    fprintf(stderr , "limit %x \n", limit);
 
     set_dtreg(TR, sel, base, limit);
 }

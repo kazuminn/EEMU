@@ -89,7 +89,15 @@ int main(int argc, char **argv){
 //	emu->DumpRegisters(32);
 	//emulation
 	for(size_t i = 0; true; i++){
+        emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
+        emu->AH = emu->EAX;
+        emu->DX = emu->EDX;
+        emu->DL = emu->EDX;
+        emu->DH = emu->EDX;
+        emu->CX = emu->ECX;
+        emu->CL = emu->ECX;
+        emu->CH = emu->ECX;
 
 	    //like irq hardware polling
 	    pic->chk_irq(emu);
