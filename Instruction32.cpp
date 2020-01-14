@@ -746,6 +746,7 @@ void task_switch(Emulator *emu, uint16_t cs) {
     base = emu->dtregs[TR].base_addr;
     emu->read_data(&newTSS, base, sizeof(TSS));//
 
+    fprintf(stderr, "hoge1 \n");
 
     emu->set_eflags(newTSS.eflags);
     emu->EIP = newTSS.eip;
@@ -754,6 +755,9 @@ void task_switch(Emulator *emu, uint16_t cs) {
     emu->EDX = newTSS.edx;
     emu->EBX = newTSS.ebx;
     emu->ESP = newTSS.esp;
+    fprintf(stderr, "hoge \n");
+    fprintf(stderr, "%x \n", newTSS.esp);
+    fprintf(stderr, "%x \n", emu->ESP);
     emu->EBP = newTSS.ebp;
     emu->ESI = newTSS.esi;
     emu->EDI = newTSS.edi;
@@ -764,6 +768,7 @@ void task_switch(Emulator *emu, uint16_t cs) {
     emu->sreg[4].sreg = newTSS.fs;
     emu->sreg[5].sreg = newTSS.gs;
     emu->set_ldtr(newTSS.ldtr);
+    fprintf(stderr, "hoge2 \n");
 }
 
 void farjump(Emulator *emu, ModRM *modrm){
@@ -1101,6 +1106,12 @@ void imul_r32_rm32(Emulator *emu){
    	emu->update_eflags_imul((int32_t)r32_s, (int32_t)rm32_s);
 }
 
+void movzs_r32_rm16(Emulator *emu){
+    emu->EIP++;
+    ModRM modrm(emu);
+    uint16_t rm16 = modrm.GetRM16();
+    modrm.SetR32(rm16);
+}
 } // namespace instruction32
 
 void cdq(Emulator *emu){
@@ -1274,6 +1285,7 @@ void InitInstructions32(void){
 	func[0x0f8c]	= jl_rel32;
 	func[0x0f95]	= setnz_rm8;
 	func[0x0fb6]	= movzs_r32_rm8;
+    func[0x0fb7]	= movzs_r32_rm16;
 	func[0x0fbf]	= movsx_r32_rm16;
 
 	func[0x0fAF]	= imul_r32_rm32;
