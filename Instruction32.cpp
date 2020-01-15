@@ -133,7 +133,8 @@ void mov_r8_imm8(Emulator *emu){
 
 void mov_r32_imm32(Emulator *emu){
 	uint8_t reg	= emu->GetCode8(0) - 0xB8;
-	uint32_t val = emu->GetCode8(1);
+	uint32_t val = emu->GetCode32(1);
+	printf("reg %x \n", val);
 	emu->reg[reg].reg32 = val;
 	emu->EIP += 5;
 }
@@ -969,8 +970,10 @@ void jl_rel32(Emulator *emu){
 }
 
 void setnz_rm8(Emulator *emu){
+    emu->EIP++;
+    ModRM *modrm = new ModRM(emu);
 	emu->reg[emu->instr.RM].reg32 = !emu->IsZero();
-	emu->EIP += 2;
+    emu->EIP += 2;
 }
 
 void sub_rm8_r8(Emulator *emu){
