@@ -88,7 +88,6 @@ int main(int argc, char **argv){
 //	emu->ESP = 0xffff;
 //	emu->DumpRegisters(32);
 	//emulation
-	emu->setne = false;
 	for(size_t i = 0; true; i++){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
@@ -129,7 +128,7 @@ int main(int argc, char **argv){
 		}else {
 			func = instructions16[emu->instr.opcode];
 		}
-        printf("%x \n", emu->ESI);
+        printf("%x \n", emu->EAX);
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;

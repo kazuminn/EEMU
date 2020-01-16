@@ -361,7 +361,7 @@ void or_rm32_imm8(Emulator *emu, ModRM *modrm) {
 	if(imm8 >= 0x80){
 		imm8 -= 0x100;
 	}
-	emu->EIP += 4;
+	emu->EIP += 1;
 	modrm->SetRM32(imm8 | rm32);
 	emu->UpdateOr();
 }
@@ -687,6 +687,9 @@ void code_0f01(Emulator *emu){
 }
 
 void push_r32(Emulator *emu){
+    for(size_t i = 0; i< 8; i++){
+        printf("hoge %x %x %x %x\n", emu->memory[emu->ESP + i * 4] ,emu->memory[emu->ESP + i * 4+ 1], emu->memory[emu->ESP + i * 4+ 2], emu->memory[emu->ESP + i* 4 + 3]);
+    }
 	uint8_t reg = emu->GetCode8(0) & ((1<<3)-1);
 	emu->Push32(emu->GetRegister32(reg));
 	emu->EIP++;
@@ -694,7 +697,9 @@ void push_r32(Emulator *emu){
 
 void pop_r32(Emulator *emu){
 	uint8_t reg = emu->GetCode8(0) & ((1<<3)-1);
-	emu->SetRegister32(reg, emu->Pop32());
+	uint32_t val = emu->Pop32();
+	printf("%x \n", val);
+	emu->SetRegister32(reg, val);
 	emu->EIP++;
 }
 
@@ -837,12 +842,14 @@ void movsx_r32_rm8(Emulator *emu){
 
 void call_rel32(Emulator *emu){
 	int32_t diff = emu->GetSignCode32(1);
+	printf("%x \n", emu->EIP);
 	emu->Push32(emu->EIP + 5);	//call命令は全体で5バイト
 	emu->EIP += (diff + 5);
 }
 
 void ret(Emulator *emu){//	cout<<"ret"<<endl;
 	emu->EIP = emu->Pop32();
+	printf("%x \n", emu->EIP);
 }
 
 void leave(Emulator *emu){
