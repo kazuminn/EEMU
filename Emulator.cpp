@@ -204,15 +204,16 @@ uint16_t Emulator::in_io8(uint16_t) {
 
 uint16_t Emulator::get_portio_base(uint16_t addr){
     for(int i=0; i<5; i++){
-        uint16_t base = (addr&(~1)) - (2*1);
+        uint16_t base = (addr&(~1)) - (2*i);
         if(port_io_map.count(base))
             return addr < base+port_io_map[base] ? base : 0;
     }
     return 0;
 }
 void Emulator::io_out8(uint16_t addr, uint8_t value) {
-    //uint16_t base = get_portio_base(addr);
-    port_io[0x20]->out8(addr, value);
+    uint16_t base = get_portio_base(addr);
+    if(base)
+        port_io[base]->out8(addr, value);
 }
 
 void Emulator::set_portio(uint16_t addr,size_t len,  PortIO *dev){

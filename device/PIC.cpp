@@ -12,7 +12,6 @@ PIC::PIC() {
 void PIC::out8(uint16_t addr, uint8_t int_number){
     switch (addr) {
         case 0x21:
-            fprintf(stderr , "pip \n");
             set_int(int_number);
             break;
     }
