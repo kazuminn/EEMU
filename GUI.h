@@ -2,6 +2,7 @@
 #define GUI_H_
 
 #include <thread>
+#include "Emulator.h"
 //#include <GL/freeglut.h>
 #include "GL/freeglut.h"
 
@@ -10,7 +11,7 @@
 #define DEFAULT_SCRNX	320
 #define DEFAULT_SCRNY	200
 
-class GUI{
+class GUI : Emulator {
 private:
 	std::thread *hThread;
 	int hMainWin;

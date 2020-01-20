@@ -39,6 +39,12 @@ void test(int val){
 	return;
 }
 
+unsigned char keyboard_data; // solly global hennsuu
+void keyboard_callback(unsigned char key, int x, int y){
+    keyboard_data = key;
+    fprintf(stderr, "%d\n", key);
+}
+
 void GUI::ThreadProc(){
 try{
 //	img = new unsigned char[scrnx * scrny *3];
@@ -61,6 +67,7 @@ try{
 //	glutTimerFunc(500, f, 0);
 	glutPassiveMotionFunc(passiveMotionCallback);
 	glutCloseFunc(close);
+    glutKeyboardFunc(keyboard_callback);
 
 	int menu = glutCreateMenu(test);
 	glutAddMenuEntry("screenshot", 1);
@@ -91,6 +98,7 @@ void close(){
 //	g_hThread->terminate();
 	throw 'e';
 }
+
 
 void GUI::display(){
 	if(disp != NULL){

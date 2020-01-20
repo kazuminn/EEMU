@@ -1,15 +1,18 @@
 #include "PIC.h"
 
+bool IRR[16];
 PIC::PIC() {
     //init
     for (size_t i = 0; i < 16 ; i++) {
         IRR[i] = false;
+
     }
 }
 
-uint8_t PIC::out8(uint16_t addr, uint8_t int_number){
+void PIC::out8(uint16_t addr, uint8_t int_number){
     switch (addr) {
         case 0x21:
+            fprintf(stderr , "pip \n");
             set_int(int_number);
             break;
     }
@@ -18,6 +21,7 @@ uint8_t PIC::out8(uint16_t addr, uint8_t int_number){
 void PIC::set_int(uint8_t int_number){
     for(size_t i = 0; i < 8; i++){
         INT[i] = int_number;
+        fprintf(stderr , "INT %x \n", INT[i]);
         int_number++;
     }
 }

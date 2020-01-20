@@ -4,7 +4,7 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
     if (pic->interrupt_queue.empty())
         return;
 
-    if (emu->eflags.IF == false){
+    if (emu->eflags.IF == 0){
         return;
     }
 
@@ -13,7 +13,7 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
     uint16_t idt_limit, idt_offset;
     idt_offset = pic->INT[pic->interrupt_queue.front()];
     pic->interrupt_queue.pop();
-
+    fprintf(stderr, "%x \n", idt_offset);
     emu->read_data(&idt, idt_base + idt_offset * 8, sizeof(IntGateDesc));
 
     save_regs(emu);

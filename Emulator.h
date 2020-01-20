@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <unordered_map>
 
 #define DEFAULT_BIT_MODE	16//16		//デフォルトの起動時のビット。本来は16。
 #define REGISTERS_COUNT		8		//レジスタの本数(16/32bit)
@@ -239,12 +240,18 @@ struct IntGateDesc {
 };
 
 
+class PortIO {
+public:
+    virtual void out8(uint16_t, uint8_t) = 0;
+};
 //エミュレータクラス
-class Emulator{
+class Emulator {
 private:
 	int BitMode;
 	int memory_size;
 public:
+    std::unordered_map<uint16_t, PortIO*> port_io;
+    std::unordered_map<uint16_t, size_t> port_io_map;
     Register eflags;
     Register sreg[6];
 	Register CR[5];		// CR0 ~ CR4 制御レジスタ
@@ -262,7 +269,7 @@ public:				// member funcs
 	~Emulator();
 
 	void InitRegisters();
-
+    void set_portio(uint16_t addr,size_t len, PortIO *dev);
 	int GetBitMode();
 	bool IsReal(){	return !IsProtected();	}
 	bool IsProtected();
@@ -275,6 +282,7 @@ public:				// member funcs
 
 	void LoadBinary(const char* fname, uint32_t addr, int size);	//バイナリファイルを読み込んでメモリの指定番地に指定サイズだけ転送する
 
+    uint16_t get_portio_base(uint16_t base);
 	void io_out8(uint16_t,uint8_t);
 	uint16_t in_io8(uint16_t);
 
