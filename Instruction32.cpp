@@ -1115,6 +1115,12 @@ void imul_r32_rm32(Emulator *emu){
    	modrm.SetR32(r32_s * rm32_s);
    	emu->update_eflags_imul((int32_t)r32_s, (int32_t)rm32_s);
 }
+void mov_sreg_rm16(Emulator *emu){
+    emu->EIP++;
+    ModRM modrm(emu);
+    uint16_t rm16 = modrm.GetRM16();
+    emu->sreg[emu->instr.reg_index].sreg = rm16;
+}
 
 void movzs_r32_rm16(Emulator *emu){
     emu->EIP++;
@@ -1240,6 +1246,7 @@ void InitInstructions32(void){
 	func[0x8B]	= mov_r32_rm32;
 
 	func[0x8D]	= lea_r32_m32;
+    func[0x8E]	= mov_sreg_rm16;
 
 	func[0x90]	= nop;
 	func[0x99]	= cdq;
