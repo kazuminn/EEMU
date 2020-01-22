@@ -41,6 +41,13 @@ void mov_rm16_r16(Emulator *emu){
 	modrm.SetRM16(r16);
 }
 
+void mov_rm16_sreg(Emulator *emu){
+    emu->EIP++;
+    ModRM modrm(emu);
+    uint16_t sreg = emu->sreg[emu->instr.reg_index].sreg;
+    modrm.SetRM16(sreg);
+}
+
 }
 
 using namespace instruction16;
@@ -55,6 +62,7 @@ void InitInstructions16(){
 	func[0x01] = add_rm16_r16;
 	func[0x89] = mov_rm16_r16;
 	func[0x8B] = mov_r16_rm32;
+    func[0x8C] = mov_rm16_sreg;
 	for(i=0;i<8;i++){
 		func[0xB8 + i] = mov_r8_imm8;
 	}

@@ -10,10 +10,12 @@ PIC::PIC() {
 }
 
 void PIC::out8(uint16_t addr, uint8_t int_number){
-    switch (addr) {
-        case 0x21:
-            set_int(int_number);
-            break;
+    if (int_number == 0x20){
+        switch (addr) {
+            case 0x21:
+                set_int(int_number);
+                break;
+        }
     }
 }
 
