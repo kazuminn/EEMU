@@ -218,13 +218,6 @@ void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
 	uint32_t r32 = modrm.GetR32();
 	modrm.SetRM32(r32);
 }
-
-/*
-void in_al_dx(Emulator *emu){
-	uint16_t addr);
-	
-}
-*/
 void short_jump(Emulator *emu){
     uint32_t diff = emu->GetSignCode8(1);
 	emu->EIP += diff + 2;
@@ -727,6 +720,7 @@ void dec_rm32(Emulator *emu, ModRM *modrm){
 
 void task_switch(Emulator *emu, uint16_t cs) {
     TSS oldTSS, newTSS;
+    uint32_t prev = emu->dtregs[TR].selector;
     uint32_t base = emu->dtregs[TR].base_addr;
     fprintf(stderr, "%x \n", base);
     emu->read_data(&oldTSS, base, sizeof(TSS));//
@@ -754,6 +748,8 @@ void task_switch(Emulator *emu, uint16_t cs) {
 
     fprintf(stderr, "hoge1 \n");
 
+    newTSS.prev_sel = prev;
+    emu->write_data(base, &newTSS, sizeof(TSS));
     emu->set_eflags(newTSS.eflags);
     emu->EIP = newTSS.eip;
     emu->EAX = newTSS.eax;
@@ -816,8 +812,38 @@ void farjump(Emulator *emu, ModRM *modrm){
 
 }
 
+void iret(Emulator *emu){
+    Register eflags;
+    uint16_t cs;
 
-    void code_ff(Emulator *emu){
+    emu->EIP = emu->Pop32();
+    cs = emu->Pop32();
+    eflags.reg32 = emu->Pop32();
+    emu->set_eflags(eflags.reg32);
+
+    if(eflags.NT){
+        uint32_t base;
+        TSS tss;
+
+        base = emu->dtregs[TR].base_addr;
+        emu->read_data(&tss, base, sizeof(TSS));
+        task_switch(emu, tss.prev_sel);
+    }
+    else{
+            uint32_t esp;
+            uint16_t ss;
+
+            esp = emu->Pop32();
+            ss = emu->Pop32();
+            emu->ESP = esp;
+            emu->sreg[2].sreg = ss;
+    }
+
+    emu->sreg[1].sreg = cs;
+}
+
+
+void code_ff(Emulator *emu){
 	emu->EIP++;
 	ModRM *modrm = new ModRM(emu);
 	
@@ -964,6 +990,11 @@ void jnle_rel32(Emulator *emu){
 void jnz_rel32(Emulator *emu){
 	int diff = !emu->IsZero() ? emu->GetSignCode32(1) : 0;
 	emu->EIP += (diff + 5);
+}
+
+void jbe_rel32(Emulator *emu){
+    int diff = emu->IsCarry() || emu->IsZero() ? emu->GetSignCode32(1) : 0;
+    emu->EIP += (diff + 5);
 }
 
 void jnl_rel32(Emulator *emu){
@@ -1128,6 +1159,7 @@ void movzs_r32_rm16(Emulator *emu){
     uint16_t rm16 = modrm.GetRM16();
     modrm.SetR32(rm16);
 }
+
 } // namespace instruction32
 
 void cdq(Emulator *emu){
@@ -1274,6 +1306,7 @@ void InitInstructions32(void){
 	func[0xC7]	= mov_rm32_imm32;
 	func[0xC9]	= leave;
 
+    func[0xCF]	= iret;
 	func[0xd3]	= code_d3;
 	//func[0xCD]	= swi;
 
@@ -1295,6 +1328,7 @@ void InitInstructions32(void){
 	func[0x0f01]	= code_0f01;
 	func[0x0f84]	= jz_rel32;
 	func[0x0f85]	= jnz_rel32;
+    func[0x0f86]	= jbe_rel32;
 	func[0x0f88]	= js_rel32;
 	func[0x0f8d]	= jnl_rel32;
 	func[0x0f8e]	= jle_rel32;

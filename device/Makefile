@@ -1,5 +1,5 @@
 TAR	= Device.a
-OBJS	= Device.o Display.o PIC.o
+OBJS	= Device.o Display.o PIC.o keyboard.o
 
 CFLAGS	= -std=c++11 -g
 

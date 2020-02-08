@@ -13,7 +13,7 @@ public:
     PIC();
     int INT[8];
 	void out8(uint16_t addr, uint8_t data);
-	void in8(int port, uint8_t data);
+	uint8_t in8(uint16_t addr);
 };
 
 #endif

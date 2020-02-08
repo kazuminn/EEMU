@@ -7,6 +7,7 @@
 #include <sstream>
 #include "Emulator.h"
 #include "ModRM.h"
+#include "device/keyboard.h"
 
 using namespace std;
 
@@ -40,6 +41,7 @@ Emulator::Emulator(){
 //	memset(memory, 0x01, memory_size);
 //	test(this);
 }
+
 
 void Emulator::SetTR(uint16_t sel){
     uint32_t gdt_base, base;
@@ -178,6 +180,7 @@ uint8_t Emulator::GetRegister8(int index){
 	}
 }
 
+
 uint16_t Emulator::GetRegister16(int index){
 	return reg[index].reg16;
 }
@@ -199,7 +202,13 @@ void Emulator::SetRegister16(int index, uint16_t val){
 }
 
 
-uint16_t Emulator::in_io8(uint16_t) {
+uint8_t Emulator::in_io8(uint16_t addr) {
+    uint8_t v = 0;
+    uint16_t base = get_portio_base(addr);
+    if(base)
+        v = port_io[base]->in8(addr);
+
+    return v;
 }
 
 uint16_t Emulator::get_portio_base(uint16_t addr){

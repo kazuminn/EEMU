@@ -243,6 +243,7 @@ struct IntGateDesc {
 class PortIO {
 public:
     virtual void out8(uint16_t, uint8_t) = 0;
+    virtual uint8_t in8(uint16_t) = 0;
 };
 //エミュレータクラス
 class Emulator {
@@ -284,7 +285,7 @@ public:				// member funcs
 
     uint16_t get_portio_base(uint16_t base);
 	void io_out8(uint16_t,uint8_t);
-	uint16_t in_io8(uint16_t);
+	uint8_t in_io8(uint16_t addr);
 
 	uint8_t GetCode8(int index);
 	int8_t  GetSignCode8(int index);

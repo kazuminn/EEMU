@@ -11,6 +11,7 @@
 #include "device/PIC.h"
 #include "GUI.h"
 #include "device/Device.h"
+#include "device/keyboard.h"
 
 #define DEBUG
 
@@ -24,6 +25,7 @@ using namespace std;
 
 Emulator	*emu;
 PIC	*pic;
+keyboard *kb;
 Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
@@ -55,9 +57,10 @@ void check_keyboard_buffer(Emulator *emu){
 int main(int argc, char **argv){
 	
 	//TODO parse args
-	
+
 	emu = new Emulator();
     pic = new PIC();
+    kb = new keyboard();
 
     inter = new Interrupt();
 	cout<<"emulator created."<<endl;
@@ -99,6 +102,7 @@ int main(int argc, char **argv){
 //	emu->DumpRegisters(32);
 	//emulation
 	emu->set_portio(0x20, 2, pic);
+    emu->set_portio(0x60, 1, kb);
 	for(size_t i = 0; true; i++){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;

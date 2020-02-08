@@ -40,7 +40,7 @@ void PIC::chk_irq(Emulator *emu){
 }
 
 
-void PIC::in8(int port, uint8_t data){
+uint8_t PIC::in8(uint16_t addr){
 	
 }
 
