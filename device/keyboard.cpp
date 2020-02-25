@@ -10,7 +10,8 @@ void keyboard::out8(uint16_t addr, uint8_t data){
 
 }
 uint8_t keyboard::in8(uint16_t addr){
-    extern unsigned char keyboard_data;
+    extern unsigned char out_buf;
+    //out_buf.pop();
     fprintf(stderr, "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
     switch(addr) {
         case 0x60: return 26;

@@ -46,11 +46,15 @@ void printVram(unsigned char *vram){
 	printf("vran[3] %x \n", vram[12]);
 }
 
-extern unsigned char keyboard_data;
-void check_keyboard_buffer(Emulator *emu){
-    if (keyboard_data != '\0' && emu->eflags.IF == 1){
+extern unsigned char out_buf_flag;
+void chk_buffer(Emulator *emu){
+    if (out_buf_flag != '\0' && emu->eflags.IF == 1){
         extern bool IRR[16];
         IRR[1] = true;
+    }
+    if (!out_buf_flag != '\0' && emu->eflags.IF == 1){
+        extern bool IRR[16];
+        IRR[12] = true;
     }
 }
 
@@ -115,13 +119,12 @@ int main(int argc, char **argv){
         emu->CH = emu->ECX;
 
 
-        check_keyboard_buffer(emu);
+        chk_buffer(emu);
 	    //like irq hardware polling
 	    pic->chk_irq(emu);
 
 	    //exec INT xx instruction
 	    inter->exec_interrupt(pic, emu);
-        keyboard_data = '\0';
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];

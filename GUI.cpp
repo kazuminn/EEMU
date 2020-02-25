@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "GUI.h"
+#include "queue"
 
 #include "kazuminlib/PPM.h"
 #include "kazuminlib/BMP.h"
@@ -39,10 +40,22 @@ void test(int val){
 	return;
 }
 
-unsigned char keyboard_data; // solly global hennsuu
+std::queue<int> out_buf;
+bool out_buf_flag;
 void keyboard_callback(unsigned char key, int x, int y){
-    keyboard_data = key;
+    out_buf.push(key);
+    out_buf_flag = true;
     fprintf(stderr, "%d\n", key);
+}
+
+void mouse_callback(int button, int state, int x, int y){
+    out_buf.push(0xfa);
+    out_buf.push(button);
+    out_buf.push(x);
+    out_buf.push(y);
+    out_buf_flag = false;
+    fprintf(stderr, "x : %d\n", x);
+    fprintf(stderr, "y : %d\n", y);
 }
 
 void GUI::ThreadProc(){
@@ -68,6 +81,7 @@ try{
 	glutPassiveMotionFunc(passiveMotionCallback);
 	glutCloseFunc(close);
     glutKeyboardFunc(keyboard_callback);
+    glutMouseFunc(mouse_callback);
 
 	int menu = glutCreateMenu(test);
 	glutAddMenuEntry("screenshot", 1);
