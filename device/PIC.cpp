@@ -7,23 +7,26 @@ PIC::PIC() {
         IRR[i] = false;
 
     }
+    set_int(0x20);
+    set_int(0x28);
 }
 
 void PIC::out8(uint16_t addr, uint8_t int_number){
-    if (int_number == 0x20){
-        switch (addr) {
-            case 0x21:
-                set_int(int_number);
-                break;
-        }
-    }
 }
 
 void PIC::set_int(uint8_t int_number){
-    for(size_t i = 0; i < 8; i++){
-        INT[i] = int_number;
-        fprintf(stderr , "INT %x \n", INT[i]);
-        int_number++;
+    if(int_number == 0x28){
+        for(size_t i = 8; i < 16; i++){
+            INT[i] = int_number;
+            fprintf(stderr , "INT %x \n", INT[i]);
+            int_number++;
+        }
+    }else{
+        for(size_t i = 0; i < 8; i++){
+            INT[i] = int_number;
+            fprintf(stderr , "INT %x \n", INT[i]);
+            int_number++;
+        }
     }
 }
 

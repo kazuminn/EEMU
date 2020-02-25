@@ -48,16 +48,15 @@ void printVram(unsigned char *vram){
 
 extern int out_buf_flag;
 void chk_buffer(Emulator *emu){
+    //keyboard
     if (out_buf_flag == 1 && emu->eflags.IF == 1){
-        fprintf(stderr, "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj %x \n", out_buf_flag);
         extern bool IRR[16];
         IRR[1] = true;
-        out_buf_flag = 0;
     }
+    //mouse
     if (out_buf_flag == 12 && emu->eflags.IF == 1){
         extern bool IRR[16];
         IRR[12] = true;
-        out_buf_flag = 0;
     }
 }
 
@@ -111,6 +110,7 @@ int main(int argc, char **argv){
 	//emulation
 	emu->set_portio(0x20, 2, pic);
     emu->set_portio(0x60, 1, kb);
+    emu->set_portio(0x60, 12, kb);
 	for(size_t i = 0; true; i++){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
@@ -127,7 +127,16 @@ int main(int argc, char **argv){
 	    pic->chk_irq(emu);
 
 	    //exec INT xx instruction
-	    inter->exec_interrupt(pic, emu);
+	    if(out_buf_flag == 12){
+            inter->exec_interrupt(pic, emu);
+            inter->exec_interrupt(pic, emu);
+            inter->exec_interrupt(pic, emu);
+            inter->exec_interrupt(pic, emu);
+            out_buf_flag = 0;
+        } else {
+            inter->exec_interrupt(pic, emu);
+            out_buf_flag = 0;
+        }
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
