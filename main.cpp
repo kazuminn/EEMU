@@ -46,15 +46,18 @@ void printVram(unsigned char *vram){
 	printf("vran[3] %x \n", vram[12]);
 }
 
-extern unsigned char out_buf_flag;
+extern int out_buf_flag;
 void chk_buffer(Emulator *emu){
-    if (out_buf_flag != '\0' && emu->eflags.IF == 1){
+    if (out_buf_flag == 1 && emu->eflags.IF == 1){
+        fprintf(stderr, "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj %x \n", out_buf_flag);
         extern bool IRR[16];
         IRR[1] = true;
+        out_buf_flag = 0;
     }
-    if (!out_buf_flag != '\0' && emu->eflags.IF == 1){
+    if (out_buf_flag == 12 && emu->eflags.IF == 1){
         extern bool IRR[16];
         IRR[12] = true;
+        out_buf_flag = 0;
     }
 }
 
@@ -76,7 +79,8 @@ int main(int argc, char **argv){
 //	getchar();
 
 	//iplとasmheadの処理
-	emu->LoadBinary(argv[1], 0x100000, 1440 * 1024);
+    out_buf_flag = 0;
+    emu->LoadBinary(argv[1], 0x100000, 1440 * 1024);
 	std::memcpy(&emu->memory[0x280000], &emu->memory[0x104390], 512 * 1024);
 
 	uint32_t source;
@@ -117,7 +121,6 @@ int main(int argc, char **argv){
         emu->CX = emu->ECX;
         emu->CL = emu->ECX;
         emu->CH = emu->ECX;
-
 
         chk_buffer(emu);
 	    //like irq hardware polling

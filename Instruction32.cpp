@@ -213,6 +213,9 @@ void mov_rm32_imm32(Emulator *emu){
 }
 
 void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
+    if(emu->GetCode32(2) == 0xfffffbf0){
+        fprintf(stderr, "sssssssssssssssssss%x\n", emu->EAX);
+    }
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();

@@ -41,10 +41,10 @@ void test(int val){
 }
 
 std::queue<int> out_buf;
-bool out_buf_flag;
+int out_buf_flag;
 void keyboard_callback(unsigned char key, int x, int y){
     out_buf.push(key);
-    out_buf_flag = true;
+    out_buf_flag = 1;
     fprintf(stderr, "%d\n", key);
 }
 
@@ -53,7 +53,7 @@ void mouse_callback(int button, int state, int x, int y){
     out_buf.push(button);
     out_buf.push(x);
     out_buf.push(y);
-    out_buf_flag = false;
+    out_buf_flag = 12;
     fprintf(stderr, "x : %d\n", x);
     fprintf(stderr, "y : %d\n", y);
 }
