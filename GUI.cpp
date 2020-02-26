@@ -50,8 +50,13 @@ void mouse_callback(int x, int y){
     out_buf.push(std::make_pair(0, 12));
     out_buf.push(std::make_pair(x, 12));
     out_buf.push(std::make_pair(y, 12));
-    fprintf(stderr, "x : %d\n", x);
-    fprintf(stderr, "y : %d\n", y);
+    fprintf(stderr, "x : %x\n", x);
+    fprintf(stderr, "y : %x\n", y);
+}
+void click_callback(int button, int status, int x, int y){
+    out_buf.push(std::make_pair(y, 12));
+    fprintf(stderr, "x : %x\n", x);
+    fprintf(stderr, "y : %x\n", y);
 }
 
 void GUI::ThreadProc(){
@@ -77,7 +82,8 @@ try{
 	glutPassiveMotionFunc(passiveMotionCallback);
 	glutCloseFunc(close);
     glutKeyboardFunc(keyboard_callback);
-    glutPassiveMotionFunc(mouse_callback);
+    glutMouseFunc(click_callback);
+    //glutPassiveMotionFunc(mouse_callback);
 
 	int menu = glutCreateMenu(test);
 	glutAddMenuEntry("screenshot", 1);

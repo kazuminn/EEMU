@@ -17,8 +17,10 @@ PIC::PIC() {
 void PIC::out8(uint16_t addr, uint8_t data){
     switch(addr) {
         case 0x20 : //keyboard
+            fprintf(stderr, "rrrrrrrrrrrrrrrrrrrrrrrrrr \n");
             IMR[1] = false; IRR[1] = false;
             IMR[12] = false; IRR[12] = false;
+            break;
     }
 }
 
@@ -39,18 +41,16 @@ void PIC::set_int(uint8_t int_number){
 extern std::queue<std::pair <int, int>> out_buf;
 int buf;
 void PIC::chk_irq(Emulator *emu){
-    auto q = out_buf.front();
 
+    auto q = out_buf.front();
     if (q.second == 1&& emu->eflags.IF == 1){ //keyboard
         IRR[1] = true;
         buf = q.first;
-        out_buf.pop();
         fprintf(stderr, "1111111111111111111111111 %x \n", q.second);
     } else if (q.second == 12 && emu->eflags.IF == 1){ //mouse
         IRR[12] = true;
         buf = q.first;
         fprintf(stderr, "10  \n");
-        out_buf.pop();
     }
 
     for (size_t i = 0; i < 16 ; i++) {
@@ -60,6 +60,7 @@ void PIC::chk_irq(Emulator *emu){
             } else {
                 fprintf(stderr, "555555555555555555555555555555 \n");
                 interrupt_queue.push(i);
+                out_buf.pop();
                 IRR[i] = false; // completed the interrupt handling
             }
         }

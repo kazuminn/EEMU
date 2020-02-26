@@ -9,6 +9,7 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
     }
     auto q = pic->interrupt_queue.front();
     if(pic->IMR[q]){
+        fprintf(stderr, "6666666666666666666666666 %x \n", emu->EIP);
         return;
     }
     pic->IMR[q] = true;
@@ -23,7 +24,7 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
 
     save_regs(emu);
     emu->EIP = (idt.offset_h << 16) + idt.offset_l;
-    fprintf(stderr, "6666666666666666666666666 \n");
+    fprintf(stderr, "6666666666666666666666666 %x \n", emu->EIP);
 }
 
 void Interrupt::save_regs(Emulator *emu){
