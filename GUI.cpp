@@ -40,20 +40,16 @@ void test(int val){
 	return;
 }
 
-std::queue<int> out_buf;
-int out_buf_flag;
+std::queue<std::pair <int, int>> out_buf;
 void keyboard_callback(unsigned char key, int x, int y){
-    out_buf.push(key);
-    out_buf_flag = 1;
+    out_buf.push(std::make_pair(key - '0', 1));
     fprintf(stderr, "%d\n", key);
 }
 
-void mouse_callback(int button, int state, int x, int y){
-    out_buf.push(0xfa);
-    out_buf.push(button);
-    out_buf.push(x);
-    out_buf.push(y);
-    out_buf_flag = 12;
+void mouse_callback(int x, int y){
+    out_buf.push(std::make_pair(0, 12));
+    out_buf.push(std::make_pair(x, 12));
+    out_buf.push(std::make_pair(y, 12));
     fprintf(stderr, "x : %d\n", x);
     fprintf(stderr, "y : %d\n", y);
 }
@@ -81,7 +77,7 @@ try{
 	glutPassiveMotionFunc(passiveMotionCallback);
 	glutCloseFunc(close);
     glutKeyboardFunc(keyboard_callback);
-    glutMouseFunc(mouse_callback);
+    glutPassiveMotionFunc(mouse_callback);
 
 	int menu = glutCreateMenu(test);
 	glutAddMenuEntry("screenshot", 1);

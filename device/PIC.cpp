@@ -1,7 +1,10 @@
 #include "PIC.h"
 
-bool IRR[16];
 PIC::PIC() {
+    for (size_t i = 0; i < 16 ; i++) {
+        IMR[i] = false;
+
+    }
     //init
     for (size_t i = 0; i < 16 ; i++) {
         IRR[i] = false;
@@ -12,29 +15,47 @@ PIC::PIC() {
 }
 
 void PIC::out8(uint16_t addr, uint8_t int_number){
+    switch(addr) {
+        case 0xa0 : IMR[12] = false; IRR[12] = false;
+    }
 }
 
 void PIC::set_int(uint8_t int_number){
     if(int_number == 0x28){
         for(size_t i = 8; i < 16; i++){
             INT[i] = int_number;
-            fprintf(stderr , "INT %x \n", INT[i]);
             int_number++;
         }
     }else{
         for(size_t i = 0; i < 8; i++){
             INT[i] = int_number;
-            fprintf(stderr , "INT %x \n", INT[i]);
             int_number++;
         }
     }
 }
 
+extern std::queue<std::pair <int, int>> out_buf;
+int buf;
 void PIC::chk_irq(Emulator *emu){
+    auto q = out_buf.front();
+
+    if (q.second == 1&& emu->eflags.IF == 1){ //keyboard
+        IRR[1] = true;
+        buf = q.first;
+        out_buf.pop();
+        fprintf(stderr, "1111111111111111111111111 %x \n", q.second);
+    } else if (q.second == 12 && emu->eflags.IF == 1){ //mouse
+        IRR[12] = true;
+        buf = q.first;
+        out_buf.pop();
+    }
+
     for (size_t i = 0; i < 16 ; i++) {
         if (IRR[i] == true){
+            fprintf(stderr, "444444444444444444444444444444 \n");
             if (i == 0 && emu->eflags.IF == true) {
             } else {
+                fprintf(stderr, "555555555555555555555555555555 \n");
                 interrupt_queue.push(i);
                 IRR[i] = false; // completed the interrupt handling
             }

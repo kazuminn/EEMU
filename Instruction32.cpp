@@ -1,4 +1,5 @@
 #include <iostream>
+#include "queue"
 using namespace std;
 
 //memo
@@ -213,9 +214,6 @@ void mov_rm32_imm32(Emulator *emu){
 }
 
 void mov_rm32_r32(Emulator *emu){	//cout<<"mov2"<<endl;
-    if(emu->GetCode32(2) == 0xfffffbf0){
-        fprintf(stderr, "sssssssssssssssssss%x\n", emu->EAX);
-    }
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t r32 = modrm.GetR32();
@@ -683,9 +681,6 @@ void code_0f01(Emulator *emu){
 }
 
 void push_r32(Emulator *emu){
-    for(size_t i = 0; i< 8; i++){
-        printf("hoge %x %x %x %x\n", emu->memory[emu->ESP + i * 4] ,emu->memory[emu->ESP + i * 4+ 1], emu->memory[emu->ESP + i * 4+ 2], emu->memory[emu->ESP + i* 4 + 3]);
-    }
 	uint8_t reg = emu->GetCode8(0) & ((1<<3)-1);
 	emu->Push32(emu->GetRegister32(reg));
 	emu->EIP++;
@@ -725,7 +720,6 @@ void task_switch(Emulator *emu, uint16_t cs) {
     TSS oldTSS, newTSS;
     uint32_t prev = emu->dtregs[TR].selector;
     uint32_t base = emu->dtregs[TR].base_addr;
-    fprintf(stderr, "%x \n", base);
     emu->read_data(&oldTSS, base, sizeof(TSS));//
     oldTSS.eflags = emu->get_eflags();
     oldTSS.eip = emu->EIP;
@@ -749,7 +743,6 @@ void task_switch(Emulator *emu, uint16_t cs) {
     base = emu->dtregs[TR].base_addr;
     emu->read_data(&newTSS, base, sizeof(TSS));//
 
-    fprintf(stderr, "hoge1 \n");
 
     newTSS.prev_sel = prev;
     emu->write_data(base, &newTSS, sizeof(TSS));
@@ -760,9 +753,6 @@ void task_switch(Emulator *emu, uint16_t cs) {
     emu->EDX = newTSS.edx;
     emu->EBX = newTSS.ebx;
     emu->ESP = newTSS.esp;
-    fprintf(stderr, "hoge \n");
-    fprintf(stderr, "%x \n", newTSS.esp);
-    fprintf(stderr, "%x \n", emu->ESP);
     emu->EBP = newTSS.ebp;
     emu->ESI = newTSS.esi;
     emu->EDI = newTSS.edi;
@@ -773,7 +763,6 @@ void task_switch(Emulator *emu, uint16_t cs) {
     emu->sreg[4].sreg = newTSS.fs;
     emu->sreg[5].sreg = newTSS.gs;
     emu->set_ldtr(newTSS.ldtr);
-    fprintf(stderr, "hoge2 \n");
 }
 
 void farjump(Emulator *emu, ModRM *modrm){

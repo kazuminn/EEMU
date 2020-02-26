@@ -12,6 +12,7 @@
 #include "GUI.h"
 #include "device/Device.h"
 #include "device/keyboard.h"
+#include "queue"
 
 #define DEBUG
 
@@ -30,35 +31,6 @@ Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
-void printVram(unsigned char *vram){
-	printf("vran[0] %x \n", vram[0]);
-	printf("vran[1] %x \n", vram[1]);
-	printf("vran[2] %x \n", vram[2]);
-	printf("vran[3] %x \n", vram[3]);
-	printf("vran[3] %x \n", vram[4]);
-	printf("vran[3] %x \n", vram[5]);
-	printf("vran[3] %x \n", vram[6]);
-	printf("vran[3] %x \n", vram[7]);
-	printf("vran[3] %x \n", vram[8]);
-	printf("vran[3] %x \n", vram[9]);
-	printf("vran[3] %x \n", vram[10]);
-	printf("vran[3] %x \n", vram[11]);
-	printf("vran[3] %x \n", vram[12]);
-}
-
-extern int out_buf_flag;
-void chk_buffer(Emulator *emu){
-    //keyboard
-    if (out_buf_flag == 1 && emu->eflags.IF == 1){
-        extern bool IRR[16];
-        IRR[1] = true;
-    }
-    //mouse
-    if (out_buf_flag == 12 && emu->eflags.IF == 1){
-        extern bool IRR[16];
-        IRR[12] = true;
-    }
-}
 
 int main(int argc, char **argv){
 	
@@ -78,7 +50,6 @@ int main(int argc, char **argv){
 //	getchar();
 
 	//iplとasmheadの処理
-    out_buf_flag = 0;
     emu->LoadBinary(argv[1], 0x100000, 1440 * 1024);
 	std::memcpy(&emu->memory[0x280000], &emu->memory[0x104390], 512 * 1024);
 
@@ -122,21 +93,12 @@ int main(int argc, char **argv){
         emu->CL = emu->ECX;
         emu->CH = emu->ECX;
 
-        chk_buffer(emu);
-	    //like irq hardware polling
+        //like irq hardware polling
 	    pic->chk_irq(emu);
 
 	    //exec INT xx instruction
-	    if(out_buf_flag == 12){
-            inter->exec_interrupt(pic, emu);
-            inter->exec_interrupt(pic, emu);
-            inter->exec_interrupt(pic, emu);
-            inter->exec_interrupt(pic, emu);
-            out_buf_flag = 0;
-        } else {
-            inter->exec_interrupt(pic, emu);
-            out_buf_flag = 0;
-        }
+        inter->exec_interrupt(pic, emu);
+
 		emu->instr.prefix = emu->parse_prefix(emu);
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
@@ -160,7 +122,6 @@ int main(int argc, char **argv){
 		}else {
 			func = instructions16[emu->instr.opcode];
 		}
-        printf("%x \n", emu->EAX);
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
@@ -182,7 +143,7 @@ int main(int argc, char **argv){
 			cout<<"out of memory."<<endl;
 			break;
 		}
-		printf("i %d \n", (int)i);
+		//printf("i %d \n", (int)i);
 
 	}
 	

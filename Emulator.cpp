@@ -54,9 +54,7 @@ void Emulator::SetTR(uint16_t sel){
     read_data(&tssdesc, gdt_base + sel, sizeof(TSSDesc));
 
     base = (tssdesc.base_h << 24) + (tssdesc.base_m << 16) + tssdesc.base_l;
-    fprintf(stderr , "base %x \n", base);
     limit = (tssdesc.limit_h << 16) + tssdesc.limit_l;
-    fprintf(stderr , "limit %x \n", limit);
 
     set_dtreg(TR, sel, base, limit);
 }
@@ -268,7 +266,7 @@ void Emulator::SetMemory8(uint32_t addr, uint32_t val){
 		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
 		return;
 	}
-	cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
+	//cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
 	memory[addr] = val & 0xFF;
 	return;
 }

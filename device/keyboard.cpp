@@ -8,16 +8,18 @@ keyboard::keyboard(){
 }
 
 void keyboard::out8(uint16_t addr, uint8_t data){
-
-}
-uint8_t keyboard::in8(uint16_t addr){
-    extern std::queue<int> out_buf;
-    //out_buf.pop();
     switch(addr) {
-        case 0x60 : auto q = out_buf.front();
-                    fprintf(stderr, "hogehogehuga %x\n", q);
-                    out_buf.pop();
-                    return q;
+        case 0x20 : IMR[1] = false; IRR[1] = false;
+    }
+}
+extern std::queue<std::pair <int, int> > out_buf;
+extern int buf;
+uint8_t keyboard::in8(uint16_t addr){
+    //out_buf.pop();
+    fprintf(stderr, "77777777777777777777777777 \n");
+    switch(addr) {
+        case 0x60 : fprintf(stderr, "hogehogehuga %x\n", buf);
+                    return buf;
 
     }
     return -1;
