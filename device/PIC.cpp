@@ -14,9 +14,12 @@ PIC::PIC() {
     set_int(0x28);
 }
 
-void PIC::out8(uint16_t addr, uint8_t int_number){
+void PIC::out8(uint16_t addr, uint8_t data){
     switch(addr) {
-        case 0xa0 : IMR[12] = false; IRR[12] = false;
+        case 0xa0 : //mouse
+            IMR[12] = false; IRR[12] = false;
+        case 0x20 : //keyboard
+            IMR[1] = false; IRR[1] = false;
     }
 }
 

@@ -7,11 +7,14 @@
 keyboard::keyboard(){
 }
 
+extern std::queue<std::pair <int, int>> out_buf;
 void keyboard::out8(uint16_t addr, uint8_t data){
     switch(addr) {
-        case 0x20 : IMR[1] = false; IRR[1] = false;
+        case 0x60 : out_buf.push(std::make_pair(0xfa, 12));
+
     }
 }
+
 extern std::queue<std::pair <int, int> > out_buf;
 extern int buf;
 uint8_t keyboard::in8(uint16_t addr){
