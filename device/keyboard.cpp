@@ -22,6 +22,9 @@ uint8_t keyboard::in8(uint16_t addr){
     fprintf(stderr, "77777777777777777777777777 \n");
     switch(addr) {
         case 0x60 : fprintf(stderr, "hogehogehuga %x\n", buf);
+                    if(buf == 0xfa){
+                        out_buf.pop();
+                    }
                     return buf;
 
     }

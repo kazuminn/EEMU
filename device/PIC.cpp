@@ -50,6 +50,7 @@ void PIC::chk_irq(Emulator *emu){
     } else if (q.second == 12 && emu->eflags.IF == 1){ //mouse
         IRR[12] = true;
         buf = q.first;
+        fprintf(stderr, "10  \n");
         out_buf.pop();
     }
 
