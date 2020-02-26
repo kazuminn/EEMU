@@ -23,7 +23,7 @@ void Interrupt::exec_interrupt(PIC *pic, Emulator *emu) {
 
     save_regs(emu);
     emu->EIP = (idt.offset_h << 16) + idt.offset_l;
-    fprintf(stderr, "66666666666666666666666666 %x\n", idt_offset);
+    fprintf(stderr, "6666666666666666666666666 \n");
 }
 
 void Interrupt::save_regs(Emulator *emu){
