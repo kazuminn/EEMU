@@ -25,6 +25,7 @@
 
 using namespace std;
 
+
 Emulator	*emu;
 PIC	*pic;
 keyboard *kb;
@@ -36,18 +37,22 @@ Display		*disp;
 int main(int argc, char **argv){
 	int osType = 0;
 
-	int i, opt;
+	 
+	int opt;
 
-	opterr = 0;
+	opterr = 1;
 
-	while ((opt = getopt(argc, argv, "osType:")) != -1){
+	while ((opt = getopt(argc, argv, "o:")) != -1){
 		switch (opt) {
-			case 'osType':
-				if(optarg == "xv6"){
+			case 'o':
+				if(*optarg == 'x'){
 					osType = 1;
-				} else if(optarg == "hariboteOS"){
+				} else if(*optarg == 'h'){
 					osType = 0;
 				}
+				break;
+			default:
+				printf("Usage: ./x86 ./path/to/img -o x|h \n");
 				break;
 		}
 	}
