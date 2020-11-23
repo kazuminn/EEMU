@@ -107,7 +107,25 @@ if(osType == 0) { //hariboteOS
     emu->set_portio(0x60, 12, kb);
 
 } else if(osType == 1){ //xv6
+	emu = new Emulator();
+    pic = new PIC();
+    //kb = new keyboard();
 
+    inter = new Interrupt();
+	cout<<"emulator created."<<endl;
+	
+	disp = new Display(emu->memory + 0xA0000);
+	gui = new GUI(disp);
+
+
+
+	//BIOS
+	//set_dram
+    emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024);
+
+	//set_pc
+	emu->EIP = 0x7c00;
+	emu->sgregs[1].base = 0x0;
 }
 
 	for(size_t i = 0; true; i++){
@@ -131,6 +149,7 @@ if(osType == 0) { //hariboteOS
 
 		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
+
 
 		//two byte opecode
 		switch(emu->instr.opcode) {

@@ -249,7 +249,7 @@ public:
 class Emulator {
 private:
 	int BitMode;
-	int memory_size;
+	long long memory_size;
 public:
     std::unordered_map<uint16_t, PortIO*> port_io;
     std::unordered_map<uint16_t, size_t> port_io_map;
