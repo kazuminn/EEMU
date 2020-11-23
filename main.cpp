@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <cstdint>
@@ -33,9 +34,26 @@ Display		*disp;
 
 
 int main(int argc, char **argv){
-	
-	//TODO parse args
+	int osType = 0;
 
+	int i, opt;
+
+	opterr = 0;
+
+	while ((opt = getopt(argc, argv, "osType:")) != -1){
+		switch (opt) {
+			case 'osType':
+				if(optarg == "xv6"){
+					osType = 1;
+				} else if(optarg == "hariboteOS"){
+					osType = 0;
+				}
+				break;
+		}
+	}
+	
+
+if(osType == 0) { //hariboteOS
 	emu = new Emulator();
     pic = new PIC();
     kb = new keyboard();
@@ -82,6 +100,11 @@ int main(int argc, char **argv){
 	emu->set_portio(0x20, 2, pic);
     emu->set_portio(0x60, 1, kb);
     emu->set_portio(0x60, 12, kb);
+
+} else if(osType == 1){ //xv6
+
+}
+
 	for(size_t i = 0; true; i++){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
