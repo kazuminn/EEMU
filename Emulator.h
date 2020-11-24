@@ -265,6 +265,7 @@ public:
 
 	uint8_t *memory;
 	InstrData instr;
+	bool is_16mode;   //true is 16mode, false is 32mode
 public:				// member funcs
 	Emulator();
 	~Emulator();

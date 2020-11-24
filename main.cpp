@@ -163,12 +163,20 @@ if(osType == 0) { //hariboteOS
 		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
 		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
 #endif
-
-		if(emu->instr.prefix) {
-			func = instructions32[emu->instr.opcode];
-		}else {
-			func = instructions16[emu->instr.opcode];
+ 		if(osType == 0) {
+			if(emu->instr.prefix) {
+				func = instructions32[emu->instr.opcode];
+			}else {
+				func = instructions16[emu->instr.opcode];
+			}
+		} else if(osType == 1) {
+			if(emu->instr.prefix && emu->is_16mode) {
+				func = instructions16[emu->instr.opcode];
+			}else {
+				func = instructions32[emu->instr.opcode];
+			}
 		}
+
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
@@ -177,10 +185,6 @@ if(osType == 0) { //hariboteOS
 		//execute
 		func(emu);
 
-		//if(i >= 500000){
-		//	emu->EIP = 0;
-		//	printVram(emu->memory + VRAM_ADDR);
-		//}
 		if(emu->EIP == 0){
 			cout<<"EIP = 0になったので終了"<<endl;
 			break;
@@ -190,8 +194,6 @@ if(osType == 0) { //hariboteOS
 			cout<<"out of memory."<<endl;
 			break;
 		}
-		//printf("i %d \n", (int)i);
-
 	}
 	
 	emu->DumpRegisters(32);
