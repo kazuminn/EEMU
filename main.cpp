@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/wait.h>
 #include <iostream>
 #include <cstdint>
 #include <cstring>
@@ -42,7 +43,8 @@ int main(int argc, char **argv){
 
 	opterr = 1;
 
-	while ((opt = getopt(argc, argv, "o:")) != -1){
+	bool hypervisor = false;
+	while ((opt = getopt(argc, argv, "ho:")) != -1){
 		switch (opt) {
 			case 'o':
 				if(*optarg == 'x'){
@@ -51,6 +53,9 @@ int main(int argc, char **argv){
 					osType = 0;
 				}
 				break;
+			case 'h':
+				hypervisor = true;
+				break;
 			default:
 				printf("Usage: ./x86 ./path/to/img -o x|h \n");
 				break;
@@ -58,6 +63,21 @@ int main(int argc, char **argv){
 	}
 	
 
+if(hypervisor) {
+
+int p_id, status;
+	// プロセスの生成
+    if ((p_id = fork()) == 0) {
+        cout << "プロセス生成" << endl;
+		//exec img
+        exit(EXIT_SUCCESS);
+    }
+
+
+    // 親の処理
+    wait(&status); // 子プロセス全部終わるまで待つ
+    exit(EXIT_FAILURE);
+}
 if(osType == 0) { //hariboteOS
 	emu = new Emulator();
     pic = new PIC();
