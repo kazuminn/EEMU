@@ -34,6 +34,8 @@ Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
+extern "C" void _pc(int *);
+
 
 int main(int argc, char **argv){
 	int osType = 0;
@@ -65,15 +67,14 @@ int main(int argc, char **argv){
 
 if(hypervisor) {
 
-extern int pc(int *address);
 
 int p_id, status;
 	// プロセスの生成
     if ((p_id = fork()) == 0) {
         cout << "プロセス生成" << endl;
 		//exec img
-		int address = 1;
-		pc(&address);
+		int address = 0xfa;
+		_pc(&address);
         exit(EXIT_SUCCESS);
     }
 
