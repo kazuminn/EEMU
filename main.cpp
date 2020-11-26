@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
 
 #include "Emulator.h"
 #include "interrupt.h"
@@ -34,11 +35,92 @@ Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
-extern "C" void _pc(uint8_t*);
 
+extern "C" void _pc(const char*);
+
+int osType = 0;
+
+void trap(int val){
+	for(size_t i = 0; true; i++){
+        emu->AX = emu->EAX;
+	    emu->AL = emu->EAX;
+        emu->AH = emu->EAX;
+        emu->DX = emu->EDX;
+        emu->DL = emu->EDX;
+        emu->DH = emu->EDX;
+        emu->CX = emu->ECX;
+        emu->CL = emu->ECX;
+        emu->CH = emu->ECX;
+
+        //like irq hardware polling
+	    pic->chk_irq(emu);
+
+	    //exec INT xx instruction
+        inter->exec_interrupt(pic, emu);
+
+		emu->instr.prefix = emu->parse_prefix(emu);
+
+		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
+		instruction_func_t* func;
+
+
+		//two byte opecode
+		switch(emu->instr.opcode) {
+			case 0x0f:
+				emu->EIP++;
+				emu->instr.opcode = (emu->instr.opcode << 8) + (uint8_t)emu->GetSignCode8(0);
+		}
+
+#ifndef QUIET
+		cout<<"emu: ";
+		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
+		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
+#endif
+ 		if(osType == 0) {
+			if(emu->instr.prefix) {
+				func = instructions32[emu->instr.opcode];
+			}else {
+				func = instructions16[emu->instr.opcode];
+			}
+		} else if(osType == 1) {
+			if(emu->instr.prefix && emu->is_16mode) {
+				func = instructions16[emu->instr.opcode];
+			}else {
+				func = instructions32[emu->instr.opcode];
+			}
+		}
+
+		if(func == NULL){
+			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
+			break;
+		}
+
+		//execute
+		func(emu);
+
+		if(emu->EIP == 0){
+			cout<<"EIP = 0になったので終了"<<endl;
+			break;
+		}
+		
+		if(emu->EIP > emu->GetMemSize()){
+			cout<<"out of memory."<<endl;
+			break;
+		}
+	}
+	
+	emu->DumpRegisters(32);
+	emu->DumpMemory("memdump.bin");
+	
+	delete emu;
+	cout<<"emulator deleted."<<endl;
+	
+	//delete gui;
+	//delete disp;
+
+}
 
 int main(int argc, char **argv){
-	int osType = 0;
 
 	 
 	int opt;
@@ -65,20 +147,27 @@ int main(int argc, char **argv){
 	}
 	
 
+
 if(hypervisor) {
-
-
-int p_id, status;
+	int p_id, status;
 	// プロセスの生成
     if ((p_id = fork()) == 0) {
         cout << "プロセス生成" << endl;
 
 		emu = new Emulator();
+    	pic = new PIC();
+    	//kb = new keyboard();
+
+    	inter = new Interrupt();
+		cout<<"emulator created."<<endl;
+
     	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024);
-		//exec img
-		uint8_t *address;
-		*(unsigned int *) address = *emu->memory + 0x7c00;
-		_pc(address);
+
+		signal(SIGSEGV, trap);
+
+		char buffer[100];
+		sprintf(buffer, "%hhn:0x7c00", emu->memory); //sory %hhn , I Know Security risc
+		_pc(buffer);
         exit(EXIT_SUCCESS);
     }
 
