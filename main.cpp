@@ -34,7 +34,7 @@ Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
-extern "C" void _pc(int *);
+extern "C" void _pc(uint8_t*);
 
 
 int main(int argc, char **argv){
@@ -72,9 +72,13 @@ int p_id, status;
 	// プロセスの生成
     if ((p_id = fork()) == 0) {
         cout << "プロセス生成" << endl;
+
+		emu = new Emulator();
+    	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024);
 		//exec img
-		int address = 0xfa;
-		_pc(&address);
+		uint8_t *address;
+		*(unsigned int *) address = *emu->memory + 0x7c00;
+		_pc(address);
         exit(EXIT_SUCCESS);
     }
 
