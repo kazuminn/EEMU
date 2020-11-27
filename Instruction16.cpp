@@ -65,7 +65,7 @@ void InitInstructions16(){
 
 //	func[0x00] = test;
 
-	func[0x01] = add_rm16_r16;
+	func[0x1] = add_rm16_r16;
 	func[0x89] = mov_rm16_r16;
 	func[0x8B] = mov_r16_rm32;
     func[0x8C] = mov_rm16_sreg;

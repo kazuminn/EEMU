@@ -51,7 +51,6 @@ typedef struct _sig_ucontext {
 int osType = 0;
 
 void trap(int val){
-	for(size_t i = 0; true; i++){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
         emu->AH = emu->EAX;
@@ -71,14 +70,13 @@ void trap(int val){
 
 		instruction_func_t* func;
 		void * sp = __builtin_frame_address(0);
-		volatile struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 0);
-		unsigned char *pc;
-		pc = (unsigned char *)context->uc_mcontext.rip;
+		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
+		unsigned long pc;
+		pc = context->uc_mcontext.rip;
+		printf("opecode : %lx\n", __builtin_bswap64(pc));
 		
+		func = instructions16[__builtin_bswap64(pc)];
 
-
-
-		func = instructions16[*pc];
 
 #ifndef QUIET
 		cout<<"emu: ";
@@ -87,32 +85,18 @@ void trap(int val){
 #endif
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
-			break;
 		}
 
 		//execute
 		func(emu);
 
-		if(emu->EIP == 0){
-			cout<<"EIP = 0になったので終了"<<endl;
-			break;
-		}
 		
 		if(emu->EIP > emu->GetMemSize()){
 			cout<<"out of memory."<<endl;
-			break;
 		}
-	}
 	
-	emu->DumpRegisters(32);
-	emu->DumpMemory("memdump.bin");
-	
-	delete emu;
-	cout<<"emulator deleted."<<endl;
-	
-	//delete gui;
-	//delete disp;
-
+	//emu->DumpRegisters(32);
+	//emu->DumpMemory("memdump.bin");
 }
 
 int main(int argc, char **argv){
