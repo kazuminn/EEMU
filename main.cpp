@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <ucontext.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <iostream>
 #include <cstdint>
@@ -19,7 +21,7 @@
 
 #define DEBUG
 
-//#define QUIET
+#define QUIET
 
 #define INTERNAL_BOXFILL
 //#define TEST_VRAM
@@ -37,6 +39,14 @@ Display		*disp;
 
 
 extern "C" void _pc(const char*);
+
+typedef struct _sig_ucontext {
+ 	unsigned long     uc_flags;
+ 	struct ucontext   *uc_link;
+ 	stack_t           uc_stack;
+ 	struct sigcontext uc_mcontext;
+ 	sigset_t          uc_sigmask;
+} sig_ucontext_t;
 
 int osType = 0;
 
@@ -58,38 +68,23 @@ void trap(int val){
 	    //exec INT xx instruction
         inter->exec_interrupt(pic, emu);
 
-		emu->instr.prefix = emu->parse_prefix(emu);
 
-		emu->instr.opcode	= emu->memory[emu->EIP + emu->sgregs[1].base];
 		instruction_func_t* func;
+		void * sp = __builtin_frame_address(0);
+		volatile struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 0);
+		unsigned char *pc;
+		pc = (unsigned char *)context->uc_mcontext.rip;
+		
 
 
-		//two byte opecode
-		switch(emu->instr.opcode) {
-			case 0x0f:
-				emu->EIP++;
-				emu->instr.opcode = (emu->instr.opcode << 8) + (uint8_t)emu->GetSignCode8(0);
-		}
+
+		func = instructions16[*pc];
 
 #ifndef QUIET
 		cout<<"emu: ";
 		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
 		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
 #endif
- 		if(osType == 0) {
-			if(emu->instr.prefix) {
-				func = instructions32[emu->instr.opcode];
-			}else {
-				func = instructions16[emu->instr.opcode];
-			}
-		} else if(osType == 1) {
-			if(emu->instr.prefix && emu->is_16mode) {
-				func = instructions16[emu->instr.opcode];
-			}else {
-				func = instructions32[emu->instr.opcode];
-			}
-		}
-
 		if(func == NULL){
 			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
