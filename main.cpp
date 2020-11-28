@@ -41,6 +41,7 @@ Display		*disp;
 
 
 extern "C" void _pc(uintptr_t, int);
+extern "C" void _iret();
 
 typedef struct _sig_ucontext {
  	unsigned long     uc_flags;
@@ -109,8 +110,7 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 			cout<<"out of memory."<<endl;
 		}
 
-        exit(EXIT_SUCCESS);
-	abort();
+	_iret();
 	//emu->DumpRegisters(32);
 	//emu->DumpMemory("memdump.bin");
 
