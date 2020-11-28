@@ -38,7 +38,7 @@ GUI		*gui;
 Display		*disp;
 
 
-extern "C" void _pc(const char*);
+extern "C" void _pc(uintptr_t);
 
 typedef struct _sig_ucontext {
  	unsigned long     uc_flags;
@@ -73,7 +73,7 @@ void trap(int val){
 		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
 		unsigned long pc;
 		pc = context->uc_mcontext.rip;
-		printf("opecode : %lx\n", __builtin_bswap64(pc));
+		printf("opecode : %lx\n", pc);
 		
 		func = instructions16[__builtin_bswap64(pc)];
 
@@ -145,8 +145,8 @@ if(hypervisor) {
 		signal(SIGSEGV, trap);
 
 		char buffer[100];
-		sprintf(buffer, "%hhn:0x7c00", emu->memory); //sory %hhn , I Know Security risc
-		_pc(buffer);
+		sprintf(buffer, "%hhn", emu->memory); //sory %hhn , I Know Security risc
+		_pc((uintptr_t)emu->memory);
         exit(EXIT_SUCCESS);
     }
 

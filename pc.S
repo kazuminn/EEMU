@@ -2,5 +2,5 @@ GLOBAL _pc
 
 SECTION .text
 _pc:
-    jmp far [rdi]
+    jmp far rdi
     ret
