@@ -38,7 +38,7 @@ GUI		*gui;
 Display		*disp;
 
 
-extern "C" void _pc(uintptr_t);
+extern "C" void _pc(uintptr_t, int);
 
 typedef struct _sig_ucontext {
  	unsigned long     uc_flags;
@@ -146,7 +146,7 @@ if(hypervisor) {
 
 		char buffer[100];
 		sprintf(buffer, "%hhn", emu->memory); //sory %hhn , I Know Security risc
-		_pc((uintptr_t)emu->memory);
+		_pc((uintptr_t)emu->memory,0x7c00);
         exit(EXIT_SUCCESS);
     }
 
