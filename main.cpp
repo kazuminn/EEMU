@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <linux/kernel.h>
 #include <ucontext.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -19,6 +20,7 @@
 #include "device/keyboard.h"
 #include "queue"
 
+#define _THIS_IP_ ({ __label__ __here; __here: (unsigned long)&&__here; })
 #define DEBUG
 
 #define QUIET
@@ -38,7 +40,7 @@ GUI		*gui;
 Display		*disp;
 
 
-extern "C" void _pc(const char*);
+extern "C" void _pc(uintptr_t, int);
 
 typedef struct _sig_ucontext {
  	unsigned long     uc_flags;
@@ -50,7 +52,10 @@ typedef struct _sig_ucontext {
 
 int osType = 0;
 
-void trap(int val){
+void _hoge(int i) {
+
+}
+void trap(int sig_num, siginfo_t * info, void * ucontext){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
         emu->AH = emu->EAX;
@@ -69,13 +74,22 @@ void trap(int val){
 
 
 		instruction_func_t* func;
+		_THIS_IP_;
+		sig_ucontext_t* uc = (sig_ucontext_t *) ucontext;
+		uint8_t * pc = (uint8_t *)uc->uc_mcontext.rip;
+		printf("hhhhhh%x\n", *pc);
+		printf("hhhhhh%p\n", (void *)uc->uc_mcontext.rip);
+		/*
 		void * sp = __builtin_frame_address(0);
 		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
 		unsigned long pc;
 		pc = context->uc_mcontext.rip;
+
 		printf("opecode : %lx\n", __builtin_bswap64(pc));
+		*/
 		
-		func = instructions16[__builtin_bswap64(pc)];
+		printf("opecode : %lx\n", _THIS_IP_);
+		func = instructions16[*pc];
 
 
 #ifndef QUIET
@@ -94,9 +108,12 @@ void trap(int val){
 		if(emu->EIP > emu->GetMemSize()){
 			cout<<"out of memory."<<endl;
 		}
-	
+
+        exit(EXIT_SUCCESS);
+	abort();
 	//emu->DumpRegisters(32);
 	//emu->DumpMemory("memdump.bin");
+
 }
 
 int main(int argc, char **argv){
@@ -140,13 +157,25 @@ if(hypervisor) {
     	inter = new Interrupt();
 		cout<<"emulator created."<<endl;
 
-    	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024);
+    	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024 * 1024);
+		printf("emu->memory : %p \n", emu->memory);
 
-		signal(SIGSEGV, trap);
+		struct sigaction sigact;
 
-		char buffer[100];
-		sprintf(buffer, "%hhn:0x7c00", emu->memory); //sory %hhn , I Know Security risc
-		_pc(buffer);
+		sigact.sa_sigaction = trap;
+		sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+		sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL);
+
+		char buffer[500];
+		sprintf(buffer, "%p:0x7c00", emu->memory); //sory %hhn , I Know Security risc
+		printf("emu->memory : %s \n", buffer);
+		printf("emu->memory : %x \n", (emu->memory + 0x7c00)[0]);
+		_pc((uintptr_t)emu->memory, 0x7c00);
+
+		delete emu;
+		delete pic;
+		delete inter;
+
         exit(EXIT_SUCCESS);
     }
 

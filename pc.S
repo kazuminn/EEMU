@@ -1,6 +1,7 @@
+extern _hoge
 GLOBAL _pc
 
 SECTION .text
 _pc:
-    jmp far [rdi]
+    jmp rdi
     ret
