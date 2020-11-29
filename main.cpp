@@ -140,13 +140,13 @@ if(hypervisor) {
     	inter = new Interrupt();
 		cout<<"emulator created."<<endl;
 
-    	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024);
+    	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 );
+		printf("emu->memory : %x\n", *(emu->memory + 0x7c00));
 
+		printf("emu->memory : %p\n", emu->memory);
 		signal(SIGSEGV, trap);
 
-		char buffer[100];
-		sprintf(buffer, "%hhn", emu->memory); //sory %hhn , I Know Security risc
-		_pc((uintptr_t)emu->memory,0x7c00);
+		_pc((uintptr_t)emu->memory + 0x7c00,0x7c00);
         exit(EXIT_SUCCESS);
     }
 
@@ -163,8 +163,8 @@ if(osType == 0) { //hariboteOS
     inter = new Interrupt();
 	cout<<"emulator created."<<endl;
 	
-	disp = new Display(emu->memory + VRAM_ADDR);
-	gui = new GUI(disp);
+	//disp = new Display(emu->memory + VRAM_ADDR);
+	//gui = new GUI(disp);
 
 
 //	getchar();
@@ -211,8 +211,8 @@ if(osType == 0) { //hariboteOS
     inter = new Interrupt();
 	cout<<"emulator created."<<endl;
 	
-	disp = new Display(emu->memory + 0xA0000);
-	gui = new GUI(disp);
+	//disp = new Display(emu->memory + 0xA0000);
+	//gui = new GUI(disp);
 
 
 
