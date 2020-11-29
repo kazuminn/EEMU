@@ -44,7 +44,7 @@ full:
 	make
 
 $(TAR):$(OBJS)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -z execstack -o $@ $^ $(LDFLAGS)
 
 device/Device.a:
 	make -C device
