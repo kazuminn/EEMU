@@ -48,46 +48,6 @@ typedef struct _sig_ucontext {
  	sigset_t          uc_sigmask;
 } sig_ucontext_t;
 
-struct _sigcontext
-{
-  unsigned long r8;
-  unsigned long r9;
-  unsigned long r10;
-  unsigned long r11;
-  unsigned long r12;
-  unsigned long r13;
-  unsigned long r14;
-  unsigned long r15;
-  unsigned long rdi;
-  unsigned long rsi;
-  unsigned long rbp;
-  unsigned long rbx;
-  unsigned long rdx;
-  unsigned long rax;
-  unsigned long rcx;
-  unsigned long rsp;
-  unsigned long rip;
-  unsigned long eflags;
-  unsigned short cs;
-  unsigned short gs;
-  unsigned short fs;
-  unsigned short __pad0;
-  unsigned long err;
-  unsigned long trapno;
-  unsigned long oldmask;
-  unsigned long cr2;
-  struct _fpstate * fpstate;
-  unsigned long __reserved1 [8];
-};
-
-struct sigframe {
-	char scratch[16];
-	unsigned long sig_number;
-	struct siginfo *info;
-	struct _sigcontext *sc;
-};
-
-
 int osType = 0;
 
 void trap(int val){
@@ -110,10 +70,10 @@ void trap(int val){
 
 		instruction_func_t* func;
 		void * sp = __builtin_frame_address(0);
-		struct sigframe *context = (struct sigframe*)(sp + 1);
+		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
 		unsigned long pc;
-		//pc = context->uc_mcontext.rip;
-		printf("opecode : %lx\n", context->sc->rip);
+		pc = context->uc_mcontext.rip;
+		printf("opecode : %lx\n", pc);
 		
 		func = instructions16[__builtin_bswap64(pc)];
 
