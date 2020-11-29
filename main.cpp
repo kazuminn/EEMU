@@ -1,3 +1,4 @@
+#include <cinttypes>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -141,12 +142,12 @@ if(hypervisor) {
 		cout<<"emulator created."<<endl;
 
     	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 );
-		printf("emu->memory : %x\n", *(emu->memory + 0x7c00));
+		printf("emu->memory : %d\n", *(emu->memory + 0x7c00));
 
-		printf("emu->memory : %p\n", emu->memory);
+		printf("emu->memory : %p\n", emu->memory + 0x7c00);
 		signal(SIGSEGV, trap);
 
-		_pc((uintptr_t)emu->memory + 0x7c00,0x7c00);
+		_pc((uintptr_t)emu->memory + (uintptr_t)0x7c00,0x7c00);
         exit(EXIT_SUCCESS);
     }
 

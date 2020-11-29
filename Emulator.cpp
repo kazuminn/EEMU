@@ -22,7 +22,8 @@ const char* registers_name32[] = {"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI
 Emulator::Emulator(){
 	BitMode = DEFAULT_BIT_MODE;
 	memory_size = 1024 * 1024 * 1024;
-	memory = new (nothrow) uint8_t[1024 * 1024];
+	memory = new (nothrow) uint32_t[1024 * 1024];
+	tmp_memory = new (nothrow) uint8_t[1024 * 1024];
 	if(memory == NULL){
 		cout<<"error new."<<endl;
 	}
@@ -132,7 +133,10 @@ void Emulator::LoadBinary(const char* fname, uint32_t addr, int size){
 	if(fp == NULL){
 		return;
 	}
-	fread(memory + addr, 1, size, fp);
+	fread(tmp_memory, 1, size, fp);
+	for(int i = 0;i<size;i++){
+		memory[addr + i] = (uint32_t)tmp_memory[i];
+	}
 	fclose(fp);
 }
 
