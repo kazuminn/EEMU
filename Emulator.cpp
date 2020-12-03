@@ -15,18 +15,20 @@ const char* registers_name16[] = { "AX",  "CX",  "DX",  "BX",  "SP",  "BP",  "SI
 const char* registers_name32[] = {"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI", "EDI"};
 
 
+
 //void test(Emulator *emu){
 //	cout<<"test("<<emu<<")"<<endl;
 //}
+	uint8_t tmp_memory[1024 * 1024] __attribute__((section(".xv6"))) = {0};
 
 Emulator::Emulator(){
 	BitMode = DEFAULT_BIT_MODE;
 	memory_size = 1024 * 1024 * 1024;
-	memory = new (nothrow) uint8_t[1024 * 1024];
 	if(memory == NULL){
 		cout<<"error new."<<endl;
 	}
 	
+	memory = tmp_memory;
 	InitRegisters();
 
 	is_16mode = true;
