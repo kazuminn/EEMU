@@ -70,13 +70,13 @@ void trap(int val){
 
 
 		instruction_func_t* func;
-		long * sp = (long*)__builtin_frame_address(0);
-		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
-		unsigned long pc;
-		pc = context->uc_mcontext.rip;
-		printf("opecode : %lx\n", pc);
+		void * sp = __builtin_frame_address(0);
+		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 8);
+		uint8_t * pc;
+		pc = (uint8_t*)context->uc_mcontext.rip;
+		printf("opecode : %x\n", *pc);
 		
-		func = instructions16[__builtin_bswap64(pc)];
+		func = instructions16[__builtin_bswap64(*pc)];
 
 
 #ifndef QUIET
@@ -142,12 +142,12 @@ if(hypervisor) {
 		cout<<"emulator created."<<endl;
 
     	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 );
-		printf("emu->memory : %d\n", *(emu->memory + 0x7c00));
+		printf("emu->memory : %x\n", *(emu->memory + 0x7c00));
 
 		printf("emu->memory : %p\n", emu->memory + 0x7c00);
 		signal(SIGSEGV, trap);
 
-		_pc((uintptr_t)emu->memory + (uintptr_t)0x7c00,0x7c00);
+		_pc((uintptr_t)emu->memory,0x7c00);
         exit(EXIT_SUCCESS);
     }
 
