@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <setjmp.h>
 
 #include <linux/kernel.h>
 #include <ucontext.h>
@@ -39,6 +40,8 @@ Interrupt	*inter;
 GUI		*gui;
 Display		*disp;
 
+jmp_buf buf_jmp; 
+uint8_t *pc;
 
 extern "C" void _pc(uintptr_t, int);
 extern "C" void _iret();
@@ -77,7 +80,7 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 		instruction_func_t* func;
 		_THIS_IP_;
 		sig_ucontext_t* uc = (sig_ucontext_t *) ucontext;
-		uint8_t * pc = (uint8_t *)uc->uc_mcontext.rip;
+		pc = (uint8_t *)uc->uc_mcontext.rip;
 		printf("hhhhhh%x\n", *pc);
 		printf("hhhhhh%p\n", (void *)uc->uc_mcontext.rip);
 		/*
@@ -111,6 +114,7 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 			cout<<"out of memory."<<endl;
 		}
 
+	longjmp(buf_jmp, 1);
 	_iret();
 	//emu->DumpRegisters(32);
 	//emu->DumpMemory("memdump.bin");
@@ -172,6 +176,11 @@ if(hypervisor) {
 		printf("emu->memory : %s \n", buffer);
 		printf("emu->memory : %x \n", (emu->memory + 0x7c00)[0]);
 		_pc((uintptr_t)emu->memory, 0x7c00);
+
+		if(setjmp(buf_jmp) == 1){
+			printf("hhhhhhhhhhhhhhhello\n");
+		_pc((uintptr_t)pc, 0x7c00);
+		}
 
 		delete emu;
 		delete pic;
