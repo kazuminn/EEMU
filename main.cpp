@@ -70,12 +70,11 @@ void trap(int val){
 
 		instruction_func_t* func;
 		void * sp = __builtin_frame_address(0);
-		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
-		unsigned long pc;
-		pc = context->uc_mcontext.rip;
-		printf("opecode : %lx\n", pc);
+		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 8);
+		uint8_t * pc = (uint8_t*)context->uc_mcontext.rip;
+		printf("opecode : %x\n", *pc);
 		
-		func = instructions16[__builtin_bswap64(pc)];
+		func = instructions16[__builtin_bswap64(*pc)];
 
 
 #ifndef QUIET
@@ -146,7 +145,8 @@ if(hypervisor) {
 		printf("emu->memory : %p\n", emu->memory);
 		signal(SIGSEGV, trap);
 
-		_pc((uintptr_t)emu->memory + 0x7c00,0x7c00);
+		long i = 0x1000;
+		_pc((uintptr_t)emu->memory, 0x7c00);
         exit(EXIT_SUCCESS);
     }
 
