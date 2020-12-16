@@ -70,7 +70,7 @@ void trap(int val){
 
 
 		instruction_func_t* func;
-		void * sp = __builtin_frame_address(0);
+		long * sp = (long*)__builtin_frame_address(0);
 		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
 		unsigned long pc;
 		pc = context->uc_mcontext.rip;
