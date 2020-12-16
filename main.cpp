@@ -88,8 +88,9 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 
 		printf("opecode : %lx\n", __builtin_bswap64(pc));
 		*/
+		printf("opecode : %lx\n", __builtin_bswap64(*pc));
 		
-		printf("opecode : %lx\n", _THIS_IP_);
+		//printf("opecode : %lx\n", _THIS_IP_);
 		func = instructions16[*pc];
 
 
