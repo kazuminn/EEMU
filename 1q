@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include <ucontext.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <iostream>
 #include <cstdint>
@@ -19,12 +19,6 @@
 #include "device/Device.h"
 #include "device/keyboard.h"
 #include "queue"
-
-struct sigframe {
-	unsigned int pretcode;
-	int sig;
-	struct sigcontext sc;
-};
 
 #define DEBUG
 
@@ -45,8 +39,15 @@ GUI		*gui;
 Display		*disp;
 
 
-extern "C" void _pc(uint32_t*, int);
+extern "C" void _pc(uintptr_t, int);
 
+typedef struct _sig_ucontext {
+ 	unsigned long     uc_flags;
+ 	struct ucontext   *uc_link;
+ 	stack_t           uc_stack;
+ 	struct sigcontext uc_mcontext;
+ 	sigset_t          uc_sigmask;
+} sig_ucontext_t;
 
 int osType = 0;
 
@@ -69,14 +70,14 @@ void trap(int val){
 
 
 		instruction_func_t* func;
-		long * sp = (long*)__builtin_frame_address(0);
-		volatile struct sigframe *context = (struct sigframe*)(sp + 1);
-		unsigned char* pc;
-		pc = (unsigned char*)context->sc.rip;
+		void * sp = __builtin_frame_address(0);
+		printf("sp : %p\n", *sp);
+		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 8);
+		uint8_t * pc;
+		pc = (uint8_t*)context->uc_mcontext.rip;
 		printf("opecode : %x\n", *pc);
 		
-		func = instructions16[*pc];
-		context->sc.rip++;
+		func = instructions16[__builtin_bswap64(*pc)];
 
 
 #ifndef QUIET
@@ -147,7 +148,7 @@ if(hypervisor) {
 		printf("emu->memory : %p\n", emu->memory + 0x7c00);
 		signal(SIGSEGV, trap);
 
-		_pc(emu->memory + 0x7c00,0x7c00);
+		_pc((uintptr_t)emu->memory,0x7c00);
         exit(EXIT_SUCCESS);
     }
 
