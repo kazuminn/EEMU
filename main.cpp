@@ -56,6 +56,7 @@ int osType = 0;
 void _hoge(int i) {
 
 }
+
 void trap(int sig_num, siginfo_t * info, void * ucontext){
         emu->AX = emu->EAX;
 	    emu->AL = emu->EAX;
@@ -78,13 +79,16 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 		_THIS_IP_;
 		sig_ucontext_t* uc = (sig_ucontext_t *) ucontext;
 		uint8_t * pc = (uint8_t *)uc->uc_mcontext.rip;
+		uc->uc_mcontext.rip++;
 		printf("hhhhhh%x\n", *pc);
 		printf("hhhhhh%p\n", (void *)uc->uc_mcontext.rip);
+
 		/*
 		void * sp = __builtin_frame_address(0);
 		struct _sig_ucontext *context = (struct _sig_ucontext*)(sp + 1);
-		unsigned long pc;
-		pc = context->uc_mcontext.rip;
+		unsigned char* pc;
+		pc = (unsigned char*)context->uc_mcontext.rip;
+		context->uc_mcontext.rip++;
 
 		printf("opecode : %lx\n", __builtin_bswap64(pc));
 		*/
@@ -111,7 +115,6 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 			cout<<"out of memory."<<endl;
 		}
 
-	_iret();
 	//emu->DumpRegisters(32);
 	//emu->DumpMemory("memdump.bin");
 
