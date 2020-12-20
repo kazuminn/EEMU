@@ -169,6 +169,7 @@ if(hypervisor) {
 		sigact.sa_sigaction = trap;
 		sigact.sa_flags = SA_RESTART | SA_SIGINFO;
 		sigaction(SIGSEGV, &sigact, (struct sigaction *)NULL);
+		sigaction(SIGILL, &sigact, (struct sigaction *)NULL);
 
 		char buffer[500];
 		sprintf(buffer, "%p:0x7c00", emu->memory); //sory %hhn , I Know Security risc
