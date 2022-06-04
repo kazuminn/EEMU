@@ -19,7 +19,6 @@ void passiveMotionCallback(int, int);
 
 
 void test(int val){
-//	cout<<"test "<<val<<endl;
 
 	//PPMのテスト
 	PPM *ppm;
@@ -43,29 +42,23 @@ void test(int val){
 std::queue<std::pair <int, int>> out_buf;
 void keyboard_callback(unsigned char key, int x, int y){
     out_buf.push(std::make_pair(key - '0', 1));
-    fprintf(stderr, "%d\n", key);
 }
 
 void mouse_callback(int x, int y){
     out_buf.push(std::make_pair(0, 12));
     out_buf.push(std::make_pair(x, 12));
     out_buf.push(std::make_pair(y, 12));
-    fprintf(stderr, "x : %x\n", x);
-    fprintf(stderr, "y : %x\n", y);
 }
 void click_callback(int button, int status, int x, int y){
     out_buf.push(std::make_pair(0, 12));
     out_buf.push(std::make_pair(x, 12));
     out_buf.push(std::make_pair(y, 12));
-    fprintf(stderr, "x : %x\n", x);
-    fprintf(stderr, "y : %x\n", y);
 }
 
 void GUI::ThreadProc(){
 try{
 //	img = new unsigned char[scrnx * scrny *3];
 		
-//cout<<"a"<<endl;	
 	int argc=1;
 	char *argv = new char[1];
 	glutInit(&argc, &argv);		//fake command-line args
@@ -100,19 +93,16 @@ try{
 
 catch(char m){
 	glutDestroyWindow(hMainWin);
-	cout<<"destroy"<<endl;
 	return;
 }
 
 }
 
 void passiveMotionCallback(int x, int y){
-	printf("passive motion");
 }
 
 void close(){
 	//goto gui_thread_end;
-	printf("close\n");
 //	g_hThread->terminate();
 	throw 'e';
 }

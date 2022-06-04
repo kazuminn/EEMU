@@ -80,8 +80,6 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 		sig_ucontext_t* uc = (sig_ucontext_t *) ucontext;
 		uint8_t * pc = (uint8_t *)uc->uc_mcontext.rip;
 		uc->uc_mcontext.rip++;
-		printf("hhhhhh%x\n", *pc);
-		printf("hhhhhh%p\n", (void *)uc->uc_mcontext.rip);
 
 		/*
 		void * sp = __builtin_frame_address(0);
@@ -90,21 +88,14 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 		pc = (unsigned char*)context->uc_mcontext.rip;
 		context->uc_mcontext.rip++;
 
-		printf("opecode : %lx\n", __builtin_bswap64(pc));
 		*/
-		printf("opecode : %lx\n", __builtin_bswap64(*pc));
 		
-		//printf("opecode : %lx\n", _THIS_IP_);
 		func = instructions16[*pc];
 
 
 #ifndef QUIET
-		cout<<"emu: ";
-		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
-		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
 #endif
 		if(func == NULL){
-			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 		}
 
 		//execute
@@ -112,7 +103,6 @@ void trap(int sig_num, siginfo_t * info, void * ucontext){
 
 		
 		if(emu->EIP > emu->GetMemSize()){
-			cout<<"out of memory."<<endl;
 		}
 
 	//emu->DumpRegisters(32);
@@ -141,7 +131,6 @@ int main(int argc, char **argv){
 				hypervisor = true;
 				break;
 			default:
-				printf("Usage: ./x86 ./path/to/img -o x|h \n");
 				break;
 		}
 	}
@@ -152,17 +141,14 @@ if(hypervisor) {
 	int p_id, status;
 	// プロセスの生成
     if ((p_id = fork()) == 0) {
-        cout << "プロセス生成" << endl;
 
 		emu = new Emulator();
     	pic = new PIC();
     	//kb = new keyboard();
 
     	inter = new Interrupt();
-		cout<<"emulator created."<<endl;
 
     	emu->LoadBinary("../xv6-public/xv6.img", 0x7c00, 1024 * 1024 * 1024);
-		printf("emu->memory : %p \n", emu->memory);
 
 		struct sigaction sigact;
 
@@ -172,9 +158,6 @@ if(hypervisor) {
 		sigaction(SIGILL, &sigact, (struct sigaction *)NULL);
 
 		char buffer[500];
-		sprintf(buffer, "%p:0x7c00", emu->memory); //sory %hhn , I Know Security risc
-		printf("emu->memory : %s \n", buffer);
-		printf("emu->memory : %x \n", (emu->memory + 0x7c00)[0]);
 		_pc((uintptr_t)emu->memory, 0x7c00);
 
 		delete emu;
@@ -195,7 +178,6 @@ if(osType == 0) { //hariboteOS
     kb = new keyboard();
 
     inter = new Interrupt();
-	cout<<"emulator created."<<endl;
 	
 	disp = new Display(emu->memory + VRAM_ADDR);
 	gui = new GUI(disp);
@@ -243,7 +225,6 @@ if(osType == 0) { //hariboteOS
     //kb = new keyboard();
 
     inter = new Interrupt();
-	cout<<"emulator created."<<endl;
 	
 	disp = new Display(emu->memory + 0xA0000);
 	gui = new GUI(disp);
@@ -290,9 +271,6 @@ if(osType == 0) { //hariboteOS
 		}
 
 #ifndef QUIET
-		cout<<"emu: ";
-		cout<<"EIP = "<<hex<<showbase<<emu->EIP<<", ";
-		cout<<"Code = "<<(uint32_t)emu->instr.opcode<<endl;
 #endif
  		if(osType == 0) {
 			if(emu->instr.prefix) {
@@ -309,7 +287,6 @@ if(osType == 0) { //hariboteOS
 		}
 
 		if(func == NULL){
-			cout<<"命令("<<showbase<<(int)emu->instr.opcode<<")は実装されていません。"<<endl;
 			break;
 		}
 
@@ -317,12 +294,10 @@ if(osType == 0) { //hariboteOS
 		func(emu);
 
 		if(emu->EIP == 0){
-			cout<<"EIP = 0になったので終了"<<endl;
 			break;
 		}
 		
 		if(emu->EIP > emu->GetMemSize()){
-			cout<<"out of memory."<<endl;
 			break;
 		}
 	}
@@ -331,7 +306,6 @@ if(osType == 0) { //hariboteOS
 	emu->DumpMemory("memdump.bin");
 	
 	delete emu;
-	cout<<"emulator deleted."<<endl;
 	
 	delete gui;
 	delete disp;

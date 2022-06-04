@@ -16,7 +16,6 @@ const char* registers_name32[] = {"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI
 
 
 //void test(Emulator *emu){
-//	cout<<"test("<<emu<<")"<<endl;
 //}
 
 Emulator::Emulator(){
@@ -24,7 +23,6 @@ Emulator::Emulator(){
 	memory_size = 1024 * 1024 * 1024;
 	memory = new (nothrow) uint8_t[memory_size];
 	if(memory == NULL){
-		cout<<"error new."<<endl;
 	}
 	
 	InitRegisters();
@@ -142,7 +140,6 @@ int Emulator::GetBitMode(){
 
 uint8_t Emulator::GetCode8(int index){
 	if(memory_size < (EIP +index)){
-		cout<<"error"<<endl;
 		return 0xff;
 	}
 	return memory[sgregs[1].base + EIP + index];
@@ -237,7 +234,6 @@ void Emulator::SetRegister32(int index, uint32_t val){
 
 uint32_t Emulator::GetMemory8(uint32_t addr){
 	if(addr > memory_size){
-		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"を参照しようとしました。"<<endl;
 		return 0x00;
 	}
 	return memory[addr];
@@ -265,10 +261,8 @@ uint32_t Emulator::GetMemory32(uint32_t addr){
 
 void Emulator::SetMemory8(uint32_t addr, uint32_t val){
 	if(addr > memory_size){
-		cout<<"fatal error:"<<"メモリサイズを超えたアドレス"<<addr<<"に値("<<(val & 0xff)<<")をセットしようとしました"<<endl;
 		return;
 	}
-	//cout<<addr<<"への書き込み("<<(val&0xff)<<endl;
 	memory[addr] = val & 0xFF;
 	return;
 }
@@ -308,29 +302,16 @@ uint32_t Emulator::Pop32(){
 }
 
 void Emulator::DumpRegisters(int bit){
-	cout<<"---Dump Registers---"<<endl;
 	
 	switch(bit){
 	case 16:
 		for(int i=0; i<REGISTERS_COUNT; i++){
-			cout<<registers_name16[i]<<" = ";
-			cout<<hex<<showbase<<reg[i].reg16;
-			cout<<endl;
 		}
-		cout<<"IP = "<<IP<<endl;
-		cout<<"FLAGS = "<<FLAGS<<endl;
 		break;
 	case 32:
 		for(int i=0; i<REGISTERS_COUNT; i++){
-			cout<<registers_name32[i]<<" = ";
-			cout<<hex<<showbase<<reg[i].reg32;
-			cout<<endl;
 		}
-		cout<<"EIP = "<<EIP<<endl;
-		cout<<"EFLAGS = "<<EFLAGS<<endl;
 		for(int i=0; i<4; i++){
-			cout<<"CR"<<dec<<i<<" = ";
-			cout<<hex<<showbase<<CR[i].reg32<<endl;
 		}
 		break;
 	//case 64:
@@ -339,7 +320,6 @@ void Emulator::DumpRegisters(int bit){
 		break;
 	}
 	
-	cout<<"--------------------"<<endl;
 	
 	return;
 }

@@ -32,7 +32,6 @@ void add_rm16_r16(Emulator *emu) {
 }
 
 void mov_r16_rm32(Emulator *emu){
-	printf("prefix 66 \n");
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint32_t rm16 = modrm.GetRM16();
@@ -40,7 +39,6 @@ void mov_r16_rm32(Emulator *emu){
 }
 
 void mov_rm16_r16(Emulator *emu){
-    printf("prefix 66 \n");
 	emu->EIP++;
 	ModRM modrm(emu);
 	uint16_t r16 = modrm.GetR16();
